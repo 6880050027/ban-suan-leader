@@ -2,10 +2,11 @@
 // เกณฑ์อิงพฤติกรรมการตัดสินใจในเกม เพื่อให้รางวัลสะท้อนสิ่งที่ผู้เล่นทำจริง ไม่ใช่เพียงจำนวน EXP
 import * as St from './state.js';
 import { CHARACTERS } from './data/world.js';
+import * as Ec from './economy.js';
 
 function stats() {
   const P = St.computeProfile();
-  const m = St.schoolMeters();
+  const m = Ec.meters();
   const lv = St.S.levels;
   const passed = id => lv[id]?.status === 'passed';
   const played = id => !!lv[id]?.record;
@@ -43,6 +44,8 @@ export const AWARDS = [
   { id: 'boonmee', group: 'staff', who: 'boonmee', th: 'รางวัลบุคลากรสนับสนุนดีเด่น', how: 'ขวัญกำลังใจของลุงบุญมีไม่น้อยกว่า 85', test: s => s.ch('boonmee').morale >= 85 },
   // ---- รางวัลโรงเรียน ----
   { id: 'safeSchool', group: 'school', th: 'รางวัลโรงเรียนปลอดภัย', how: 'ผ่านด่านงานบริหารทั่วไปครบทุกด่านที่เล่น และได้ EXP ด้านนี้ไม่น้อยกว่าร้อยละ 75', test: s => [1, 5, 9, 13, 17].every(id => St.levelDone(id)) && s.areaRatio('general') >= 0.75 },
+  { id: 'trusted', group: 'school', th: 'รางวัลโรงเรียนที่ชุมชนไว้วางใจ', how: 'มีนักเรียนตั้งแต่ 1,000 คนขึ้นไป', test: () => Ec.econ().students >= 1000 },
+  { id: 'cleanMoney', group: 'school', th: 'รางวัลการบริหารงบประมาณโปร่งใส', how: 'จัดหาสิ่งต่าง ๆ ให้โรงเรียนอย่างถูกระเบียบอย่างน้อย 3 รายการ โดยไม่เคยใช้เงินผิดประเภท', test: () => Ec.econ().bought.filter(b => b.verdict === 'ok').length >= 3 && Ec.econ().lostToMisuse === 0 },
   { id: 'kds', group: 'school', th: 'รางวัลโรงเรียนเก่ง ดี มีสุข', how: 'ตัวชี้วัดเก่ง ดี และมีสุข ไม่น้อยกว่า 75 ทั้งสามด้าน', test: s => (s.m.keng ?? 0) >= 75 && (s.m.dee ?? 0) >= 75 && (s.m.suk ?? 0) >= 75 },
 ];
 export const GROUPS = { admin: 'รางวัลผู้บริหาร', staff: 'รางวัลครูและบุคลากร', school: 'รางวัลโรงเรียน' };

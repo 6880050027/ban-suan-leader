@@ -316,6 +316,48 @@ a.btn.primary { color: #fff; }
   #dock button span { font-size: .72rem; }
 }
 
+
+/* ---------- งบประมาณ ---------- */
+.hud-card.fin { border: 0; text-align: left; font: inherit; cursor: pointer; min-width: 150px; position: relative; }
+.fin-row { display: flex; justify-content: space-between; gap: 10px; font-family: var(--font-h); font-size: .85rem; }
+.fin-row b { font-weight: 500; color: var(--peach-d); font-variant-numeric: tabular-nums; }
+.fin-row #hud-size { font-size: .75rem; color: var(--ink-2); font-family: var(--font-b); }
+.hud-card.fin.crisis { background: #F3E3DF; }
+.crisis-tag { position: absolute; top: -8px; right: -6px; background: var(--bad); color: #fff; font-family: var(--font-h); font-size: .7rem; padding: 1px 8px; border-radius: 99px; animation: pulse 1.6s infinite; }
+.tabs { display: flex; gap: 6px; margin: 4px 0 12px; flex-wrap: wrap; }
+.tab { border: 1px solid var(--line); background: #fff; border-radius: 99px; padding: 6px 16px; font-family: var(--font-h); }
+.tab.on { background: var(--peach); color: #fff; border-color: var(--peach); }
+.fin-top { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 6px 0 10px; }
+.fin-top div { background: #FBF5EC; border-radius: 14px; padding: 10px 12px; }
+.fin-top b { display: block; font-family: var(--font-h); font-size: 1.4rem; font-weight: 500; color: var(--peach-d); font-variant-numeric: tabular-nums; }
+.fin-top span { font-size: .8rem; color: var(--ink-2); }
+.wallets { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 8px; }
+.wallet { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 12px; background: #fff; border: 1px solid var(--line); border-left: 5px solid var(--w); font-size: .88rem; }
+.wallet b { font-family: var(--font-h); font-weight: 500; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.log b.neg { color: var(--bad); font-weight: 500; } .log b.pos { color: var(--ok); font-weight: 500; }
+.crisis-box { background: #FBE6E1; border-left: 5px solid var(--bad); border-radius: 12px; padding: 10px 14px; margin: 8px 0; }
+.shop { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.shop-item { display: flex; flex-direction: column; gap: 4px; text-align: left; background: #fff; border: 1.5px solid var(--line); border-radius: 16px; padding: 12px 14px; transition: all .15s; }
+.shop-item:hover { border-color: var(--peach); transform: translateY(-2px); }
+.shop-item b { font-family: var(--font-h); font-weight: 500; }
+.shop-item .price { margin-top: auto; font-family: var(--font-h); color: var(--peach-d); font-variant-numeric: tabular-nums; }
+.shop-item.owned { background: #EEF6E8; border-color: #CFE3C2; } .shop-item.owned .price { color: var(--ok); }
+.shop-item.locked { background: #F6F2EC; color: #8E8070; } .shop-item.locked .price { color: #9A8B7E; font-size: .85rem; }
+.srcs { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 8px; }
+.src { text-align: left; background: #fff; border: 1.5px solid var(--line); border-left: 6px solid var(--w); border-radius: 14px; padding: 10px 12px; }
+.src:not([disabled]):hover { border-color: var(--peach); border-left-color: var(--w); }
+.src[disabled] { opacity: .55; cursor: default; }
+.src b { display: block; font-weight: 600; font-size: .9rem; } .src span { font-size: .8rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+#visitbar { position: fixed; top: max(12px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); z-index: 12; background: rgba(255,253,248,.96); border-radius: 18px; box-shadow: var(--shadow); padding: 10px 16px; display: flex; gap: 14px; align-items: center; max-width: calc(100vw - 24px); border-top: 4px solid var(--gold); }
+#visitbar > div { display: grid; min-width: 0; } #visitbar b { font-family: var(--font-h); font-weight: 500; }
+#visitbar[hidden] { display: none !important; }
+body.visiting #hud, body.visiting #dock, body.visiting #tracker { display: none; }
+@media (max-width: 760px) {
+  .hud-card.fin { width: 176px; min-width: 0; padding: 6px 12px; }
+  .fin-top { grid-template-columns: 1fr; }
+  #visitbar { flex-direction: column; align-items: stretch; top: 8px; }
+}
+
 /* มือถือ */
 @media (max-width: 760px) {
   body { font-size: 15px; }

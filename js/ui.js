@@ -8,6 +8,7 @@ import * as St from './state.js';
 import * as Sc from './scene.js';
 import * as Au from './audio.js';
 import * as Aw from './awards.js';
+import * as Ec from './economy.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -33,6 +34,8 @@ export function init() {
   refreshSoundIcon();
   refreshHUD();
   if (St.hasSave()) { St.load(); refreshHUD(); syncWorld(); }
+  const vm = location.search.match(/[?&]visit=([A-Za-z0-9_-]+)/);
+  if (vm) { try { enterVisit(Ec.decodeVisit(vm[1])); return; } catch { toast('รหัสโรงเรียนในลิงก์ไม่ถูกต้อง', 'bad'); } }
   showTitle();
 }
 
@@ -67,6 +70,11 @@ const ACTIONS = {
   hall: () => hallModal(),
   share: () => shareModal(),
   menu: () => menuModal(),
+  finance: arg => financeModal(arg || 'overview'),
+  buy: arg => buyModal(arg),
+  quest: arg => questModal(arg),
+  visit: () => visitModal(),
+  leaveVisit: () => leaveVisit(),
   intro: () => { closeModal(); playIntro(); },
   beginSteps: arg => { const a = St.lv(+arg).attempt; if (!a) return; a.phase = 'steps'; St.save(); closeSheet(); activeLevel = +arg; renderPhase(); renderTracker(); },
 };
@@ -79,7 +87,8 @@ export function refreshHUD() {
   const lo = r.min, hi = r.next ? r.next.min : Math.max(exp, r.min + 1);
   $('#hud-exp-bar').style.width = (r.next ? Math.min(100, 100 * (exp - lo) / (hi - lo)) : 100) + '%';
   $('#hud-exp').textContent = r.next ? `${exp} / ${r.next.min} EXP` : `${exp} EXP · ระดับสูงสุด`;
-  const m = St.schoolMeters();
+  if (visiting) return;
+  const m = Ec.meters();
   for (const k of ['keng', 'dee', 'suk']) {
     const v = m[k];
     $(`#m-${k} .bar i`).style.width = (v ?? 0) + '%';
@@ -89,6 +98,15 @@ export function refreshHUD() {
   Sc.setPlayerScale(r.scale);
   Sc.setTrophies(Aw.earnedCount());
   for (const id of Object.keys(CHARACTERS)) if (CHARACTERS[id].readiness && id !== 'player') Sc.setMood(id, St.S.chars[id].morale);
+  const e = Ec.econ();
+  $('#hud-students').textContent = Ec.fmt(e.students);
+  $('#hud-size').textContent = Ec.sizeLabel();
+  $('#hud-money').textContent = Ec.fmt(Ec.usable());
+  $('#hud-fin').classList.toggle('crisis', e.crisis);
+  $('#hud-crisis').hidden = !e.crisis;
+  Sc.setFacilities(Object.keys(e.owned));
+  Sc.setStudentCount(e.students);
+  Sc.setCrisis(e.crisis);
 }
 
 function syncWorld() {
@@ -460,6 +478,7 @@ function finishLevelUI(L) {
   const domTag = Object.entries(tagCount).sort((a, b) => b[1] - a[1])[0][0];
   const cmdRows = Object.entries(att.commands).map(([c, r]) => `<li>${esc(CHARACTERS[c].name)}: ท่านเลือก <b>${COMMANDS[r.cmd].th}</b> · ความพร้อม ${r.readiness} · ${r.result === 'fit' ? 'เข้ากัน' : r.result === 'near' ? 'ใกล้เคียง' : 'ไม่เข้ากัน'}</li>`).join('');
   const res = St.finishLevel(L.id);
+  const tick = res.passed ? Ec.semesterTick(L.id, Ec.meters()) : null;
   const pre = St.lv(L.id).reflectionBefore;
   activeLevel = null; syncWorld(); refreshHUD();
   const afterRank = St.rankFor();
@@ -482,6 +501,13 @@ function finishLevelUI(L) {
   $('#f-done').addEventListener('click', () => { keep(); closeModal(); afterLevelChange(L.id, beforeRank, nextTierOpenBefore); });
   $('#f-again').addEventListener('click', () => { keep(); openLevel(L.id); });
   if (afterRank.index > beforeRank) setTimeout(() => toast(`เลื่อนระดับเป็น <b>${afterRank.th}</b>`, 'rank'), 400);
+  if (tick) {
+    const d = tick.students - tick.studentsBefore;
+    setTimeout(() => { Au.sfx.exp(); toast(`ได้รับงบรอบภาคเรียน · รายหัว +${Ec.fmt(tick.inPer)} · ค่าสาธารณูปโภคและค่าจ้าง −${Ec.fmt(tick.expense)} บาท<br>นักเรียน ${d >= 0 ? '+' : ''}${d} คน (รวม ${Ec.fmt(tick.students)} คน)`, 'good'); }, 1300);
+    if (tick.full) setTimeout(() => toast('จำนวนนักเรียนเต็มความจุของอาคารแล้ว หากต้องการรับนักเรียนเพิ่ม ต้องยื่นคำขอตั้งงบลงทุนอาคารเรียนหลังใหม่', 'rank'), 2400);
+    if (tick.crisisStart) setTimeout(() => crisisModal(), 1800);
+    if (tick.crisisEnd) setTimeout(() => toast('โรงเรียนพ้นภาวะวิกฤตทางการเงินแล้ว', 'rank'), 1800);
+  }
   // ความพร้อมของตัวละครที่เติบโต
   for (const c of Object.keys(att.commands)) {
     const cr = St.S.chars[c].credits;
@@ -576,10 +602,12 @@ function nextAfterMeet(lvId) {
 function closeSheet() { $('#sheet').classList.remove('show'); }
 
 export function onCharClick(id) {
+  if (visiting) return toast('ท่านกำลังเยี่ยมโรงเรียนของผู้อื่น โปรดกลับโรงเรียนของตนเองก่อนทำงานกับบุคลากร');
   if (id.startsWith('student')) return toast('นักเรียนกำลังทำกิจกรรมในสนาม ทุกการตัดสินใจของท่านส่งผลถึงนักเรียนในท้ายที่สุด');
   Sc.flyToChar(id); openChar(id);
 }
 export function onBuildingClick(id) {
+  if (visiting) return;
   if (id === 'hall') { Sc.flyToBuilding('hall'); return hallModal(); }
   const areaOf = { academic: 'academic', personnel: 'personnel', budget: 'budget', general: 'general' };
   const area = areaOf[id];
@@ -754,6 +782,8 @@ function hallModal() {
 function menuModal() {
   openModal(`<h2>เมนู</h2>
     <div class="menu-grid">
+      <button class="btn" data-act="share">แชร์ภาพโรงเรียน</button>
+      <button class="btn" data-act="visit">เยี่ยมโรงเรียนอื่น</button>
       <button class="btn" data-act="rules">กติกาและผลที่ได้รับ</button>
       <button class="btn" data-act="intro">ชมประวัติโรงเรียน</button>
       <button class="btn" data-act="sound">ตั้งค่าเสียง</button>
@@ -782,11 +812,11 @@ async function makeShareCard() {
   // ป้ายชื่อเกมบนภาพ
   g.fillStyle = 'rgba(255,253,248,.92)'; g.beginPath(); g.roundRect(70, 70, 470, 64, 32); g.fill();
   g.fillStyle = '#D9714F'; g.font = '500 30px Mitr, sans-serif'; g.textBaseline = 'middle'; g.fillText('เส้นทางผู้บริหาร · เมืองบ้านสวน', 96, 103);
-  const r = St.rankFor(), m = St.schoolMeters(), aw = Aw.earnedCount();
+  const r = St.rankFor(), m = Ec.meters(), aw = Aw.earnedCount();
   g.textBaseline = 'alphabetic';
   g.fillStyle = '#3A2E28'; g.font = '500 58px Mitr, sans-serif'; g.fillText(SCHOOL_NAME, 60, 930);
   g.fillStyle = '#6B5A4E'; g.font = '400 34px Sarabun, sans-serif';
-  g.fillText(`${St.S.playerName ? 'ผอ.' + St.S.playerName + ' · ' : ''}${r.th}`, 60, 982);
+  g.fillText(`${St.S.playerName ? 'ผอ.' + St.S.playerName + ' · ' : ''}${r.th} · นักเรียน ${Ec.fmt(Ec.econ().students)} คน`, 60, 982);
   // สถิติ
   const stat = (x, big, small) => { g.fillStyle = '#FBEFE3'; g.beginPath(); g.roundRect(x, 1015, 305, 130, 24); g.fill(); g.fillStyle = '#D9714F'; g.font = '500 54px Mitr, sans-serif'; g.fillText(big, x + 28, 1085); g.fillStyle = '#6B5A4E'; g.font = '400 28px Sarabun, sans-serif'; g.fillText(small, x + 28, 1125); };
   stat(60, String(St.totalExp()), 'EXP สะสม'); stat(387, `${St.completedCount()}/20`, 'ด่านที่ผ่าน'); stat(714, String(aw), 'รางวัลในหอเกียรติยศ');
@@ -827,4 +857,177 @@ async function shareModal() {
   $('#sh-fb').addEventListener('click', () => window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(gameUrl()), '_blank', 'noopener'));
   $('#sh-line').addEventListener('click', () => window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(gameUrl()), '_blank', 'noopener'));
   $('#sh-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(text + ' ' + gameUrl()); toast('คัดลอกข้อความแล้ว'); } catch { toast('คัดลอกไม่สำเร็จ'); } });
+}
+
+// ---------------- งบประมาณ ร้านค้า และเควสระดมทรัพยากร ----------------
+const VERDICT = {
+  ok: ['ok', 'ใช้ได้ตามระเบียบ'], bad: ['bad', 'ขัดระเบียบ'], unv: ['unv', 'ยังไม่ยืนยันตัวบท'],
+  short: ['unv', 'เงินไม่พอ'], nocap: ['unv', 'ยังไม่ได้รับจัดสรร'], locked: ['unv', 'ยังเปิดซื้อไม่ได้'], owned: ['ok', 'มีแล้ว'],
+};
+function walletRows() {
+  const e = Ec.econ();
+  const rows = [
+    ['perhead', e.wallets.perhead], ['activity', e.wallets.activity], ['income', e.wallets.income],
+    ['donation', Ec.donationTotal()], ['capital', Ec.balance('capital')], ['student', e.wallets.student],
+  ];
+  return rows.map(([k, v]) => `<div class="wallet" style="--w:${Ec.WALLETS[k].color}"><span>${Ec.WALLETS[k].th}</span><b>${Ec.fmt(v)}</b></div>`).join('');
+}
+function financeTabs(active) {
+  const tabs = [['overview', 'ภาพรวม'], ['shop', 'ร้านค้า'], ['quests', 'ระดมทรัพยากร']];
+  return `<div class="tabs">${tabs.map(([k, th]) => `<button class="tab ${k === active ? 'on' : ''}" data-act="finance" data-arg="${k}">${th}</button>`).join('')}</div>`;
+}
+function financeModal(tab = 'overview') {
+  const e = Ec.econ();
+  let body = '';
+  if (tab === 'overview') {
+    const dons = e.donations.map(d => `<li>${Ec.fmt(d.amount)} บาท · เพื่อ${Ec.PURPOSE_TH[d.purpose]} <span class="tiny">(${esc(d.from)})</span></li>`).join('');
+    const caps = e.capital.filter(c => !c.used).map(c => `<li>${esc(Ec.ITEM[c.item].th)} · ${c.ready ? 'ได้รับจัดสรรแล้ว พร้อมใช้' : `รอการจัดสรร (เมื่อผ่านครบ ${c.readyAfter} ด่าน)`}</li>`).join('');
+    body = `
+      ${e.crisis ? `<div class="crisis-box"><b>โรงเรียนอยู่ในภาวะวิกฤตทางการเงิน</b><p class="small">เงินรายหัวรวมกับเงินรายได้ต่ำกว่า ${Ec.fmt(Ec.crisisLine())} บาท นักเรียนจะลดลงทุกภาคเรียน ตัวชี้วัดเก่ง ดี มีสุข ลดลง 15 คะแนน ทางออกคือทำเควสระดมทรัพยากรอย่างถูกระเบียบ และชะลอการซื้อ</p></div>` : ''}
+      <div class="fin-top">
+        <div><b>${Ec.fmt(e.students)}</b><span>นักเรียน (${Ec.sizeLabel()})</span></div>
+        <div><b>${Ec.fmt(e.capacity)}</b><span>ความจุของอาคาร</span></div>
+        <div><b>${Ec.fmt(e.lostToMisuse)}</b><span>เงินที่เสียจากการใช้ผิดประเภท</span></div>
+      </div>
+      <h3>เงินแต่ละประเภท (บาทในเกม)</h3>
+      <div class="wallets">${walletRows()}</div>
+      <p class="tiny">ทุกครั้งที่ผ่านด่านเป็นครั้งแรก โรงเรียนได้รับงบรอบภาคเรียนตามจำนวนนักเรียน และหักค่าสาธารณูปโภคกับค่าจ้างชั่วคราวจากเงินรายหัว ตัวเลขเหล่านี้กำหนดขึ้นเพื่อการเล่น ไม่ใช่อัตราจริง เงินของนักเรียน (ค่าหนังสือ อุปกรณ์ เครื่องแบบ ปัจจัยพื้นฐาน) แสดงไว้เพื่อให้เห็นว่ามีอยู่ แต่นำมาใช้ซื้อของให้โรงเรียนไม่ได้</p>
+      ${dons ? `<h3>เงินบริจาคที่ระบุวัตถุประสงค์</h3><ul class="tight">${dons}</ul>` : ''}
+      ${caps ? `<h3>งบลงทุน</h3><ul class="tight">${caps}</ul>` : ''}
+      <h3>ความเคลื่อนไหวล่าสุด</h3>
+      ${e.log.length ? `<ul class="log">${e.log.slice(0, 10).map(l => `<li>${esc(l.text)}${l.amount ? ` <b class="${l.amount < 0 ? 'neg' : 'pos'}">${l.amount > 0 ? '+' : ''}${Ec.fmt(l.amount)}</b>` : ''}</li>`).join('')}</ul>` : '<p class="small">ยังไม่มีรายการ ผ่านด่านแรกเพื่อรับงบรอบภาคเรียน</p>'}`;
+  } else if (tab === 'shop') {
+    body = `<p class="small">เลือกรายการ แล้วเลือกแหล่งเงิน หากแหล่งเงินขัดระเบียบ เงินจะถูกเรียกคืนและรายการจะไม่ได้รับการจัดหา หากยังยืนยันตัวบทไม่ได้ เกมจะไม่ตัดสินและไม่หักเงิน</p>
+      <div class="shop">${Ec.ITEMS.map(it => {
+        const owned = it.facility && e.owned[it.facility];
+        return `<button class="shop-item ${owned ? 'owned' : ''} ${it.locked ? 'locked' : ''}" data-act="buy" data-arg="${it.id}">
+          <b>${esc(it.th)}</b><span class="small">${esc(it.desc)}</span>
+          <span class="price">${owned ? 'มีแล้ว' : it.locked ? 'ยังเปิดซื้อไม่ได้' : Ec.fmt(it.price) + ' บาท'}</span></button>`;
+      }).join('')}</div>`;
+  } else {
+    body = `<p class="small">หาเงินเข้าโรงเรียนโดยไม่ผลักภาระให้ผู้ปกครอง แต่ละเควสทำได้ช่วงละ 1 ครั้ง หากตัดสินใจขัดระเบียบจะไม่ได้รับเงิน</p>
+      <div class="shop">${Ec.QUESTS.map(q => {
+        const a = Ec.questAvailable(q);
+        const rw = q.capitalQuest ? 'งบลงทุนเป็นรายการ' : q.reward.wallet ? `สูงสุด ${Ec.fmt(q.reward.amount)} บาท` : 'ขวัญกำลังใจครู';
+        return `<button class="shop-item ${a.ok ? '' : 'locked'}" data-act="quest" data-arg="${q.id}"><b>${esc(q.th)}</b>
+          <span class="small">ผู้เสนอ: ${esc(CHARACTERS[q.by].name)}</span><span class="price">${a.ok ? rw : esc(a.why)}</span></button>`;
+      }).join('')}</div>`;
+  }
+  openModal(`<h2>งบประมาณโรงเรียน</h2>${financeTabs(tab)}${body}`, { wide: true });
+}
+function buyModal(id) {
+  const it = Ec.ITEM[id], e = Ec.econ();
+  if (it.facility && e.owned[it.facility]) return toast('โรงเรียนมีรายการนี้แล้ว');
+  if (it.locked) return openModal(`<h2>${esc(it.th)}</h2><div class="fb undetermined"><p>${esc(it.lockNote)}</p>
+    <p class="small">แหล่งอ้างอิง: <a href="${Ec.SRC.capital2560}" target="_blank" rel="noopener">คู่มือการจัดตั้งงบลงทุน สพฐ. 2560</a> · <a href="${Ec.SRC.vehicle}" target="_blank" rel="noopener">สรุประเบียบรถราชการ</a></p></div>
+    <div class="btn-row"><button class="btn" data-act="finance" data-arg="shop">กลับร้านค้า</button></div>`, { wide: true });
+  const srcs = ['perhead', 'income', 'activity', 'donation', 'capital', 'student'];
+  openModal(`<h2>${esc(it.th)}</h2><p>${esc(it.desc)} · ราคา <b>${Ec.fmt(it.price)}</b> บาท</p>
+    <h3>จะใช้เงินประเภทใด</h3>
+    <div class="srcs">${srcs.map(k => `<button class="src" data-src="${k}" style="--w:${Ec.WALLETS[k].color}"><b>${Ec.WALLETS[k].th}</b><span>คงเหลือ ${Ec.fmt(Ec.balance(k, k === 'capital' ? id : undefined))} บาท</span></button>`).join('')}</div>
+    <div id="buy-res"></div>
+    <div class="btn-row"><button class="btn ghost" data-act="finance" data-arg="shop">กลับร้านค้า</button></div>`, { wide: true });
+  showReader('tonkla', 'ก่อนจัดซื้อ ต้องตรวจว่าเงินประเภทนี้ใช้กับรายการนี้ได้ และรายการต้องอยู่ในแผนปฏิบัติการที่คณะกรรมการสถานศึกษาเห็นชอบแล้วครับ', true);
+  $('#modal-body').querySelectorAll('.src').forEach(b => b.addEventListener('click', () => {
+    const r = Ec.buy(id, b.dataset.src);
+    const [cls, lab] = VERDICT[r.verdict] || ['unv', ''];
+    const link = r.src ? ` (<a href="${r.src}" target="_blank" rel="noopener">แหล่งอ้างอิง</a>)` : '';
+    let html = `<div class="fb ${cls === 'bad' ? 'illegal' : cls === 'ok' ? 'ok' : 'undetermined'}"><div class="fb-head"><span class="chip ${cls}">${lab}</span>${r.lost ? `<span class="chip bad">เสียเงิน ${Ec.fmt(r.lost)} บาท</span>` : ''}</div><p>${esc(r.why || '')}${link}</p>`;
+    if (r.note) html += `<p class="small">${esc(r.note)}</p>`;
+    if (r.ok) html += `<p class="small"><b>ขั้นตอนพัสดุที่ต้องทำต่อ:</b></p><ul class="tight small">${r.method.map(m => `<li>${esc(m)}</li>`).join('')}</ul>`;
+    html += '</div>';
+    $('#buy-res').innerHTML = html;
+    if (r.ok) { Au.sfx.levelClear(); $('#modal-body').querySelectorAll('.src').forEach(x => x.disabled = true); toast(`จัดหา "${esc(it.th)}" แล้ว`, 'good'); }
+    else if (r.verdict === 'bad') { Au.sfx.bad(); $('#modal-body').querySelectorAll('.src').forEach(x => x.disabled = true); }
+    else Au.sfx.cmdMiss();
+    refreshHUD(); grantAwards();
+    const inCrisis = Ec.econ().crisis && (r.ok || r.verdict === 'bad');
+    if (inCrisis) setTimeout(() => crisisModal(), 2200);
+    else if (r.ok && it.facility) {
+      const fly = document.createElement('div'); fly.className = 'btn-row';
+      fly.innerHTML = '<button class="btn primary">ดูสิ่งก่อสร้างใหม่ในเมือง</button><button class="btn" data-act="finance" data-arg="shop">กลับร้านค้า</button>';
+      fly.firstChild.addEventListener('click', () => { closeModal(); Sc.flyToFacility(it.facility); });
+      $('#buy-res').appendChild(fly);
+    }
+    setTimeout(() => $('#buy-res')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
+  }));
+}
+function questModal(id, step = 0, answers = []) {
+  const q = Ec.QUEST[id];
+  if (step === 0) { const a = Ec.questAvailable(q); if (!a.ok) return toast(a.why); }
+  if (step >= q.steps.length) {
+    const r = Ec.finishQuest(id, answers);
+    if (r.factor) Au.sfx.levelClear(); else Au.sfx.levelFail();
+    refreshHUD(); grantAwards();
+    return openModal(`<h2>${esc(q.th)}</h2><div class="result ${r.factor ? 'pass' : 'fail'}">${esc(r.text)}</div>
+      ${answers.map((a, i) => `<div class="fb ${a.v === 'bad' ? 'illegal' : a.v === 'ok' ? 'ok' : 'undetermined'}"><p class="small">ขั้นที่ ${i + 1}</p><p>${esc(a.t)}</p><p class="small">${esc(a.why)}${a.src ? ` (<a href="${a.src}" target="_blank" rel="noopener">แหล่งอ้างอิง</a>)` : ''}</p></div>`).join('')}
+      <div class="btn-row"><button class="btn primary" data-act="finance" data-arg="overview">ดูงบประมาณ</button><button class="btn ghost" data-act="close">กลับเมือง</button></div>`, { wide: true });
+  }
+  const st = q.steps[step];
+  openModal(`<h2>${esc(q.th)}</h2><div class="step-prog">${q.steps.map((_, k) => `<i class="${k < step ? 'done' : k === step ? 'cur' : ''}"></i>`).join('')}</div>
+    <p>${esc(st.q)}</p><div class="opts">${st.opts.map((o, k) => `<button class="opt" data-k="${k}"><span class="opt-l">${THAI_LETTERS[k]}</span><span class="opt-t">${esc(o.t)}</span></button>`).join('')}</div>
+    <div class="btn-row"><button class="btn ghost" data-act="finance" data-arg="quests">ยกเลิก</button></div>`, { wide: true });
+  showReader(q.by, step === 0 ? 'ขอเสนอแนวทางหาทรัพยากรให้โรงเรียนครับ/ค่ะ ขอให้ท่านพิจารณา' : 'ขั้นต่อไปครับ/ค่ะ', step === 0);
+  $('#modal-body').querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => {
+    const o = st.opts[+b.dataset.k];
+    (o.v === 'bad' ? Au.sfx.bad : Au.sfx.good)();
+    questModal(id, step + 1, [...answers, o]);
+  }));
+}
+function crisisModal() {
+  const e = Ec.econ();
+  if (!e.crisis) return;
+  openModal(`<h2>ภาวะวิกฤตทางการเงิน</h2>
+    <div class="crisis-box"><p>เงินรายหัวรวมกับเงินรายได้สถานศึกษาเหลือ ${Ec.fmt(Ec.usable())} บาท ต่ำกว่าระดับที่โรงเรียนต้องใช้ดำเนินงาน (${Ec.fmt(Ec.crisisLine())} บาท)</p>
+    <ul class="tight small"><li>นักเรียนจะลดลงทุกภาคเรียนจนกว่าจะพ้นวิกฤต</li><li>ตัวชี้วัดเก่ง ดี มีสุข ลดลง 15 คะแนน</li><li>ท้องฟ้าในเมืองจะหม่นลง เพื่อเตือนให้เห็นสภาพของโรงเรียน</li></ul></div>
+    <p class="small">ทางออก: ทำเควสระดมทรัพยากรอย่างถูกระเบียบ ชะลอการจัดซื้อที่ไม่จำเป็น และผ่านด่านถัดไปเพื่อรับงบรอบภาคเรียน ห้ามนำเงินของนักเรียนหรือเงินที่ผูกวัตถุประสงค์มาใช้แก้ปัญหา</p>
+    <div class="btn-row"><button class="btn primary" data-act="finance" data-arg="quests">ไปที่เควสระดมทรัพยากร</button><button class="btn ghost" data-act="close">ปิด</button></div>`);
+  Au.sfx.levelFail();
+}
+
+// ---------------- เยี่ยมโรงเรียน ----------------
+let visiting = null;
+function myVisitCode() {
+  const m = Ec.meters();
+  return Ec.encodeVisit(Ec.visitPayload({ e: St.totalExp(), r: St.rankFor().index, a: Aw.earnedCount(), l: St.completedCount(), m: [m.keng, m.dee, m.suk] }));
+}
+function recentVisits() { try { return JSON.parse(localStorage.getItem('banSuanVisits') || '[]'); } catch { return []; } }
+function visitModal() {
+  const code = myVisitCode(), link = gameUrl() + '?visit=' + code;
+  const recent = recentVisits();
+  openModal(`<h2>เยี่ยมโรงเรียนอื่น</h2>
+    <p class="small">เกมนี้ไม่มีเซิร์ฟเวอร์กลาง การเยี่ยมโรงเรียนจึงใช้ลิงก์หรือรหัสที่ผู้เล่นแชร์ให้กัน ผู้เยี่ยมเห็นเมือง สิ่งก่อสร้าง จำนวนนักเรียน ระดับ และรางวัลแบบอ่านอย่างเดียว ไม่เห็นคำตอบหรือบันทึกสะท้อนคิด</p>
+    <section class="card"><h3>ลิงก์โรงเรียนของท่าน</h3><textarea id="vs-link" rows="2" readonly>${esc(link)}</textarea>
+      <div class="btn-row"><button class="btn primary" id="vs-copy">คัดลอกลิงก์</button>${navigator.share ? '<button class="btn" id="vs-share">แชร์ลิงก์</button>' : ''}</div></section>
+    <section class="card"><h3>เยี่ยมโรงเรียนของเพื่อน</h3><textarea id="vs-in" rows="2" placeholder="วางลิงก์หรือรหัสโรงเรียนของเพื่อน"></textarea>
+      <div class="btn-row"><button class="btn primary" id="vs-go">ไปเยี่ยม</button></div>
+      ${recent.length ? `<p class="small">เคยเยี่ยมล่าสุด</p><div class="menu-grid">${recent.map((r, i) => `<button class="btn" data-recent="${i}">ผอ.${esc(r.n || 'ไม่ระบุชื่อ')} · ${Ec.fmt(r.s)} คน</button>`).join('')}</div>` : ''}</section>`);
+  $('#vs-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(link); toast('คัดลอกลิงก์แล้ว'); } catch { $('#vs-link').select(); toast('เลือกข้อความแล้ว กดคัดลอกจากเครื่องได้เลย'); } });
+  $('#vs-share')?.addEventListener('click', async () => { try { await navigator.share({ title: 'เยี่ยมโรงเรียนของฉันในเกมเส้นทางผู้บริหาร', url: link }); } catch {} });
+  $('#vs-go').addEventListener('click', () => { try { enterVisit(Ec.decodeVisit($('#vs-in').value)); } catch (e) { toast('รหัสโรงเรียนไม่ถูกต้อง', 'bad'); } });
+  $('#modal-body').querySelectorAll('[data-recent]').forEach(b => b.addEventListener('click', () => enterVisit(recent[+b.dataset.recent])));
+}
+function enterVisit(o) {
+  visiting = o;
+  try { const r = recentVisits().filter(x => JSON.stringify(x) !== JSON.stringify(o)); r.unshift(o); localStorage.setItem('banSuanVisits', JSON.stringify(r.slice(0, 6))); } catch {}
+  closeModal(); closeSheet();
+  document.body.classList.add('visiting');
+  Sc.setFacilities(o.f); Sc.setStudentCount(o.s); Sc.setCrisis(!!o.c); Sc.setTrophies(o.a || 0); Sc.setQuestMarkers([]);
+  const rk = RANKS[o.r];
+  const bar = $('#visitbar');
+  bar.hidden = false;
+  bar.innerHTML = `<div><b>กำลังเยี่ยม${esc(SCHOOL_NAME)} ของ ผอ.${esc(o.n || 'ไม่ระบุชื่อ')}</b>
+    <span class="small">${rk ? esc(rk.th) + ' · ' : ''}${Ec.fmt(o.e || 0)} EXP · ผ่าน ${o.l || 0}/20 ด่าน · นักเรียน ${Ec.fmt(o.s)} คน (${Ec.sizeLabel(o.s)}) · รางวัล ${o.a || 0}${o.c ? ' · อยู่ในภาวะวิกฤต' : ''}</span>
+    ${o.m ? `<span class="small">เก่ง ${o.m[0] ?? '–'} · ดี ${o.m[1] ?? '–'} · มีสุข ${o.m[2] ?? '–'}</span>` : ''}</div>
+    <button class="btn sm primary" data-act="leaveVisit">กลับโรงเรียนของฉัน</button>`;
+  Sc.resetView();
+  Au.sfx.quest();
+}
+function leaveVisit() {
+  visiting = null;
+  document.body.classList.remove('visiting');
+  $('#visitbar').hidden = true;
+  if (location.search.includes('visit=')) history.replaceState(null, '', location.pathname);
+  refreshHUD(); syncWorld();
+  if (!St.hasSave()) showTitle();
 }
