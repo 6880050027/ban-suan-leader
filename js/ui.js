@@ -6,6 +6,7 @@ import {
 } from './data/world.js';
 import * as St from './state.js';
 import * as Sc from './scene.js';
+import * as Au from './audio.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -28,6 +29,7 @@ const ROUTINE = {
 
 export function init() {
   bindHUD();
+  refreshSoundIcon();
   refreshHUD();
   if (St.hasSave()) { St.load(); refreshHUD(); syncWorld(); }
   showTitle();
@@ -35,9 +37,13 @@ export function init() {
 
 // ---------------- HUD ----------------
 function bindHUD() {
+  // เบราว์เซอร์ให้เริ่มเสียงได้หลังผู้ใช้แตะครั้งแรกเท่านั้น
+  const firstTouch = () => { Au.unlock(); window.removeEventListener('pointerdown', firstTouch); window.removeEventListener('keydown', firstTouch); };
+  window.addEventListener('pointerdown', firstTouch); window.addEventListener('keydown', firstTouch);
   document.body.addEventListener('click', e => {
-    const b = e.target.closest('[data-act]');
-    if (!b) return;
+    const b = e.target.closest('[data-act], .btn, .cmd, .tr-item');
+    if (b && !b.classList.contains('opt')) (b.dataset.act === 'close' || b.dataset.act === 'closeSheet') ? Au.sfx.close() : Au.sfx.click();
+    if (!b || !b.dataset.act) return;
     const act = b.dataset.act, arg = b.dataset.arg;
     ACTIONS[act]?.(arg, b, e);
   });
@@ -56,6 +62,7 @@ const ACTIONS = {
   skip: arg => { const t = St.tierOf(+arg).id; const before = t < 4 && St.tierOpen(t + 1); St.skipLevel(+arg); closeModal(); afterLevelChange(+arg, 0, before); toast(`ข้ามด่าน ${arg} แล้ว ด่านนี้ยังนับเป็นการผ่านเพื่อปลดล็อก และไม่กระทบสิทธิรับโปรไฟล์`); },
   fly: arg => { Sc.flyToChar(arg); openChar(arg); },
   title: () => showTitle(),
+  sound: () => soundModal(),
 };
 
 export function refreshHUD() {
@@ -101,11 +108,14 @@ function openModal(html, { wide = false, cls = '', closable = true } = {}) {
   m.setAttribute('aria-hidden', 'false');
   $('#modal-body').scrollTop = 0;
   const f = $('#modal-body [autofocus]'); if (f) setTimeout(() => f.focus(), 50);
+  Au.setDuck(true);
 }
 function closeModal() {
   const m = $('#modal'); m.className = 'modal'; m.setAttribute('aria-hidden', 'true');
+  Au.setDuck(false);
 }
 function toast(msg, kind = '') {
+  if (kind === 'rank') (msg.includes('ปลดล็อก') ? Au.sfx.unlock : Au.sfx.rankUp)();
   const t = document.createElement('div'); t.className = 'toast ' + kind; t.innerHTML = msg;
   $('#toasts').appendChild(t);
   setTimeout(() => t.classList.add('out'), 4200);
@@ -294,6 +304,7 @@ function renderBrief(L, att) {
     if (att.phase === 'meet') {
       closeModal(); syncWorld();
       Sc.flyToChar(tasks[0].c);
+      Au.sfx.quest();
       toast(`แตะ${CHARACTERS[tasks[0].c].name}ที่มีป้าย <b>!</b> เพื่อเลือกวิธีทำงานกับเขา`);
     } else renderPhase();
   });
@@ -366,8 +377,8 @@ function renderStep(L, att) {
     att.retryMode = null;
     const o = st.options[oi];
     if (!before) logStep(L, st, o);
-    if (o.legal === 'illegal' && !res.retried) toast('ตัวเลือกนี้ขัดระเบียบ ดูผลที่ตามมาด้านล่าง', 'bad');
-    else toast(`+${res.exp} EXP`, 'good');
+    if (o.legal === 'illegal') { Au.sfx.bad(); if (!res.retried) toast('ตัวเลือกนี้ขัดระเบียบ ดูผลที่ตามมาด้านล่าง', 'bad'); }
+    else { Au.sfx.good(); setTimeout(() => Au.sfx.exp(), 260); toast(`+${res.exp} EXP`, 'good'); }
     St.save(); renderStep(L, att); refreshHUD();
     setTimeout(() => $('#reveal')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
   }));
@@ -412,6 +423,7 @@ function finishLevelUI(L) {
   const pre = St.lv(L.id).reflectionBefore;
   activeLevel = null; syncWorld(); refreshHUD();
   const afterRank = St.rankFor();
+  (res.passed ? Au.sfx.levelClear : Au.sfx.levelFail)();
   openModal(`<div class="lv-head" style="--area:${AREAS[L.area].color}"><span class="chip area">${AREAS[L.area].th}</span><h2>สรุปด่าน ${L.id} · ${esc(L.title)}</h2></div>
     <div class="kolb"><span>ประสบการณ์</span><span class="on">สะท้อนคิด</span><span class="on">แนวคิด</span><span class="on">ลองใหม่</span></div>
     <div class="result ${res.passed ? 'pass' : 'fail'}"><b>${res.exp}</b> / ${res.max} EXP · ${res.passed ? 'ผ่านด่าน' : `ยังไม่ผ่าน (ต้องได้ ${Math.ceil(res.max * PASS_RATIO)})`}</div>
@@ -478,11 +490,13 @@ function openChar(id) {
   }
   sheet.innerHTML = `<button class="x" data-act="closeSheet" aria-label="ปิด">×</button>
     <div class="sheet-head"><span class="avatar" style="--shirt:${c.look.shirt};--skin:${c.look.skin};--hair:${c.look.hair}"></span><div><h3>${esc(c.name)}</h3></div></div>${body}`;
+  if (!sheet.classList.contains('show')) Au.sfx.open();
   sheet.classList.add('show');
   sheet.querySelectorAll('[data-cmd]').forEach(b => b.addEventListener('click', () => {
     const r = St.judgeCommand(lvId, id, b.dataset.cmd);
     St.addLog(id, `ด่าน ${lvId}: ได้รับการ${COMMANDS[b.dataset.cmd].th}จาก ผอ.`);
     St.save();
+    (r.result === 'fit' ? Au.sfx.cmdFit : Au.sfx.cmdMiss)();
     if (r.result !== 'miss') toast(`+${COMMAND_EXP[r.result]} EXP · ${r.result === 'fit' ? 'เข้ากับความพร้อม' : 'ใกล้เคียง'}`, 'good');
     refreshHUD(); syncWorld(); openChar(id);
     const pending = (COMMAND_TASKS[lvId] || []).filter(t => !St.lv(lvId).attempt.commands[t.c]);
@@ -495,6 +509,7 @@ function openChar(id) {
     s.morale = Math.max(10, Math.min(100, s.morale + (ok ? 5 : -4)));
     if (ok && (readiness === 'R1' || readiness === 'R2')) s.credits++;
     s.routineAt = St.completedCount();
+    (ok ? Au.sfx.cmdFit : Au.sfx.cmdMiss)();
     St.addLog(id, `งานประจำ "${ROUTINE[id]}": ได้รับการ${COMMANDS[k].th}จาก ผอ. ${ok ? '(ทำได้ราบรื่น)' : '(ดูอึดอัด)'}`);
     St.save(); refreshHUD();
     toast(`${esc(CHARACTERS[id].name)}: ${esc(pickLine(ok ? (fit === 'consult' ? 'consultFit' : 'fit') : (readiness === 'ST' ? 'stakeholderCommand' : (['direct', 'coach', 'support', 'delegate'].indexOf(k) < ['direct', 'coach', 'support', 'delegate'].indexOf(fit) ? 'over' : 'under'))))}`);
@@ -615,4 +630,24 @@ function saveModal() {
     if (!btn.dataset.armed) { btn.dataset.armed = '1'; btn.textContent = 'กดอีกครั้งเพื่อยืนยันการลบ'; return; }
     St.resetAll(); refreshHUD(); syncWorld(); closeSheet(); showTitle();
   });
+}
+
+// ---------------- Sound ----------------
+function soundModal() {
+  const st = Au.getSettings();
+  openModal(`<h2>เสียง</h2>
+    <p class="small">เพลงและเสียงเอฟเฟกต์สังเคราะห์ขึ้นในเบราว์เซอร์ ไม่ได้ใช้ไฟล์เพลงจากที่อื่น เพลงจะเบาลงเองระหว่างอ่านสถานการณ์</p>
+    <label class="switch-row"><span><b>เพลงประกอบ</b><small>ลูปมาริมบาโทนอบอุ่นของเมืองบ้านสวน</small></span><input type="checkbox" id="snd-music" ${st.music ? 'checked' : ''}></label>
+    <label class="switch-row"><span><b>เสียงเอฟเฟกต์</b><small>คลิก ตอบ ได้ EXP ผ่านด่าน เลื่อนระดับ ปลดล็อก</small></span><input type="checkbox" id="snd-sfx" ${st.sfx ? 'checked' : ''}></label>
+    <label class="field">ความดังรวม <input type="range" id="snd-vol" min="0" max="1" step="0.05" value="${st.vol}"></label>
+    <div class="btn-row"><button class="btn" id="snd-test">ลองฟังเสียงเลื่อนระดับ</button><button class="btn primary" data-act="close">เสร็จ</button></div>`);
+  $('#snd-music').addEventListener('change', e => { Au.unlock(); Au.setMusic(e.target.checked); refreshSoundIcon(); });
+  $('#snd-sfx').addEventListener('change', e => { Au.setSfx(e.target.checked); refreshSoundIcon(); });
+  $('#snd-vol').addEventListener('input', e => Au.setVolume(+e.target.value));
+  $('#snd-test').addEventListener('click', () => Au.sfx.rankUp());
+}
+export function refreshSoundIcon() {
+  const st = Au.getSettings();
+  const b = document.querySelector('#dock [data-act=sound]');
+  if (b) b.classList.toggle('muted', !st.music && !st.sfx);
 }

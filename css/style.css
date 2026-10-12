@@ -65,9 +65,21 @@ p { margin: .4em 0 .8em; }
 #m-suk .bar i { background: linear-gradient(90deg, #F8C7D4, #E07A9B); }
 
 #dock { position: fixed; right: 12px; top: max(12px, env(safe-area-inset-top)); display: flex; gap: 8px; }
-#dock button { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 70px; padding: 8px 4px 6px; border: 0; border-radius: 18px; background: rgba(255, 253, 248, .93); box-shadow: var(--shadow); font-family: var(--font-h); font-size: .8rem; transition: transform .15s; }
+#dock button { display: flex; flex-direction: column; align-items: center; gap: 2px; width: 66px; padding: 8px 4px 6px; border: 0; border-radius: 18px; background: rgba(255, 253, 248, .93); box-shadow: var(--shadow); font-family: var(--font-h); font-size: .8rem; transition: transform .15s; }
 #dock button:hover { transform: translateY(-2px); }
 #dock svg, #camctl svg { width: 24px; height: 24px; fill: none; stroke: var(--peach-d); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+#dock .cross { display: none; }
+#dock .muted .cross { display: inline; }
+#dock .muted .wave { display: none; }
+.switch-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 16px; background: #fff; margin: 10px 0; cursor: pointer; }
+.switch-row span { display: grid; }
+.switch-row small { color: var(--ink-2); font-size: .82rem; }
+.switch-row input { appearance: none; width: 46px; height: 26px; border-radius: 99px; background: #E6DACA; position: relative; flex: none; cursor: pointer; transition: background .2s; }
+.switch-row input::after { content: ''; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.2); transition: transform .2s; }
+.switch-row input:checked { background: var(--peach); }
+.switch-row input:checked::after { transform: translateX(20px); }
+.switch-row input:focus-visible { outline: 3px solid rgba(242,140,107,.4); }
+input[type=range] { width: 100%; accent-color: var(--peach); margin-top: 8px; }
 #camctl { position: fixed; right: 12px; bottom: max(16px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 8px; }
 #camctl button { width: 46px; height: 46px; border-radius: 50%; border: 0; background: rgba(255, 253, 248, .93); box-shadow: var(--shadow); font-size: 1.5rem; font-family: var(--font-h); display: grid; place-items: center; color: var(--peach-d); }
 
