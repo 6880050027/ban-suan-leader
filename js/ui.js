@@ -1,4 +1,4 @@
-// หน้าจอ เควส การสั่งงานตัวละคร สมุดผู้นำ และการบันทึก
+// หน้าจอ ภารกิจ การสั่งงานตัวละคร สมุดผู้นำ และการบันทึก
 import { LEVELS } from './data/levels.js';
 import {
   AREAS, TIERS, TAGS, COMMANDS, READINESS_TH, CHARACTERS, COMMAND_TASKS, COMMAND_REACTIONS,
@@ -7,6 +7,7 @@ import {
 import * as St from './state.js';
 import * as Sc from './scene.js';
 import * as Au from './audio.js';
+import * as Aw from './awards.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -17,7 +18,7 @@ const DIFF_DOTS = d => '●'.repeat(d) + '○'.repeat(4 - d);
 let activeLevel = null; // id ของด่านที่กำลังเล่น
 let modalStack = [];
 
-// งานประจำของตัวละครเมื่อไม่มีเควส (ใช้ฝึกอ่านความพร้อม ไม่ให้ EXP)
+// งานประจำของตัวละครเมื่อไม่มีภารกิจ (ใช้ฝึกอ่านความพร้อม ไม่ให้ EXP)
 const ROUTINE = {
   prasert: 'ตรวจความปลอดภัยอาคารและสนามเด็กเล่นประจำเดือน', malee: 'จัดตารางนิเทศชั้นเรียนภาคเรียนนี้',
   tonkla: 'ทำทะเบียนคุมครุภัณฑ์ให้เป็นปัจจุบัน', arun: 'นำวง PLC กลุ่มสาระวิทยาศาสตร์', wilai: 'ปรับแผนสอนซ่อมเสริมคณิตศาสตร์ ม.2',
@@ -63,6 +64,11 @@ const ACTIONS = {
   fly: arg => { Sc.flyToChar(arg); openChar(arg); },
   title: () => showTitle(),
   sound: () => soundModal(),
+  hall: () => hallModal(),
+  share: () => shareModal(),
+  menu: () => menuModal(),
+  intro: () => { closeModal(); playIntro(); },
+  beginSteps: arg => { const a = St.lv(+arg).attempt; if (!a) return; a.phase = 'steps'; St.save(); closeSheet(); activeLevel = +arg; renderPhase(); renderTracker(); },
 };
 
 export function refreshHUD() {
@@ -81,11 +87,12 @@ export function refreshHUD() {
   }
   $('#hud-progress').textContent = `${St.completedCount()}/20 ด่าน`;
   Sc.setPlayerScale(r.scale);
+  Sc.setTrophies(Aw.earnedCount());
   for (const id of Object.keys(CHARACTERS)) if (CHARACTERS[id].readiness && id !== 'player') Sc.setMood(id, St.S.chars[id].morale);
 }
 
 function syncWorld() {
-  // ตั้งเครื่องหมายเควสตามด่านที่กำลังเล่น
+  // ตั้งเครื่องหมายภารกิจตามด่านที่กำลังเล่น
   const id = currentAttemptLevel();
   activeLevel = id;
   if (id && St.lv(id).attempt?.phase === 'meet') {
@@ -103,6 +110,8 @@ function currentAttemptLevel() {
 function openModal(html, { wide = false, cls = '', closable = true } = {}) {
   const m = $('#modal');
   m.className = 'modal show ' + (wide ? 'wide ' : '') + cls;
+  // ย้ายภาพตัวละครกลับมาไว้นอกหน้าต่างก่อนเปลี่ยนเนื้อหา ไม่ให้ถูกลบไปพร้อมเนื้อหาเดิม
+  const rd = $('#reader'); if (rd && rd.parentElement !== document.body) { rd.hidden = true; document.body.appendChild(rd); }
   $('#modal-body').innerHTML = html;
   $('#modal-close').hidden = !closable;
   m.setAttribute('aria-hidden', 'false');
@@ -113,6 +122,7 @@ function openModal(html, { wide = false, cls = '', closable = true } = {}) {
 function closeModal() {
   const m = $('#modal'); m.className = 'modal'; m.setAttribute('aria-hidden', 'true');
   Au.setDuck(false);
+  hideReader();
 }
 function toast(msg, kind = '') {
   if (kind === 'rank') (msg.includes('ปลดล็อก') ? Au.sfx.unlock : Au.sfx.rankUp)();
@@ -127,88 +137,116 @@ function showTitle() {
   const has = St.hasSave();
   openModal(`
     <div class="title-screen">
-      <div class="title-badge">เกมเตรียมความพร้อมผู้บริหารสถานศึกษา</div>
+      <div class="title-badge">เกมจำลองสถานการณ์เพื่อเตรียมความพร้อมผู้บริหารสถานศึกษา</div>
       <h1>เส้นทางผู้บริหาร<br><span>เมืองบ้านสวน</span></h1>
-      <p class="lead">ท่านเพิ่งได้รับแต่งตั้งเป็นผู้อำนวยการ${esc(SCHOOL_NAME)} โรงเรียนมัธยมศึกษาขนาดกลาง สังกัด ${esc(AREA_OFFICE)} ในโลกปี พ.ศ. 2570 เป้าหมายคือพาครูและนักเรียนให้ "เก่ง ดี มีสุข" ผ่านงาน 4 ด้านตามกฎกระทรวงกระจายอำนาจฯ พ.ศ. 2550 ใน 20 ด่าน จากเรื่องประจำวันไปจนถึงวิกฤต</p>
-      ${has ? `<p class="small">พบข้อมูลที่บันทึกไว้: ${esc(St.S.playerName ? 'ผอ.' + St.S.playerName : 'ไม่ระบุชื่อ')} · ผ่าน ${St.completedCount()}/20 ด่าน · ${St.totalExp()} EXP</p>` : ''}
+      <p class="lead">ท่านได้รับแต่งตั้งเป็นผู้อำนวยการ${esc(SCHOOL_NAME)} โรงเรียนมัธยมศึกษาขนาดกลาง สังกัด ${esc(AREA_OFFICE)} ในปีการศึกษา 2570 ภารกิจของท่านคือพัฒนาครูและนักเรียนให้ "เก่ง ดี มีสุข" ผ่านการบริหารงาน 4 ด้านตามกฎกระทรวงกระจายอำนาจฯ พ.ศ. 2550 ใน 20 ด่าน ตั้งแต่งานประจำไปจนถึงภาวะวิกฤต</p>
+      ${has ? `<p class="small">ข้อมูลที่บันทึกไว้: ${esc(St.S.playerName ? 'ผอ.' + St.S.playerName : 'ไม่ระบุชื่อ')} · ผ่าน ${St.completedCount()}/20 ด่าน · ${St.totalExp()} EXP</p>` : ''}
       <div class="btn-row center">
         ${has ? `<button class="btn primary" id="t-continue" autofocus>เล่นต่อ</button>` : ''}
         <button class="btn ${has ? '' : 'primary'}" id="t-new" ${has ? '' : 'autofocus'}>เริ่มเกมใหม่</button>
+        <button class="btn ghost" id="t-intro">ประวัติโรงเรียน</button>
         <button class="btn ghost" data-act="save">นำเข้ารหัสบันทึก</button>
       </div>
-      <p class="fineprint">ชื่อบุคคล โรงเรียน และเขตพื้นที่ในเกมเป็นชื่อสมมติทั้งหมด สถานการณ์อิงกรณีจริงที่มีแหล่งอ้างอิง ข้อมูลระเบียบเป็นสถานะ ณ ตุลาคม 2569 ผลโปรไฟล์ใช้เพื่อสะท้อนคิด ไม่ใช่เครื่องมือวินิจฉัย</p>
+      <p class="fineprint">ชื่อบุคคล โรงเรียน และเขตพื้นที่ในเกมเป็นชื่อสมมติทั้งหมด ส่วนสถานการณ์อิงกรณีจริงที่มีแหล่งอ้างอิง ข้อมูลระเบียบเป็นสถานะ ณ เดือนตุลาคม 2569 ผลโปรไฟล์ใช้เพื่อการสะท้อนคิด ไม่ใช่เครื่องมือวินิจฉัย</p>
     </div>`, { cls: 'title', closable: false });
   $('#t-continue')?.addEventListener('click', () => { closeModal(); syncWorld(); refreshHUD(); if (!St.S.seenRules) showRules(); else resumeHint(); });
   $('#t-new').addEventListener('click', () => newGameForm(has));
+  $('#t-intro').addEventListener('click', () => { closeModal(); playIntro(() => showTitle()); });
 }
 function newGameForm(hadSave) {
   openModal(`
     <h2>เริ่มเกมใหม่</h2>
-    ${hadSave ? `<p class="warn">การเริ่มใหม่จะเขียนทับข้อมูลเดิมในเบราว์เซอร์นี้ ถ้าต้องการเก็บไว้ ให้ไปที่ "บันทึก" แล้วคัดลอกรหัสสำรองก่อน</p>` : ''}
-    <label class="field">ชื่อที่จะใช้ในเกม (ไม่ต้องใช้ชื่อจริง)
+    ${hadSave ? `<p class="warn">การเริ่มเกมใหม่จะเขียนทับข้อมูลเดิมในเบราว์เซอร์นี้ หากต้องการเก็บข้อมูลเดิมไว้ โปรดไปที่เมนู "บันทึก" และคัดลอกรหัสสำรองก่อน</p>` : ''}
+    <label class="field">ชื่อที่ใช้ในเกม (ไม่จำเป็นต้องเป็นชื่อจริง)
       <input id="ng-name" maxlength="24" placeholder="เช่น ใจดี" autofocus>
     </label>
     <div class="btn-row"><button class="btn primary" id="ng-go">เข้าสู่เมืองบ้านสวน</button><button class="btn ghost" data-act="title">ย้อนกลับ</button></div>`, { closable: false });
-  const go = () => { St.newGame($('#ng-name').value.trim()); refreshHUD(); syncWorld(); showRules(true); };
+  const go = () => { St.newGame($('#ng-name').value.trim()); refreshHUD(); syncWorld(); closeModal(); playIntro(() => showRules(true)); };
   $('#ng-go').addEventListener('click', go);
   $('#ng-name').addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
 }
 function resumeHint() {
   const id = currentAttemptLevel();
-  if (id) toast(`ท่านค้างอยู่ที่ด่าน ${id} เปิด "ภารกิจ" เพื่อเล่นต่อ`);
+  if (id) toast(`ท่านยังทำด่าน ${id} ไม่เสร็จ เปิดเมนู "ภารกิจ" เพื่อดำเนินการต่อ`);
+}
+
+// ---------------- Intro: ประวัติโรงเรียน (แต่งขึ้น) ----------------
+const INTRO_SHOTS = [
+  { year: 'พ.ศ. 2512', text: 'ชาวบ้านสวนร่วมกันบริจาคที่ดินริมคลองและแรงงาน สร้างอาคารเรียนไม้หลังแรก เปิดสอนนักเรียนรุ่นแรก 42 คน', at: [-19, 0, -11], dist: 34, az: -0.5 },
+  { year: 'พ.ศ. 2538', text: 'โรงเรียนขยายการรับนักเรียนจนเปิดสอนครบตั้งแต่ ม.1 ถึง ม.6 และกลายเป็นโรงเรียนประจำชุมชนที่ผู้ปกครองหลายรุ่นผูกพัน', at: [-4, 0, 7], dist: 40, az: 0.3 },
+  { year: 'พ.ศ. 2565', text: 'ผลสัมฤทธิ์ของนักเรียนเริ่มลดลง ครูหลายคนขอย้าย ภาระงานเอกสารเพิ่มขึ้น และชุมชนตั้งคำถามถึงทิศทางของโรงเรียน', at: [14, 0, -9], dist: 30, az: 0.9 },
+  { year: 'พ.ศ. 2570', text: 'ท่านได้รับแต่งตั้งเป็นผู้อำนวยการคนที่ 9 ครู นักเรียน และชุมชนกำลังรอดูว่าท่านจะนำโรงเรียนไปในทิศทางใด', at: [3.4, 0, -6], dist: 20, az: 0.55, player: true },
+];
+function playIntro(done) {
+  const el = $('#intro');
+  el.hidden = false; document.body.classList.add('cine');
+  el.innerHTML = `<div class="ib top"></div><div class="ib bottom"><div class="cap"><b></b><p></p></div><button class="btn sm ghost skip">ข้ามฉากเปิด</button></div>`;
+  Au.unlock();
+  let i = 0, timer = null, finished = false;
+  const finish = () => { if (finished) return; finished = true; clearTimeout(timer); document.body.classList.remove('cine'); el.classList.add('out'); setTimeout(() => { el.hidden = true; el.classList.remove('out'); }, 500); Sc.resetView(); done && done(); };
+  const next = () => {
+    if (i >= INTRO_SHOTS.length) return finish();
+    const s = INTRO_SHOTS[i++];
+    Sc.cinematic(s.at, s.dist, s.az, 2.6);
+    const cap = el.querySelector('.cap'); cap.classList.remove('show');
+    setTimeout(() => { cap.querySelector('b').textContent = s.year; cap.querySelector('p').textContent = s.text; cap.classList.add('show'); Au.sfx.page(); }, 250);
+    timer = setTimeout(next, i === INTRO_SHOTS.length ? 3200 : 2700);
+  };
+  el.querySelector('.skip').addEventListener('click', finish);
+  next();
 }
 
 // ---------------- Rules (andragogy) ----------------
 function showRules(first = false) {
   openModal(`
-    <h2>กติกาและสิ่งที่ท่านจะได้</h2>
-    <p class="lead">เกมนี้ออกแบบสำหรับครูและรองผู้อำนวยการที่เตรียมตัวขึ้นเป็นผู้บริหาร ซึ่งเป็นผู้ใหญ่ที่มีประสบการณ์ในโรงเรียนอยู่แล้ว กติกาจึงวางตามหลักการเรียนรู้ของผู้ใหญ่ (andragogy) ของ Knowles และวงจรการเรียนรู้จากประสบการณ์ของ Kolb</p>
+    <h2>กติกาและผลที่ผู้เล่นจะได้รับ</h2>
+    <p class="lead">เกมนี้ออกแบบสำหรับครูและรองผู้อำนวยการที่เตรียมเข้าสู่ตำแหน่งผู้บริหารสถานศึกษา ซึ่งเป็นผู้เรียนวัยผู้ใหญ่ที่มีประสบการณ์ในโรงเรียนอยู่แล้ว กติกาจึงอิงหลักการเรียนรู้ของผู้ใหญ่ (andragogy) ของ Knowles และวงจรการเรียนรู้จากประสบการณ์ของ Kolb</p>
     <div class="grid2">
       <section class="card">
-        <h3>วิธีเล่น</h3>
+        <h3>ขั้นตอนการเล่น</h3>
         <ol class="steps">
-          <li>เปิด <b>ภารกิจ</b> เลือกด่านในช่วงที่ปลดล็อกแล้ว ภายในช่วงเดียวกันเล่นด่านไหนก่อนก็ได้</li>
-          <li>อ่าน <b>ทำไมเรื่องนี้สำคัญ</b> และกรณีจริงที่ด่านอิง แล้วจดสั้น ๆ ว่าถ้าเป็นโรงเรียนของท่านจะทำอะไร</li>
-          <li>ออกไปในเมือง แตะตัวละครที่มีป้าย <span class="mini-marker">!</span> แล้วเลือกวิธีทำงานกับเขา: สั่งการ สอนงาน สนับสนุน มอบหมาย หรือปรึกษาหารือ</li>
-          <li>ตัดสินใจทีละขั้น ขั้นละ 5 ตัวเลือก ดูผลที่ตามมา เหตุผล และแหล่งอ้างอิงทันที</li>
-          <li>สรุปบทเรียนท้ายด่าน ด่านผ่านเมื่อได้ EXP อย่างน้อยร้อยละ ${Math.round(PASS_RATIO * 100)} ผ่านครบ 5 ด่านจะปลดล็อกช่วงถัดไป</li>
+          <li>เปิดเมนู <b>ภารกิจ</b> แล้วเลือกด่านในช่วงที่เปิดแล้ว ด่านในช่วงเดียวกันเล่นตามลำดับใดก็ได้</li>
+          <li>ศึกษาเหตุผลความสำคัญของด่านและกรณีจริงที่ด่านอ้างอิง จากนั้นบันทึกสั้น ๆ ว่าหากเป็นโรงเรียนของท่านจะดำเนินการอย่างไร</li>
+          <li>ไปพบตัวละครที่มีเครื่องหมาย <span class="mini-marker">!</span> ในเมือง แล้วเลือกวิธีทำงานกับบุคคลนั้น ได้แก่ สั่งการ สอนงาน สนับสนุน มอบหมาย หรือปรึกษาหารือ</li>
+          <li>ตัดสินใจทีละขั้น ขั้นละ 5 ตัวเลือก ระบบแสดงผลที่ตามมา เหตุผล และแหล่งอ้างอิงทันที</li>
+          <li>สรุปบทเรียนท้ายด่าน ด่านจะผ่านเมื่อได้ EXP ไม่น้อยกว่าร้อยละ ${Math.round(PASS_RATIO * 100)} และเมื่อผ่านครบ 5 ด่าน ช่วงถัดไปจะเปิดให้เล่น</li>
         </ol>
-        <h3>คะแนน 2 ชั้น</h3>
+        <h3>การให้คะแนน</h3>
         <ul class="tight">
-          <li><b>ชั้นที่ 1 ระเบียบ:</b> บางขั้นมีตัวเลือกที่ขัดระเบียบ 1 ข้อ เลือกแล้วได้ 0 EXP เห็นผลที่ตามมาจากกรณีจริง และเลือกใหม่ได้ 1 ครั้ง (ได้ EXP ครึ่งเดียว) คะแนนความรู้ระเบียบนับจากครั้งแรก</li>
-          <li><b>ขั้นเชิงสไตล์:</b> ทุกตัวเลือกไม่ขัดระเบียบ ไม่มีคำตอบเดียว</li>
-          <li><b>ยังยืนยันไม่ได้:</b> ตัวเลือกที่ตัวบทยังตรวจไม่ได้ จะไม่ถูกตัดสินถูกผิด</li>
-          <li><b>ชั้นที่ 2 สไตล์:</b> ทุกตัวเลือกติดป้ายสไตล์ภาวะผู้นำ 7 ป้าย และธงเสี่ยง (เฉย/หลีกเลี่ยง) EXP บอกว่าเหมาะกับสถานการณ์แค่ไหน ไม่ได้จัดอันดับสไตล์</li>
-          <li><b>การสั่งงาน:</b> คำสั่งที่เข้ากับความพร้อมของคน (R1–R4 ตาม Hersey–Blanchard) ได้ ${COMMAND_EXP.fit} EXP ใกล้เคียงได้ ${COMMAND_EXP.near} และทำให้ตัวละครเติบโตข้ามด่าน</li>
+          <li><b>ด้านระเบียบ:</b> บางขั้นมีตัวเลือกที่ขัดระเบียบ 1 ข้อ หากเลือกจะได้ 0 EXP ระบบแสดงผลที่ตามมาจากกรณีจริง และให้เลือกใหม่ได้ 1 ครั้งโดยได้ EXP ครึ่งหนึ่ง คะแนนความรู้ระเบียบนับจากการเลือกครั้งแรก</li>
+          <li><b>ขั้นสะท้อนแนวการนำ:</b> ทุกตัวเลือกไม่ขัดระเบียบ จึงไม่มีคำตอบที่ถูกเพียงข้อเดียว</li>
+          <li><b>ยังไม่ยืนยันตัวบท:</b> ตัวเลือกที่ยังไม่ได้ตรวจสอบกับตัวบทต้นฉบับจะไม่นำมาตัดสินถูกหรือผิด</li>
+          <li><b>ด้านแนวการนำ:</b> ทุกตัวเลือกจัดอยู่ใน 7 แนวการนำ หรือเป็นพฤติกรรมนิ่งเฉยหรือหลีกเลี่ยง ค่า EXP แสดงความเหมาะสมกับสถานการณ์ ไม่ได้จัดอันดับว่าแนวใดดีกว่า</li>
+          <li><b>การทำงานกับบุคลากร:</b> หากวิธีที่เลือกสอดคล้องกับระดับความพร้อม (R1–R4 ตาม Hersey และ Blanchard) จะได้ ${COMMAND_EXP.fit} EXP หากใกล้เคียงจะได้ ${COMMAND_EXP.near} EXP และบุคลากรจะพัฒนาขึ้นในด่านต่อไป</li>
         </ul>
       </section>
       <section class="card">
-        <h3>หลักผู้ใหญ่เรียนรู้ในเกมนี้</h3>
+        <h3>หลักการเรียนรู้ของผู้ใหญ่ในเกม</h3>
         <table class="mini">
-          <tr><th>หลักของ Knowles</th><th>ในเกม</th></tr>
-          <tr><td>ต้องรู้ว่าเรียนไปทำไม</td><td>ทุกด่านเปิดด้วยงานที่ฝึกและระเบียบที่อ้างอิง</td></tr>
-          <tr><td>กำหนดการเรียนเอง</td><td>เลือกลำดับด่านในช่วง เล่นซ้ำ ข้ามด่านที่กระทบใจได้</td></tr>
-          <tr><td>ใช้ประสบการณ์เดิม</td><td>ช่อง "ถ้าเป็นโรงเรียนของท่าน" ก่อนตัดสินใจ</td></tr>
-          <tr><td>ผูกกับบทบาท</td><td>ความยากไล่ตามภาระของผู้อำนวยการจริง</td></tr>
-          <tr><td>ยึดปัญหา</td><td>ผลของด่านต้นส่งต่อไปด่านหลังผ่านความพร้อมของตัวละคร</td></tr>
-          <tr><td>แรงจูงใจภายใน</td><td>ไม่มีกระดานจัดอันดับ มีแต่ข้อมูลย้อนกลับ</td></tr>
+          <tr><th>หลักของ Knowles</th><th>การนำมาใช้ในเกม</th></tr>
+          <tr><td>ผู้เรียนต้องรู้ว่าเรียนเพื่ออะไร</td><td>ทุกด่านระบุงานที่ฝึกและระเบียบที่อ้างอิง</td></tr>
+          <tr><td>ผู้เรียนกำหนดการเรียนของตนเอง</td><td>เลือกลำดับด่านในช่วงเดียวกัน เล่นซ้ำ และข้ามด่านที่มีเนื้อหาสะเทือนใจได้</td></tr>
+          <tr><td>ประสบการณ์เดิมเป็นทรัพยากร</td><td>บันทึกแนวทางของโรงเรียนตนเองก่อนตัดสินใจ</td></tr>
+          <tr><td>ความพร้อมผูกกับบทบาท</td><td>ความยากเรียงตามภาระงานจริงของผู้อำนวยการ</td></tr>
+          <tr><td>การเรียนรู้โดยยึดปัญหา</td><td>ผลของด่านต้นส่งต่อไปยังด่านหลังผ่านความพร้อมของบุคลากร</td></tr>
+          <tr><td>แรงจูงใจภายใน</td><td>ไม่มีการจัดอันดับผู้เล่น มีเพียงข้อมูลย้อนกลับ</td></tr>
         </table>
-        <h3>สิ่งที่ท่านได้</h3>
+        <h3>ผลที่ผู้เล่นจะได้รับ</h3>
         <ul class="tight">
-          <li>ซ้อมตัดสินใจในเรื่องที่ผู้อำนวยการปีแรกต้องเจอจริง โดยไม่มีผลเสียจริง</li>
-          <li>เฉลยพร้อมแหล่งอ้างอิงที่เปิดตรวจเองได้</li>
-          <li>ระดับผู้บริหารที่เติบโตตาม EXP และตัวชี้วัด "เก่ง ดี มีสุข" ของโรงเรียน</li>
-          <li><b>สมุดผู้นำ:</b> โปรไฟล์แนวโน้มการตัดสินใจ 4 แกน พร้อมแนวทางพัฒนาตนจาก Bass, Hallinger, Robinson และคณะ และแผนสั้นแบบ PIE สำหรับโรงเรียนของท่าน</li>
+          <li>ฝึกตัดสินใจในสถานการณ์ที่ผู้อำนวยการปีแรกมีโอกาสพบจริง โดยไม่เกิดผลเสียจริง</li>
+          <li>เฉลยพร้อมแหล่งอ้างอิงที่ตรวจสอบได้</li>
+          <li>ระดับผู้บริหารที่เพิ่มขึ้นตาม EXP ตัวชี้วัด "เก่ง ดี มีสุข" และรางวัลในหอเกียรติยศ</li>
+          <li><b>สมุดผู้นำ:</b> แนวโน้มการตัดสินใจ 4 มิติ แนวทางพัฒนาตนจาก Bass, Hallinger และ Robinson กับคณะ และแผนพัฒนาแบบ PIE สำหรับโรงเรียนของท่าน</li>
         </ul>
-        <h3>การควบคุมเมือง</h3>
-        <p class="small">ลากเพื่อหมุน · ล้อเมาส์หรือหนีบสองนิ้วเพื่อซูม · คลิกขวาหรือลากสองนิ้วเพื่อเลื่อน · แตะตัวละครหรืออาคารเพื่อดูรายละเอียด</p>
+        <h3>การควบคุมมุมมอง</h3>
+        <p class="small">ลากเพื่อหมุน · ใช้ล้อเมาส์หรือสองนิ้วเพื่อซูม · คลิกขวาหรือลากสองนิ้วเพื่อเลื่อน · แตะตัวละครหรืออาคารเพื่อดูรายละเอียด</p>
       </section>
     </div>
-    <details class="card soft"><summary>ตัวชี้วัด "เก่ง ดี มีสุข" คำนวณอย่างไร</summary>
-      <p class="small">เป็นตัวชี้วัดในเกม ไม่ใช่การวัดจริง <b>เก่ง</b> เฉลี่ยจากร้อยละ EXP ในด่านวิชาการกับสัดส่วนการเลือกป้ายมุ่งการเรียนการสอนและพัฒนาครู <b>ดี</b> เฉลี่ยจากคะแนนความรู้ระเบียบกับร้อยละ EXP ในด่านงบประมาณ งานบุคคล และบริหารทั่วไป (แสดงเมื่อเล่นด่านวิชาการแล้วอย่างน้อย 1 ด่านสำหรับ <b>เก่ง</b>) <b>มีสุข</b> เฉลี่ยจากความเหมาะของคำสั่งกับความพร้อมของคน ขวัญกำลังใจของครูในเมือง ป้ายใส่ใจรายบุคคล และการไม่นิ่งเฉย</p>
+    <details class="card soft"><summary>วิธีคำนวณตัวชี้วัด "เก่ง ดี มีสุข"</summary>
+      <p class="small">เป็นตัวชี้วัดภายในเกม ไม่ใช่การวัดผลจริง <b>เก่ง</b> คำนวณจากร้อยละ EXP ในด่านวิชาการ ร่วมกับสัดส่วนการเลือกแนวมุ่งการเรียนการสอนและแนวพัฒนาครู (แสดงผลเมื่อผ่านด่านวิชาการอย่างน้อย 1 ด่าน) <b>ดี</b> คำนวณจากคะแนนความรู้ระเบียบ ร่วมกับร้อยละ EXP ในด่านงบประมาณ งานบุคคล และการบริหารทั่วไป <b>มีสุข</b> คำนวณจากความสอดคล้องระหว่างวิธีทำงานกับความพร้อมของบุคลากร ขวัญกำลังใจของครู การใส่ใจรายบุคคล และการไม่นิ่งเฉยต่อปัญหา</p>
     </details>
     <p class="fineprint">${esc(VALIDITY_NOTE)}</p>
-    <div class="btn-row"><button class="btn primary" id="r-ok">${first ? 'เข้าใจแล้ว ไปที่ภารกิจแรก' : 'ปิด'}</button></div>`, { wide: true });
+    <div class="btn-row"><button class="btn primary" id="r-ok">${first ? 'รับทราบ และไปที่ภารกิจแรก' : 'ปิด'}</button></div>`, { wide: true });
   $('#r-ok').addEventListener('click', () => { St.S.seenRules = true; St.save(); closeModal(); if (first) questBoard(); });
 }
 
@@ -244,7 +282,7 @@ function questBoard() {
 
 // ---------------- Level flow ----------------
 function openLevel(id) {
-  if (!St.levelOpen(id)) return toast('ด่านนี้ยังล็อกอยู่');
+  if (!St.levelOpen(id)) return toast('ด่านนี้ยังไม่เปิด โปรดผ่านด่านในช่วงก่อนหน้าให้ครบ');
   const cur = currentAttemptLevel();
   if (cur && cur !== id) {
     openModal(`<h2>ยังมีด่านที่เล่นค้างอยู่</h2><p>ท่านกำลังเล่นด่าน ${cur} อยู่ ถ้าเริ่มด่าน ${id} ความคืบหน้าของด่าน ${cur} จะถูกยกเลิก</p>
@@ -288,7 +326,7 @@ function renderBrief(L, att) {
   const A = AREAS[L.area];
   const tasks = COMMAND_TASKS[L.id] || [];
   openModal(`${levelHeader(L, att)}
-    <div class="kolb"><span class="on">ประสบการณ์</span><span>สะท้อนคิด</span><span>แนวคิด</span><span>ลองใหม่</span></div>
+    <div class="kolb"><span class="on">ประสบการณ์ตรง</span><span>สังเกตและสะท้อนคิด</span><span>สร้างความคิดรวบยอด</span><span>ทดลองปฏิบัติ</span></div>
     <section class="card soft"><h3>ทำไมเรื่องนี้สำคัญ</h3><p>${esc(A.why)}</p></section>
     <section class="story">${L.intro.map(p => `<p>${p}</p>`).join('')}</section>
     <details class="card soft" open><summary>กรณีจริงที่ด่านนี้อิง (ชื่อจริงถูกตัดออก)</summary><p class="small">${L.realCase}</p>
@@ -298,6 +336,7 @@ function renderBrief(L, att) {
     <div class="btn-row">
       <button class="btn primary" id="b-go">${tasks.length ? `ออกไปพบ${tasks.map(t => CHARACTERS[t.c].name).join(' และ ')}` : 'เริ่มตัดสินใจ'}</button>
       <button class="btn ghost" data-act="close">ไว้ทีหลัง</button></div>`, { wide: true });
+  showReader(L.reader, L.hook, true);
   $('#b-go').addEventListener('click', () => {
     St.lv(L.id).reflectionBefore = $('#b-ref').value.trim();
     att.phase = tasks.length ? 'meet' : 'steps'; St.save();
@@ -305,7 +344,7 @@ function renderBrief(L, att) {
       closeModal(); syncWorld();
       Sc.flyToChar(tasks[0].c);
       Au.sfx.quest();
-      toast(`แตะ${CHARACTERS[tasks[0].c].name}ที่มีป้าย <b>!</b> เพื่อเลือกวิธีทำงานกับเขา`);
+      toast(`แตะ${CHARACTERS[tasks[0].c].name}ที่มีเครื่องหมาย <b>!</b> เพื่อเลือกวิธีทำงานกับบุคคลนี้`);
     } else renderPhase();
   });
 }
@@ -357,11 +396,11 @@ function renderStep(L, att) {
   }
   const last = i === L.steps.length - 1;
   openModal(`${levelHeader(L, att)}
-    <div class="kolb"><span class="${revealed ? '' : 'on'}">ประสบการณ์</span><span class="${revealed ? 'on' : ''}">สะท้อนคิด</span><span>แนวคิด</span><span>ลองใหม่</span></div>
+    <div class="kolb"><span class="${revealed ? '' : 'on'}">ประสบการณ์ตรง</span><span class="${revealed ? 'on' : ''}">สังเกตและสะท้อนคิด</span><span>สร้างความคิดรวบยอด</span><span>ทดลองปฏิบัติ</span></div>
     <div class="step-prog">${L.steps.map((_, k) => `<i class="${k < i ? 'done' : k === i ? 'cur' : ''}"></i>`).join('')}</div>
     <h3 class="step-title">ขั้นที่ ${i + 1} · ${esc(st.title)}</h3>
-    ${st.styleOnly ? `<p class="badge-style">ขั้นเชิงสไตล์ · ทุกตัวเลือกในขั้นนี้ไม่ขัดระเบียบ ไม่มีคำตอบเดียว</p>` : ''}
-    ${st.hasUnverified ? `<p class="badge-unv">ขั้นนี้มีตัวเลือกที่ตัวบทยังยืนยันไม่ได้ จะไม่ถูกตัดสินถูกผิด</p>` : ''}
+    ${st.styleOnly ? `<p class="badge-style">ขั้นสะท้อนแนวการนำ: ทุกตัวเลือกในขั้นนี้ไม่ขัดระเบียบ จึงไม่มีคำตอบที่ถูกเพียงข้อเดียว</p>` : ''}
+    ${st.hasUnverified ? `<p class="badge-unv">ขั้นนี้มีตัวเลือกที่ยังไม่ได้ยืนยันกับตัวบทต้นฉบับ ตัวเลือกดังกล่าวจึงไม่นำมาตัดสินถูกหรือผิด</p>` : ''}
     ${st.note ? `<p class="small note">${st.note}</p>` : ''}
     ${retrying ? `<p class="warn">ตัวเลือกแรกขัดระเบียบ เลือกใหม่ได้ 1 ครั้ง (ได้ EXP ครึ่งหนึ่งของตัวเลือกใหม่)</p>` : ''}
     <div class="opts">${opts}</div>
@@ -370,6 +409,7 @@ function renderStep(L, att) {
       ${canRetry && !retrying ? `<button class="btn" id="s-retry">เลือกใหม่ (1 ครั้ง)</button>` : ''}
       ${revealed && !retrying ? `<button class="btn primary" id="s-next">${last ? 'สรุปด่าน' : 'ขั้นถัดไป'}</button>` : ''}
       <button class="btn ghost" data-act="close">พักไว้ก่อน</button></div>`, { wide: true });
+  showReader(L.reader, revealed ? 'บันทึกการตัดสินใจของท่านไว้แล้ว โปรดพิจารณาเหตุผลและแหล่งอ้างอิงก่อนดำเนินการขั้นต่อไป' : `ขั้นที่ ${i + 1}: ${st.title} ขอให้ท่านพิจารณาตัวเลือกทั้ง 5 ข้อ`, false);
   $('#modal-body').querySelectorAll('.opt:not([disabled])').forEach(b => b.addEventListener('click', () => {
     const oi = +b.dataset.oi;
     const before = att.answers[i];
@@ -377,7 +417,7 @@ function renderStep(L, att) {
     att.retryMode = null;
     const o = st.options[oi];
     if (!before) logStep(L, st, o);
-    if (o.legal === 'illegal') { Au.sfx.bad(); if (!res.retried) toast('ตัวเลือกนี้ขัดระเบียบ ดูผลที่ตามมาด้านล่าง', 'bad'); }
+    if (o.legal === 'illegal') { Au.sfx.bad(); if (!res.retried) toast('ตัวเลือกนี้ขัดระเบียบ โปรดพิจารณาผลที่ตามมาด้านล่าง', 'bad'); }
     else { Au.sfx.good(); setTimeout(() => Au.sfx.exp(), 260); toast(`+${res.exp} EXP`, 'good'); }
     St.save(); renderStep(L, att); refreshHUD();
     setTimeout(() => $('#reveal')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
@@ -389,7 +429,7 @@ function renderStep(L, att) {
   });
 }
 function legalChip(legal) {
-  return { ok: '<span class="chip ok">ไม่ขัดระเบียบ</span>', illegal: '<span class="chip bad">ขัดระเบียบ</span>', undetermined: '<span class="chip unv">ยังยืนยันไม่ได้</span>' }[legal];
+  return { ok: '<span class="chip ok">ไม่ขัดระเบียบ</span>', illegal: '<span class="chip bad">ขัดระเบียบ</span>', undetermined: '<span class="chip unv">ยังไม่ยืนยันตัวบท</span>' }[legal];
 }
 function tagChips(tags) {
   return tags.map((t, k) => `<span class="chip tag" style="--tag:${TAGS[t].color}" title="${esc(TAGS[t].base)}">${k ? '' : '★ '}${TAGS[t].th}</span>`).join(' ');
@@ -400,7 +440,7 @@ function feedbackCard(o, label, exp, wasFirstBad) {
     <div class="fb-head"><span class="small">${label}</span> ${legalChip(o.legal)} <span class="chip exp">+${exp} EXP</span></div>
     <div class="fb-tags">${tagChips(o.tags)}</div>
     ${consequence}
-    ${o.legal === 'undetermined' ? `<p class="small">ตัวเลือกนี้อิงตัวบทที่ยังตรวจกับต้นฉบับไม่ได้ จึงไม่นับในคะแนนชั้นที่ 1</p>` : ''}
+    ${o.legal === 'undetermined' ? `<p class="small">ตัวเลือกนี้อิงตัวบทที่ยังไม่ได้ตรวจสอบกับต้นฉบับ จึงไม่นับในคะแนนด้านระเบียบ</p>` : ''}
     ${!wasFirstBad ? `<p class="teacher-view"><b>ครูอาจเห็นการตัดสินใจนี้อย่างไร:</b> ${esc(TEACHER_VIEW[o.tags[0]])}</p>` : ''}
   </div>`;
 }
@@ -414,7 +454,7 @@ function finishLevelUI(L) {
   const tierBefore = St.tierOf(L.id).id;
   const nextTierOpenBefore = tierBefore < 4 && St.tierOpen(tierBefore + 1);
   const att = St.lv(L.id).attempt;
-  // ป้ายที่เลือกในด่านนี้
+  // แนวการนำที่เลือกในด่านนี้
   const tagCount = {};
   L.steps.forEach((st, i) => { const o = st.options[att.answers[i].first]; tagCount[o.tags[0]] = (tagCount[o.tags[0]] || 0) + 1; });
   const domTag = Object.entries(tagCount).sort((a, b) => b[1] - a[1])[0][0];
@@ -425,7 +465,7 @@ function finishLevelUI(L) {
   const afterRank = St.rankFor();
   (res.passed ? Au.sfx.levelClear : Au.sfx.levelFail)();
   openModal(`<div class="lv-head" style="--area:${AREAS[L.area].color}"><span class="chip area">${AREAS[L.area].th}</span><h2>สรุปด่าน ${L.id} · ${esc(L.title)}</h2></div>
-    <div class="kolb"><span>ประสบการณ์</span><span class="on">สะท้อนคิด</span><span class="on">แนวคิด</span><span class="on">ลองใหม่</span></div>
+    <div class="kolb"><span>ประสบการณ์ตรง</span><span class="on">สังเกตและสะท้อนคิด</span><span class="on">สร้างความคิดรวบยอด</span><span class="on">ทดลองปฏิบัติ</span></div>
     <div class="result ${res.passed ? 'pass' : 'fail'}"><b>${res.exp}</b> / ${res.max} EXP · ${res.passed ? 'ผ่านด่าน' : `ยังไม่ผ่าน (ต้องได้ ${Math.ceil(res.max * PASS_RATIO)})`}</div>
     <div class="grid2">
       <section class="card"><h3>แบบแผนการตัดสินใจในด่านนี้</h3><div>${Object.entries(tagCount).map(([t, n]) => `<span class="chip tag" style="--tag:${TAGS[t].color}">${TAGS[t].th} × ${n}</span>`).join(' ')}</div>
@@ -437,7 +477,8 @@ function finishLevelUI(L) {
     <label class="field">บทเรียนหนึ่งข้อที่จะลองใช้ในโรงเรียนของท่าน (ลองปฏิบัติ)
       <textarea id="f-lesson" rows="2" maxlength="500">${esc(St.lv(L.id).lesson || '')}</textarea></label>
     <div class="btn-row"><button class="btn primary" id="f-done">กลับเมือง</button><button class="btn" id="f-again">เล่นด่านนี้ใหม่</button></div>`, { wide: true });
-  const keep = () => { const v = $('#f-lesson').value.trim(); if (v) { St.lv(L.id).lesson = v; St.save(); } };
+  showReader(L.reader, res.passed ? 'ขอบคุณท่านผู้อำนวยการที่พิจารณาเรื่องนี้อย่างรอบคอบ' : 'เรื่องนี้ยังต้องทบทวนอีกครั้ง ท่านสามารถเล่นด่านนี้ใหม่ได้', false);
+  const keep = () => { const v = $('#f-lesson').value.trim(); if (v) { St.lv(L.id).lesson = v; St.save(); } grantAwards(); };
   $('#f-done').addEventListener('click', () => { keep(); closeModal(); afterLevelChange(L.id, beforeRank, nextTierOpenBefore); });
   $('#f-again').addEventListener('click', () => { keep(); openLevel(L.id); });
   if (afterRank.index > beforeRank) setTimeout(() => toast(`เลื่อนระดับเป็น <b>${afterRank.th}</b>`, 'rank'), 400);
@@ -445,11 +486,11 @@ function finishLevelUI(L) {
   for (const c of Object.keys(att.commands)) {
     const cr = St.S.chars[c].credits;
     if (att.commands[c].result === 'fit' && (att.commands[c].readiness === 'R1' || att.commands[c].readiness === 'R2'))
-      setTimeout(() => toast(`${esc(CHARACTERS[c].name)} มั่นใจขึ้นจากการที่ท่านใช้วิธีที่เหมาะกับเขา (สะสม ${cr})`), 900);
+      setTimeout(() => toast(`${esc(CHARACTERS[c].name)} มีความพร้อมเพิ่มขึ้น เพราะท่านเลือกวิธีทำงานที่สอดคล้องกับระดับความพร้อม (สะสม ${cr})`), 900);
   }
 }
 function afterLevelChange(id, beforeRank, nextTierOpenBefore) {
-  refreshHUD(); syncWorld();
+  refreshHUD(); syncWorld(); grantAwards();
   const t = St.tierOf(id).id;
   if (t < 4 && !nextTierOpenBefore && St.tierOpen(t + 1)) toast(`ปลดล็อก <b>${TIERS[t].th}</b>`, 'rank');
   if (t === 2 && TIERS[1].levels.every(St.levelDone) && !St.S.debrief.midShown) { St.S.debrief.midShown = true; St.save(); setTimeout(() => leaderBook('mid'), 600); }
@@ -480,7 +521,7 @@ function openChar(id) {
       ${c.readiness && c.readiness !== 'ST' ? `<div class="morale"><span>ขวัญกำลังใจ</span><div class="bar"><i style="width:${s.morale}%"></i></div><b>${s.morale}</b></div>` : ''}`;
     if (inMeet) {
       body += `<div class="task-box"><h4>ด่าน ${lvId}: เลือกวิธีทำงานกับ${esc(c.name)}</h4><p class="small">${task.note}</p>
-        ${done ? cmdFeedback(id, done) : `<div class="cmds">${cmdList.map(k => `<button class="cmd" data-cmd="${k}"><b>${COMMANDS[k].th}</b><span>${COMMANDS[k].hint}</span></button>`).join('')}</div>`}</div>`;
+        ${done ? cmdFeedback(id, done) + nextAfterMeet(lvId) : `<div class="cmds">${cmdList.map(k => `<button class="cmd" data-cmd="${k}"><b>${COMMANDS[k].th}</b><span>${COMMANDS[k].hint}</span></button>`).join('')}</div>`}</div>`;
     } else if (c.readiness) {
       body += `<div class="task-box soft"><h4>งานประจำ: ${esc(ROUTINE[id] || 'งานทั่วไป')}</h4>
         ${routineDone ? `<p class="small">ท่านคุยเรื่องนี้แล้ว รอบถัดไปเปิดหลังผ่านด่านถัดไป</p>` : `<p class="small">ฝึกอ่านความพร้อมของคน ไม่ได้ EXP แต่มีผลต่อขวัญกำลังใจและตัวชี้วัด "มีสุข"</p>
@@ -497,10 +538,10 @@ function openChar(id) {
     St.addLog(id, `ด่าน ${lvId}: ได้รับการ${COMMANDS[b.dataset.cmd].th}จาก ผอ.`);
     St.save();
     (r.result === 'fit' ? Au.sfx.cmdFit : Au.sfx.cmdMiss)();
-    if (r.result !== 'miss') toast(`+${COMMAND_EXP[r.result]} EXP · ${r.result === 'fit' ? 'เข้ากับความพร้อม' : 'ใกล้เคียง'}`, 'good');
-    refreshHUD(); syncWorld(); openChar(id);
+    if (r.result !== 'miss') toast(`+${COMMAND_EXP[r.result]} EXP · ${r.result === 'fit' ? 'สอดคล้องกับระดับความพร้อม' : 'ใกล้เคียงกับระดับความพร้อม'}`, 'good');
+    refreshHUD(); syncWorld(); openChar(id); grantAwards();
     const pending = (COMMAND_TASKS[lvId] || []).filter(t => !St.lv(lvId).attempt.commands[t.c]);
-    if (!pending.length) toast('พบทุกคนครบแล้ว กด "เริ่มตัดสินใจ" ที่แถบด่านด้านล่าง');
+    if (!pending.length) toast('ท่านพบบุคลากรครบแล้ว กด "เริ่มตัดสินใจ" ที่แถบด่านด้านล่าง');
   }));
   sheet.querySelectorAll('[data-rcmd]').forEach(b => b.addEventListener('click', () => {
     const k = b.dataset.rcmd;
@@ -525,13 +566,21 @@ function cmdFeedback(id, d) {
     <p class="small">ท่านเลือก <b>${COMMANDS[d.cmd].th}</b> · ความพร้อมในด่านนี้ ${d.readiness} · วิธีที่เข้ากันคือ <b>${COMMANDS[d.fit].th}</b> → ${d.result === 'fit' ? `เข้ากัน +${COMMAND_EXP.fit} EXP` : d.result === 'near' ? `ใกล้เคียง +${COMMAND_EXP.near} EXP` : 'ไม่เข้ากัน 0 EXP'}</p>
     <p class="small">หมายเหตุ: หลักฐานเชิงประจักษ์ของโมเดล Hersey–Blanchard ยังอ่อน เกมใช้เพื่อฝึกการอ่านคน ไม่ได้อ้างว่าคำสั่งที่เข้าคู่ได้ผลดีกว่าเสมอ</p></div>`;
 }
+function nextAfterMeet(lvId) {
+  const att = St.lv(lvId).attempt;
+  const pending = (COMMAND_TASKS[lvId] || []).filter(t => !att.commands[t.c]);
+  return pending.length
+    ? `<div class="btn-row"><button class="btn sm primary" data-act="fly" data-arg="${pending[0].c}">ไปพบ${esc(CHARACTERS[pending[0].c].name)}</button></div>`
+    : `<div class="btn-row"><button class="btn sm primary" data-act="beginSteps" data-arg="${lvId}">เริ่มตัดสินใจ</button></div>`;
+}
 function closeSheet() { $('#sheet').classList.remove('show'); }
 
 export function onCharClick(id) {
-  if (id.startsWith('student')) return toast('นักเรียนกำลังเล่นอยู่ในสนาม ทุกการตัดสินใจของท่านไปถึงพวกเขาในที่สุด');
+  if (id.startsWith('student')) return toast('นักเรียนกำลังทำกิจกรรมในสนาม ทุกการตัดสินใจของท่านส่งผลถึงนักเรียนในท้ายที่สุด');
   Sc.flyToChar(id); openChar(id);
 }
 export function onBuildingClick(id) {
+  if (id === 'hall') { Sc.flyToBuilding('hall'); return hallModal(); }
   const areaOf = { academic: 'academic', personnel: 'personnel', budget: 'budget', general: 'general' };
   const area = areaOf[id];
   const sheet = $('#sheet');
@@ -544,13 +593,14 @@ export function onBuildingClick(id) {
       <h4>ด่านของงานนี้</h4><ul class="lv-list">${lvls.map(l => `<li><span>ด่าน ${l.id} · ${esc(l.title)}</span> ${statusChip(l.id)} ${St.levelOpen(l.id) ? `<button class="btn sm" data-act="start" data-arg="${l.id}">เปิด</button>` : ''}</li>`).join('')}</ul>`;
   } else {
     const hints = {
-      toilet: 'ห้องน้ำที่นักเรียนหลายร้อยคนใช้ทุกวัน ถ้าท่อแตก ท่านจะเลือกใช้เงินก้อนไหนซ่อม (ด่าน 2)',
-      canteen: 'ที่นี่ใช้น้ำบาดาลประกอบอาหาร เรื่องน้ำสะอาดเป็นเรื่องความปลอดภัยของนักเรียน (ด่าน 13)',
-      areaOffice: 'สำนักงานเขตพื้นที่ ผู้บังคับบัญชาของท่านอยู่ที่นี่ งานกับหน่วยเหนือใช้การเจรจาด้วยข้อมูล',
-      health: 'หน่วยงานภายนอกที่ท่านต้องประสานเมื่อเกิดเหตุด้านสุขภาพ',
-      police: 'หลังยกเลิกเวรครู การรักษาความปลอดภัยยามค่ำคืนประสานกับตำรวจและท้องถิ่น (ด่าน 1)',
-      field: 'นักเรียนเล่นกันอยู่ที่นี่ทุกพักกลางวัน',
-      guidance: 'ระบบดูแลช่วยเหลือนักเรียนเริ่มที่ห้องนี้',
+      toilet: 'ห้องน้ำนักเรียนที่มีผู้ใช้หลายร้อยคนต่อวัน หากระบบประปาชำรุด ผู้บริหารต้องเลือกแหล่งเงินและวิธีจัดจ้างให้ถูกต้องตามระเบียบ (ด่าน 2)',
+      canteen: 'โรงอาหารใช้น้ำบาดาลในการประกอบอาหาร คุณภาพน้ำจึงเป็นประเด็นด้านความปลอดภัยของนักเรียน (ด่าน 13)',
+      areaOffice: 'สำนักงานเขตพื้นที่การศึกษา หน่วยงานต้นสังกัดของโรงเรียน การทำงานกับหน่วยเหนือใช้การหารือและการนำเสนอข้อมูล',
+      health: 'หน่วยงานภายนอกที่โรงเรียนต้องประสานเมื่อเกิดเหตุด้านสุขภาพของนักเรียนและบุคลากร',
+      police: 'ภายหลังการยกเลิกเวรครู การรักษาความปลอดภัยในเวลากลางคืนดำเนินการร่วมกับตำรวจและองค์กรปกครองส่วนท้องถิ่น (ด่าน 1)',
+      field: 'สนามกีฬาที่นักเรียนใช้ทำกิจกรรมในช่วงพักกลางวัน',
+      guidance: 'ห้องแนะแนว จุดเริ่มต้นของระบบดูแลช่วยเหลือนักเรียน',
+      cafe: 'ร้านค้าในชุมชนรอบโรงเรียน', flower: 'ร้านค้าในชุมชนรอบโรงเรียน',
     };
     html = `<h3>${esc(names[id] || id)}</h3><p class="small">${esc(hints[id] || 'ส่วนหนึ่งของชุมชนรอบโรงเรียน')}</p>`;
   }
@@ -583,9 +633,9 @@ function leaderBook(kind) {
         <h3>แนวทางพัฒนาตน</h3><ul class="tight">${pr.grow.map(g => `<li>${esc(g)}</li>`).join('')}</ul>
         <p class="tiny">อ้างอิง: ${pr.refs.map(([n, u]) => `<a href="${u}" target="_blank" rel="noopener">${esc(n)}</a>`).join(' · ')}</p></section>
       <section class="card"><h3>สี่แกน (สัดส่วนของโอกาสที่ได้เลือก)</h3>${['A', 'B', 'C', 'D'].map(axis).join('')}
-        <div class="scores"><div><b>${P.knowledge ?? '–'}%</b><span>ความรู้ระเบียบ</span></div><div><b>${P.fitScore ?? '–'}%</b><span>ความเหมาะของคำสั่ง</span></div><div class="${P.flag > 30 ? 'hi' : ''}"><b>${P.flag}%</b><span>ธงเสี่ยงเฉย/หลีกเลี่ยง</span></div></div></section>
+        <div class="scores"><div><b>${P.knowledge ?? '–'}%</b><span>ความรู้ระเบียบ</span></div><div><b>${P.fitScore ?? '–'}%</b><span>ความสอดคล้องกับความพร้อมของบุคลากร</span></div><div class="${P.flag > 30 ? 'hi' : ''}"><b>${P.flag}%</b><span>พฤติกรรมนิ่งเฉย</span></div></div></section>
     </div>
-    <section class="card"><h3>ป้ายสไตล์ทั้ง 8</h3><p class="tiny">ร้อยละ = แต้มที่ท่านเลือก ÷ แต้มสูงสุดที่ป้ายนั้นเปิดให้เลือกในขั้นที่ท่านผ่าน (ป้ายหลัก 2 แต้ม ป้ายรอง 1 แต้ม) วิธีนี้ลดอคติจากการที่ป้ายแต่ละแบบปรากฏในคลังไม่เท่ากัน</p>${tagRows}</section>
+    <section class="card"><h3>แนวการนำ 7 แนวและพฤติกรรมนิ่งเฉย</h3><p class="tiny">ร้อยละ = คะแนนที่ท่านเลือก ÷ คะแนนสูงสุดที่แนวนั้นเปิดให้เลือกในขั้นที่ท่านผ่าน (แนวหลัก 2 คะแนน แนวรอง 1 คะแนน) วิธีนี้ลดอคติที่เกิดจากจำนวนตัวเลือกของแต่ละแนวในคลังสถานการณ์ไม่เท่ากัน</p>${tagRows}</section>
     ${ex ? `<section class="card soft"><h3>ตัวอย่างการตัดสินใจของท่านที่สะท้อนแนวโน้มนี้</h3><ul class="tight">${ex}</ul></section>` : ''}
     <section class="card soft"><h3>ข้อเสนอร่วมของทุกโปรไฟล์</h3><p class="small">${esc(COMMON_ADVICE)} (<a href="${REF.robinson}" target="_blank" rel="noopener">Robinson et al., 2008</a> · <a href="${REF.h1994}" target="_blank" rel="noopener">Hallinger et al., 1994</a> · <a href="${REF.hl2014}" target="_blank" rel="noopener">Hallinger & Lee, 2014</a>)</p></section>
     ${lessons ? `<section class="card"><h3>บทเรียนที่ท่านบันทึกไว้</h3><ul class="tight">${lessons}</ul></section>` : ''}
@@ -650,4 +700,131 @@ export function refreshSoundIcon() {
   const st = Au.getSettings();
   const b = document.querySelector('#dock [data-act=sound]');
   if (b) b.classList.toggle('muted', !st.music && !st.sfx);
+}
+
+// ---------------- ตัวละครเด้งขึ้นมาอ่านภารกิจ ----------------
+function showReader(charId, line, big) {
+  const r = $('#reader');
+  if (!charId) return hideReader();
+  const wide = window.innerWidth >= 760;
+  Sc.setPortrait(charId, wide ? [150, 170] : [104, 118]);
+  const pic = r.querySelector('.reader-pic');
+  const cv = Sc.portraitCanvas();
+  if (cv.parentElement !== pic) pic.appendChild(cv);
+  r.querySelector('.who').textContent = CHARACTERS[charId].name;
+  r.querySelector('.say').textContent = line || '';
+  r.classList.add('inline'); r.classList.toggle('lg', wide);
+  const body = $('#modal-body');
+  const head = body.querySelector('.lv-head');
+  if (head) head.after(r); else body.insertBefore(r, body.firstChild);
+  r.hidden = false;
+  if (big) { r.classList.remove('pop'); void r.offsetWidth; r.classList.add('pop'); Au.sfx.page(); }
+}
+function hideReader() {
+  const r = $('#reader'); if (!r) return;
+  r.hidden = true; Sc.setPortrait(null);
+  if (r.parentElement !== document.body) document.body.appendChild(r);
+}
+
+// ---------------- หอเกียรติยศ ----------------
+function grantAwards() {
+  const fresh = Aw.checkAwards();
+  fresh.forEach((a, k) => setTimeout(() => {
+    Au.sfx.award();
+    toast(`ได้รับ <b>${esc(a.th)}</b>${a.who ? ' (' + esc(Aw.whoName(a)) + ')' : ''}`, 'rank award');
+  }, 600 + k * 900));
+  if (fresh.length) Sc.setTrophies(Aw.earnedCount());
+}
+function hallModal() {
+  const got = St.S.awards || {};
+  const card = a => {
+    const ok = !!got[a.id];
+    return `<div class="award ${ok ? 'got' : ''}">
+      <div class="medal">${ok ? '★' : '☆'}</div>
+      <div><b>${esc(a.th)}</b>${a.who ? `<span class="small"> · ${esc(Aw.whoName(a))}</span>` : ''}
+      <p class="small">${esc(a.how)}</p>${ok ? `<p class="tiny">ได้รับเมื่อ ${new Date(got[a.id]).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}</p>` : ''}</div></div>`;
+  };
+  openModal(`<h2>หอเกียรติยศ ${esc(SCHOOL_NAME)}</h2>
+    <p class="small">ได้รับแล้ว ${Aw.earnedCount()} จาก ${Aw.AWARDS.length} รางวัล ชื่อรางวัลแต่งขึ้นเพื่อใช้ในเกม เกณฑ์อิงพฤติกรรมการตัดสินใจ ไม่ใช่เพียงจำนวน EXP รางวัลของครูและบุคลากรสะท้อนผลจากวิธีที่ท่านทำงานกับบุคคลนั้น</p>
+    ${Object.entries(Aw.GROUPS).map(([g, th]) => `<h3>${th}</h3><div class="awards">${Aw.AWARDS.filter(a => a.group === g).map(card).join('')}</div>`).join('')}
+    <div class="btn-row"><button class="btn primary" data-act="share">แชร์ภาพโรงเรียน</button><button class="btn ghost" data-act="close">ปิด</button></div>`, { wide: true });
+}
+
+// ---------------- เมนูรวม ----------------
+function menuModal() {
+  openModal(`<h2>เมนู</h2>
+    <div class="menu-grid">
+      <button class="btn" data-act="rules">กติกาและผลที่ได้รับ</button>
+      <button class="btn" data-act="intro">ชมประวัติโรงเรียน</button>
+      <button class="btn" data-act="sound">ตั้งค่าเสียง</button>
+      <button class="btn" data-act="save">บันทึกและรหัสสำรอง</button>
+      <button class="btn" data-act="title">กลับหน้าแรก</button>
+    </div>`);
+}
+
+// ---------------- ถ่ายภาพและแชร์ ----------------
+function gameUrl() { return location.origin + location.pathname.replace(/index\.html$/, ''); }
+async function makeShareCard() {
+  closeSheet();
+  await (document.fonts?.ready || Promise.resolve());
+  const shot = new Image();
+  shot.src = Sc.snapshot(true);
+  await shot.decode().catch(() => {});
+  const W = 1080, H = 1350, c = document.createElement('canvas'); c.width = W; c.height = H;
+  const g = c.getContext('2d');
+  g.fillStyle = '#FFF8EE'; g.fillRect(0, 0, W, H);
+  // ภาพเมือง (ครอบตัดให้เต็มพื้นที่ด้านบน)
+  const ih = 820, sr = shot.width / shot.height, tr = W / ih;
+  let sw = shot.width, sh = shot.height, sx = 0, sy = 0;
+  if (sr > tr) { sw = shot.height * tr; sx = (shot.width - sw) / 2; } else { sh = shot.width / tr; sy = (shot.height - sh) / 2; }
+  g.save(); g.beginPath(); g.roundRect(40, 40, W - 80, ih - 40, 36); g.clip();
+  g.drawImage(shot, sx, sy, sw, sh, 40, 40, W - 80, ih - 40); g.restore();
+  // ป้ายชื่อเกมบนภาพ
+  g.fillStyle = 'rgba(255,253,248,.92)'; g.beginPath(); g.roundRect(70, 70, 470, 64, 32); g.fill();
+  g.fillStyle = '#D9714F'; g.font = '500 30px Mitr, sans-serif'; g.textBaseline = 'middle'; g.fillText('เส้นทางผู้บริหาร · เมืองบ้านสวน', 96, 103);
+  const r = St.rankFor(), m = St.schoolMeters(), aw = Aw.earnedCount();
+  g.textBaseline = 'alphabetic';
+  g.fillStyle = '#3A2E28'; g.font = '500 58px Mitr, sans-serif'; g.fillText(SCHOOL_NAME, 60, 930);
+  g.fillStyle = '#6B5A4E'; g.font = '400 34px Sarabun, sans-serif';
+  g.fillText(`${St.S.playerName ? 'ผอ.' + St.S.playerName + ' · ' : ''}${r.th}`, 60, 982);
+  // สถิติ
+  const stat = (x, big, small) => { g.fillStyle = '#FBEFE3'; g.beginPath(); g.roundRect(x, 1015, 305, 130, 24); g.fill(); g.fillStyle = '#D9714F'; g.font = '500 54px Mitr, sans-serif'; g.fillText(big, x + 28, 1085); g.fillStyle = '#6B5A4E'; g.font = '400 28px Sarabun, sans-serif'; g.fillText(small, x + 28, 1125); };
+  stat(60, String(St.totalExp()), 'EXP สะสม'); stat(387, `${St.completedCount()}/20`, 'ด่านที่ผ่าน'); stat(714, String(aw), 'รางวัลในหอเกียรติยศ');
+  // เก่ง ดี มีสุข
+  const bars = [['เก่ง', m.keng, '#5B8DD6'], ['ดี', m.dee, '#6FAF7A'], ['มีสุข', m.suk, '#E07A9B']];
+  bars.forEach(([lab, v, col], i) => {
+    const x = 60 + i * 327, y = 1185;
+    g.fillStyle = '#3A2E28'; g.font = '500 30px Mitr, sans-serif'; g.fillText(lab, x, y + 26);
+    g.fillStyle = '#F1E6D6'; g.beginPath(); g.roundRect(x + 100, y + 6, 190, 22, 11); g.fill();
+    if (v != null) { g.fillStyle = col; g.beginPath(); g.roundRect(x + 100, y + 6, Math.max(22, 190 * v / 100), 22, 11); g.fill(); }
+    else { g.fillStyle = '#A89888'; g.font = '400 24px Sarabun, sans-serif'; g.fillText('ยังไม่มีข้อมูล', x + 112, y + 25); }
+  });
+  g.fillStyle = '#8A7A6E'; g.font = '400 26px Sarabun, sans-serif';
+  g.fillText('ร่วมเล่นได้ที่ ' + gameUrl().replace(/^https?:\/\//, ''), 60, 1300);
+  return c;
+}
+async function shareModal() {
+  closeModal();
+  Au.sfx.shutter();
+  $('#flash').classList.remove('go'); void $('#flash').offsetWidth; $('#flash').classList.add('go');
+  const c = await makeShareCard();
+  const url = c.toDataURL('image/png');
+  const blob = await new Promise(res => c.toBlob(res, 'image/png'));
+  const file = new File([blob], 'ban-suan-school.png', { type: 'image/png' });
+  const canFile = !!(navigator.canShare && navigator.canShare({ files: [file] }));
+  const text = `โรงเรียนของฉันในเกมเส้นทางผู้บริหาร: ${St.rankFor().th} · ${St.totalExp()} EXP · ผ่าน ${St.completedCount()}/20 ด่าน`;
+  openModal(`<h2>แชร์ภาพโรงเรียน</h2>
+    <img class="share-img" src="${url}" alt="ภาพโรงเรียนของท่านพร้อมระดับ EXP และรางวัล">
+    <div class="btn-row">
+      ${canFile ? `<button class="btn primary" id="sh-native">แชร์ไปยังแอป (Facebook, Instagram, LINE)</button>` : ''}
+      <a class="btn ${canFile ? '' : 'primary'}" id="sh-dl" href="${url}" download="ban-suan-school.png">บันทึกภาพลงเครื่อง</a>
+      <button class="btn" id="sh-fb">แชร์ลิงก์เกมทาง Facebook</button>
+      <button class="btn" id="sh-line">แชร์ลิงก์เกมทาง LINE</button>
+      <button class="btn ghost" id="sh-copy">คัดลอกข้อความ</button>
+    </div>
+    <p class="small">${canFile ? 'ปุ่มแรกเปิดเมนูแชร์ของเครื่อง เลือก Facebook, Instagram หรือ LINE ได้' : 'บนคอมพิวเตอร์ ให้บันทึกภาพลงเครื่องก่อน แล้วอัปโหลดไปยังสื่อสังคมออนไลน์'} ส่วนปุ่ม Facebook และ LINE จะแชร์ลิงก์เกม เพราะสองช่องทางนี้ไม่รับไฟล์ภาพจากเว็บโดยตรง สำหรับ Instagram ให้บันทึกภาพแล้วโพสต์จากแอป</p>`, { wide: true });
+  $('#sh-native')?.addEventListener('click', async () => { try { await navigator.share({ files: [file], title: 'เส้นทางผู้บริหาร เมืองบ้านสวน', text: text + ' ' + gameUrl() }); } catch {} });
+  $('#sh-fb').addEventListener('click', () => window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(gameUrl()), '_blank', 'noopener'));
+  $('#sh-line').addEventListener('click', () => window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(gameUrl()), '_blank', 'noopener'));
+  $('#sh-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(text + ' ' + gameUrl()); toast('คัดลอกข้อความแล้ว'); } catch { toast('คัดลอกไม่สำเร็จ'); } });
 }

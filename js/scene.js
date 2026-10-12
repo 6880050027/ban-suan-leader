@@ -12,6 +12,7 @@ const chars = {};       // id -> { group, parts, home, target, wait, labelEl, ma
 const buildings = {};   // id -> { group, labelEl, center }
 const movers = [];      // รถและเมฆ
 let handlers = {};
+let trophyGroup = null;
 let flyAnim = null;
 let hovered = null;
 
@@ -308,6 +309,9 @@ function schoolCampus() {
   building({ id: 'canteen', x: -20, z: 11, w: 11, d: 6, h: 3.6, floors: 1, wall: '#FFF6EA', roof: '#EE8C6B', label: 'โรงอาหาร', awning: '#EE8C6B' });
   building({ id: 'toilet', x: 17, z: 13, w: 6, d: 4, h: 3, floors: 1, wall: '#E3F1F2', roof: '#7FB7C2', roofType: 'flat', label: 'ห้องน้ำนักเรียน' });
   building({ id: 'guidance', x: -6, z: -16.5, w: 5, d: 3, h: 3, floors: 1, wall: '#F2F7FB', roof: '#A7C7E7', label: 'ห้องแนะแนว' });
+  building({ id: 'hall', x: -25, z: 0.5, w: 5.5, d: 4, h: 3.4, floors: 1, wall: '#FFF4D6', roof: '#E3B341', label: 'หอเกียรติยศ', sign: '#E3B341' });
+  const podium = mesh(rbox(5, 0.6, 1.6, 0.2), clay('#E9D6B3')); podium.position.set(-25, 0.3, 3.6); scene.add(podium);
+  trophyGroup = new THREE.Group(); trophyGroup.position.set(-25, 0.6, 3.6); trophyGroup.userData.dynamic = true; scene.add(trophyGroup);
 
   // สนามกีฬา
   const trackGeo = new THREE.RingGeometry(7.5, 10.2, 48, 1);
@@ -691,6 +695,13 @@ export function flyTo(pos, dist = 22, polar = 0.62) {
   const camTo = to.clone().add(dir.multiplyScalar(dist));
   flyAnim = { t: 0, from, to, camFrom, camTo };
 }
+// ฉากเปิด: บินกล้องไปยังจุดที่กำหนดอย่างช้า ๆ
+export function cinematic(at, dist, az, dur = 2.6) {
+  const to = new THREE.Vector3(at[0], 0, at[2]);
+  const polar = 0.95;
+  const dir = new THREE.Vector3(Math.sin(polar) * Math.sin(az), Math.cos(polar), Math.sin(polar) * Math.cos(az));
+  flyAnim = { t: 0, dur, from: controls.target.clone(), to, camFrom: camera.position.clone(), camTo: to.clone().add(dir.multiplyScalar(dist)) };
+}
 export function flyToChar(id) { const c = chars[id]; if (c) flyTo(c.group.position, 24, 0.6); }
 export function flyToBuilding(id) { const b = buildings[id]; if (b) flyTo(b.center, 34, 0.75); }
 export function resetView() { flyAnim = { t: 0, from: controls.target.clone(), to: new THREE.Vector3(2, 0, 3), camFrom: camera.position.clone(), camTo: new THREE.Vector3(58, 62, 78) }; }
@@ -701,13 +712,103 @@ export function zoomBy(f) {
 }
 export function charPos(id) { return chars[id]?.group.position.clone(); }
 
+// ---------- ถ้วยรางวัลในหอเกียรติยศ ----------
+export function setTrophies(n) {
+  if (!trophyGroup) return;
+  while (trophyGroup.children.length) trophyGroup.remove(trophyGroup.children[0]);
+  const gold = clay('#F2C14E', { rough: 0.35, emissive: '#B8860B', ei: 0.15, bump: 0.15 });
+  const shown = Math.min(n, 10);
+  for (let i = 0; i < shown; i++) {
+    const cup = new THREE.Group();
+    const base = mesh(new THREE.CylinderGeometry(0.22, 0.26, 0.16, 12), clay('#8A5A3C'));
+    const stem = mesh(new THREE.CylinderGeometry(0.06, 0.08, 0.3, 10), gold); stem.position.y = 0.23;
+    const bowl = mesh(new THREE.SphereGeometry(0.24, 16, 10, 0, Math.PI * 2, 0, Math.PI / 2), gold); bowl.rotation.x = Math.PI; bowl.position.y = 0.6;
+    const rim = mesh(new THREE.TorusGeometry(0.24, 0.03, 6, 16), gold); rim.rotation.x = Math.PI / 2; rim.position.y = 0.6;
+    cup.add(base, stem, bowl, rim);
+    cup.position.set(-2 + (i % 5) * 1, 0.08, i < 5 ? -0.35 : 0.35);
+    trophyGroup.add(cup);
+  }
+}
+
+// ---------- ภาพตัวละครที่เด้งขึ้นมาอ่านภารกิจ ----------
+let pRenderer = null, pScene, pCam, pChar = null, pCharId = null, pPaper = null, pActive = false;
+export function portraitCanvas() {
+  if (pRenderer) return pRenderer.domElement;
+  pRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  pRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  pRenderer.setSize(220, 250);
+  pRenderer.outputColorSpace = THREE.SRGBColorSpace;
+  pRenderer.toneMapping = THREE.ACESFilmicToneMapping;
+  pScene = new THREE.Scene();
+  pScene.add(new THREE.HemisphereLight('#FFF4E0', '#B79A7A', 1.6));
+  const key = new THREE.DirectionalLight('#FFE2BC', 2.2); key.position.set(2, 4, 5); pScene.add(key);
+  pCam = new THREE.PerspectiveCamera(30, 220 / 250, 0.1, 50);
+  pCam.position.set(0, 1.9, 6.2); pCam.lookAt(0, 1.55, 0);
+  return pRenderer.domElement;
+}
+export function setPortrait(charId, size) {
+  portraitCanvas();
+  if (size) { pRenderer.setSize(size[0], size[1]); pCam.aspect = size[0] / size[1]; pCam.updateProjectionMatrix(); }
+  pActive = !!charId;
+  if (!charId || charId === pCharId) return;
+  if (pChar) pScene.remove(pChar);
+  const c = CHARACTERS[charId];
+  pChar = makeCharacter(c.look, { small: false, isPlayer: charId === 'player' });
+  // ท่าถือเอกสาร: แขนยื่นมาด้านหน้า
+  const parts = pChar.userData.parts;
+  parts.arms.forEach((a, i) => { a.rotation.x = -1.15; a.rotation.z = i ? -0.35 : 0.35; a.position.z = 0.25; });
+  const paperTex = (() => {
+    const cv = document.createElement('canvas'); cv.width = 128; cv.height = 160;
+    const g = cv.getContext('2d'); g.fillStyle = '#FFFDF6'; g.fillRect(0, 0, 128, 160);
+    g.fillStyle = '#D9714F'; g.fillRect(14, 16, 60, 10);
+    g.fillStyle = '#C9BBA8'; for (let y = 40; y < 150; y += 14) g.fillRect(14, y, 100 - (y % 28 ? 20 : 0), 5);
+    const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace; return t;
+  })();
+  pPaper = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.15, 0.03), [clay('#FFFDF6'), clay('#FFFDF6'), clay('#FFFDF6'), clay('#FFFDF6'), new THREE.MeshStandardMaterial({ map: paperTex, roughness: 0.9 }), clay('#F3EBDD')]);
+  pPaper.position.set(0, 1.25, 0.78); pPaper.rotation.x = -0.35;
+  pChar.add(pPaper);
+  // รวมส่วนศีรษะ (ผม ตา ปาก แว่น หมวก) ให้หมุนไปด้วยกันเวลาก้มอ่าน
+  const pivot = new THREE.Group(); pivot.position.set(0, 1.85, 0); pChar.add(pivot);
+  for (const ch of [...pChar.children]) if (ch !== pivot && ch !== pPaper && ch.isMesh && ch.position.y >= 1.8) pivot.attach(ch);
+  pChar.userData.headPivot = pivot;
+  pChar.rotation.y = 0;
+  pScene.add(pChar);
+  pCharId = charId;
+}
+function renderPortrait(t) {
+  if (!pActive || !pChar || !pRenderer.domElement.isConnected) return;
+  const hp = pChar.userData.headPivot;
+  hp.rotation.x = 0.22 + Math.sin(t * 1.6) * 0.05;   // ก้มอ่าน
+  hp.rotation.y = Math.sin(t * 0.9) * 0.16;          // กวาดสายตาอ่าน
+  pPaper.position.y = 1.25 + Math.sin(t * 1.6) * 0.03;
+  pChar.position.y = Math.abs(Math.sin(t * 2.2)) * 0.03;
+  pChar.rotation.y = Math.sin(t * 0.5) * 0.12;
+  pRenderer.render(pScene, pCam);
+}
+
+// ---------- ถ่ายภาพเมือง ----------
+export function snapshot(overview = false) {
+  const keepPos = camera.position.clone(), keepTarget = controls.target.clone();
+  if (overview) {
+    // ภาพมุมกว้างของทั้งโรงเรียนสำหรับแชร์ แล้วคืนมุมกล้องเดิม
+    controls.target.set(-2, 0, 2);
+    camera.position.set(40, 46, 56);
+    camera.lookAt(controls.target);
+  }
+  updateLabels();
+  renderer.render(scene, camera);
+  const url = renderer.domElement.toDataURL('image/png');
+  if (overview) { camera.position.copy(keepPos); controls.target.copy(keepTarget); camera.lookAt(keepTarget); }
+  return url;
+}
+
 // ---------- ลูป ----------
 const ease = t => 1 - Math.pow(1 - t, 3);
 function tick() {
   const dt = Math.min(clock.getDelta(), 0.05);
   const t = clock.elapsedTime;
   if (flyAnim) {
-    flyAnim.t = Math.min(1, flyAnim.t + dt / 0.9);
+    flyAnim.t = Math.min(1, flyAnim.t + dt / (flyAnim.dur || 0.9));
     const k = ease(flyAnim.t);
     controls.target.lerpVectors(flyAnim.from, flyAnim.to, k);
     camera.position.lerpVectors(flyAnim.camFrom, flyAnim.camTo, k);
@@ -739,6 +840,7 @@ function tick() {
   }
   renderer.render(scene, camera);
   updateLabels();
+  renderPortrait(t);
 }
 
 function animateChar(id, c, dt, t) {

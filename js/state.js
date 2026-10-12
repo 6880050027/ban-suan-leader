@@ -1,5 +1,7 @@
 // สถานะเกม การบันทึก และการคำนวณคะแนน/โปรไฟล์
 import { LEVELS } from './data/levels.js';
+import { applyCopy } from './data/copy.js';
+applyCopy(LEVELS);
 import { TIERS, COMMAND_TASKS, FIT_BY_READINESS, PASS_RATIO, COMMAND_EXP, RANKS, CHARACTERS, PROFILES } from './data/world.js';
 
 const KEY = 'banSuanLeaderSave.v1';

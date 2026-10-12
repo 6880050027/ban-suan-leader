@@ -199,6 +199,21 @@ export const sfx = {
     blip(1800, t, { type: 'square', dur: 0.03, vel: 0.05 }); blip(2400, t + 0.04, { type: 'square', dur: 0.03, vel: 0.05 });
     [79, 84, 88, 91, 96].forEach((m, i) => marimba(t + 0.1 + i * 0.06, m, 0.2, sfxBus, 0.9));
   },
+  // เปิดหน้าเอกสาร (ฉากเปิด/อ่านภารกิจ): เสียงกระดาษพลิกเบา ๆ
+  page() {
+    if (!ready()) return; const t = ctx.currentTime;
+    const len = Math.floor(ctx.sampleRate * 0.18);
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate); const d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.sin(Math.PI * i / len);
+    const src = ctx.createBufferSource(); src.buffer = buf;
+    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 2400; bp.Q.value = 0.8;
+    const g = ctx.createGain(); g.gain.value = 0.12;
+    src.connect(bp); bp.connect(g); g.connect(sfxBus); src.start(t);
+  },
+  // ได้รับรางวัล: กริ่งระยิบระยับ
+  award() { if (!ready()) return; const t = ctx.currentTime; [84, 88, 91, 96, 100].forEach((m, i) => marimba(t + i * 0.07, m, 0.22, sfxBus, 1.1)); },
+  // ถ่ายภาพ: เสียงชัตเตอร์
+  shutter() { if (!ready()) return; const t = ctx.currentTime; blip(1200, t, { type: 'square', dur: 0.03, vel: 0.08 }); blip(700, t + 0.05, { type: 'square', dur: 0.05, vel: 0.06 }); },
   // แจ้งเตือนเควสใหม่
   quest() { if (!ready()) return; const t = ctx.currentTime; marimba(t, 84, 0.2, sfxBus, 0.4); marimba(t + 0.12, 91, 0.2, sfxBus, 0.6); },
 };

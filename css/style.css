@@ -83,7 +83,7 @@ input[type=range] { width: 100%; accent-color: var(--peach); margin-top: 8px; }
 #camctl { position: fixed; right: 12px; bottom: max(16px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 8px; }
 #camctl button { width: 46px; height: 46px; border-radius: 50%; border: 0; background: rgba(255, 253, 248, .93); box-shadow: var(--shadow); font-size: 1.5rem; font-family: var(--font-h); display: grid; place-items: center; color: var(--peach-d); }
 
-#tracker[hidden], #sheet[hidden] { display: none !important; }
+#tracker[hidden], #sheet[hidden], #reader[hidden], #intro[hidden] { display: none !important; }
 #tracker { position: fixed; left: 50%; transform: translateX(-50%); bottom: max(16px, env(safe-area-inset-bottom)); background: rgba(255, 253, 248, .96); border-radius: 18px; box-shadow: var(--shadow); padding: 10px 14px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border-top: 4px solid var(--area); max-width: min(720px, calc(100vw - 90px)); }
 .tr-title { font-family: var(--font-h); font-size: .9rem; width: 100%; }
 .tr-item { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 4px 12px; font-size: .88rem; }
@@ -258,6 +258,64 @@ table.mini th { font-family: var(--font-h); font-weight: 500; }
 @keyframes spin { to { transform: rotate(360deg); } }
 #nogl { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); background: #fff; padding: 20px; border-radius: 18px; max-width: 420px; box-shadow: var(--shadow); }
 
+
+/* ---------- ตัวละครเด้งขึ้นมาอ่านภารกิจ ---------- */
+#reader { position: fixed; left: max(18px, calc(50vw - 490px - 250px)); bottom: 28px; z-index: 25; display: flex; flex-direction: column; align-items: center; width: 230px; pointer-events: none; }
+#reader .reader-pic { width: 220px; height: 250px; border-radius: 50% 50% 26px 26px; background: radial-gradient(circle at 50% 60%, #FFF1DE, #F6DDBF 70%); box-shadow: var(--shadow); overflow: hidden; border: 4px solid #fff; }
+#reader canvas { display: block; }
+#reader .bubble { position: relative; margin-top: 12px; background: #fff; border-radius: 18px; padding: 10px 14px; box-shadow: var(--shadow); font-size: .9rem; line-height: 1.5; }
+#reader .bubble::before { content: ''; position: absolute; top: -9px; left: 50%; transform: translateX(-50%); border: 10px solid transparent; border-top: 0; border-bottom-color: #fff; }
+#reader .bubble b { display: block; font-family: var(--font-h); font-weight: 500; color: var(--peach-d); }
+#reader .bubble p { margin: 2px 0 0; }
+#reader.pop { animation: readerPop .6s cubic-bezier(.2, 1.4, .4, 1) both; }
+@keyframes readerPop { 0% { transform: translateY(70px) scale(.6); opacity: 0; } 100% { transform: none; opacity: 1; } }
+#reader.inline { position: static; flex-direction: row; align-items: center; gap: 14px; width: auto; margin: 6px 0 10px; pointer-events: auto; }
+#reader.inline .reader-pic { width: 104px; height: 118px; flex: none; border-width: 3px; }
+#reader.inline.lg .reader-pic { width: 150px; height: 170px; }
+#reader.inline.lg .bubble { font-size: .98rem; padding: 12px 16px; }
+#reader.inline .bubble { margin-top: 0; flex: 1; min-width: 0; }
+#reader.inline .bubble::before { top: 50%; left: -9px; transform: translateY(-50%); border: 10px solid transparent; border-left: 0; border-right-color: #fff; }
+
+/* ---------- ฉากเปิด ---------- */
+#intro { position: fixed; inset: 0; z-index: 60; pointer-events: none; }
+#intro .ib { position: absolute; left: 0; right: 0; background: #2E241D; pointer-events: auto; transition: height .5s; }
+#intro .ib.top { top: 0; height: 9vh; }
+#intro .ib.bottom { bottom: 0; min-height: 22vh; display: flex; align-items: center; justify-content: center; gap: 20px; padding: 12px 24px max(12px, env(safe-area-inset-bottom)); }
+#intro .cap { max-width: 760px; color: #FFF3E3; text-align: center; opacity: 0; transform: translateY(10px); transition: opacity .6s, transform .6s; }
+#intro .cap.show { opacity: 1; transform: none; }
+#intro .cap b { font-family: var(--font-h); font-weight: 500; font-size: 1.5rem; color: var(--gold); display: block; }
+#intro .cap p { font-size: 1.1rem; margin: 4px 0 0; line-height: 1.6; }
+#intro .skip { position: absolute; right: 18px; bottom: max(14px, env(safe-area-inset-bottom)); color: #E9D9C6; }
+#intro.out { opacity: 0; transition: opacity .5s; }
+body.cine #hud, body.cine #dock, body.cine #camctl, body.cine #labels, body.cine #tracker, body.cine #toasts { opacity: 0; pointer-events: none; transition: opacity .4s; }
+
+/* ---------- หอเกียรติยศ ---------- */
+.awards { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.award { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1px dashed var(--line); border-radius: 16px; background: #FAF7F2; color: #9A8B7E; }
+.award b { font-family: var(--font-h); font-weight: 500; }
+.award p { margin: 4px 0 0; }
+.award .medal { flex: none; width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-size: 1.3rem; background: #EEE6DA; color: #B7A898; }
+.award.got { border-style: solid; border-color: #EBCB7A; background: #FFF8E4; color: var(--ink); }
+.award.got .medal { background: radial-gradient(circle at 35% 30%, #FFE79A, #E3B341); color: #fff; box-shadow: 0 3px 8px rgba(160, 110, 20, .35); }
+.toast.award { background: linear-gradient(90deg, #FFF3C8, #FFE2B0); }
+
+/* ---------- เมนูและแชร์ ---------- */
+.menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.menu-grid .btn { justify-content: center; padding: 14px; }
+.share-img { display: block; width: min(100%, 420px); margin: 6px auto 4px; border-radius: 18px; box-shadow: var(--shadow); }
+a.btn { text-decoration: none; color: inherit; }
+a.btn.primary { color: #fff; }
+#flash { position: fixed; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 70; }
+#flash.go { animation: flash .45s ease-out; }
+@keyframes flash { 0% { opacity: .85; } 100% { opacity: 0; } }
+@media (max-width: 760px) {
+  #intro .cap b { font-size: 1.2rem; } #intro .cap p { font-size: .98rem; }
+  #intro .ib.bottom { flex-direction: column; min-height: 30vh; }
+  #intro .skip { position: static; }
+  .menu-grid { grid-template-columns: 1fr; }
+  #dock button span { font-size: .72rem; }
+}
+
 /* มือถือ */
 @media (max-width: 760px) {
   body { font-size: 15px; }
@@ -290,7 +348,7 @@ table.mini th { font-family: var(--font-h); font-weight: 500; }
 @media print {
   @page { size: A4; margin: 22mm 20mm; }
   html, body { overflow: visible; height: auto; background: #fff; }
-  #world, #labels, #hud, #dock, #camctl, #tracker, #sheet, #toasts, .x, .btn, #loading { display: none !important; }
+  #world, #labels, #hud, #dock, #camctl, #tracker, #sheet, #toasts, .x, .btn, #loading, #reader, #intro, #flash { display: none !important; }
   .modal { position: static; display: block !important; background: none; padding: 0; backdrop-filter: none; }
   .modal-box { box-shadow: none; width: 100% !important; max-height: none; animation: none; }
   #modal-body { overflow: visible; padding: 0; }
