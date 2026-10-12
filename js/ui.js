@@ -2,13 +2,15 @@
 import { LEVELS } from './data/levels.js';
 import {
   AREAS, TIERS, TAGS, COMMANDS, READINESS_TH, CHARACTERS, COMMAND_TASKS, COMMAND_REACTIONS,
-  PASS_RATIO, RANKS, COMMON_ADVICE, VALIDITY_NOTE, TEACHER_VIEW, SCHOOL_NAME, AREA_OFFICE, REF, COMMAND_EXP,
+  PASS_RATIO, RANKS, BIOS, BIO_GROUPS, COMMON_ADVICE, VALIDITY_NOTE, TEACHER_VIEW, SCHOOL_NAME, AREA_OFFICE, REF, COMMAND_EXP,
 } from './data/world.js';
 import * as St from './state.js';
 import * as Sc from './scene.js';
 import * as Au from './audio.js';
 import * as Aw from './awards.js';
 import * as Ec from './economy.js';
+import * as Rq from './requirements.js';
+import { QUIZ } from './data/quiz.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -31,6 +33,8 @@ const ROUTINE = {
 
 export function init() {
   bindHUD();
+  Sc.setFacilityNames(Object.fromEntries(Ec.ITEMS.flatMap(i => [[i.id, shortName(i.th)], [i.facility || i.id, shortName(i.th)]])));
+  setInterval(quizTick, 4000);
   refreshSoundIcon();
   refreshHUD();
   if (St.hasSave()) { St.load(); refreshHUD(); syncWorld(); }
@@ -63,13 +67,18 @@ const ACTIONS = {
   close: () => closeModal(),
   closeSheet: () => closeSheet(),
   start: arg => openLevel(+arg),
-  skip: arg => { const t = St.tierOf(+arg).id; const before = t < 4 && St.tierOpen(t + 1); St.skipLevel(+arg); closeModal(); afterLevelChange(+arg, 0, before); toast(`ข้ามด่าน ${arg} แล้ว ด่านนี้ยังนับเป็นการผ่านเพื่อปลดล็อก และไม่กระทบสิทธิรับโปรไฟล์`); },
+  skip: arg => { if (!St.LEVEL_BY_ID[+arg].warning && !Rq.check(+arg).ok) { openModal(`<h2>ยังข้ามด่าน ${arg} ไม่ได้</h2><p>ข้ามด่านได้เมื่อโรงเรียนมีความพร้อมตามเกณฑ์ของด่านนั้นแล้วเท่านั้น</p>${reqBox(+arg)}<div class="btn-row"><button class="btn" data-act="board">กลับหน้าภารกิจ</button></div>`, { wide: true }); return; } const t = St.tierOf(+arg).id; const before = t < 4 && St.tierOpen(t + 1); St.skipLevel(+arg); closeModal(); afterLevelChange(+arg, 0, before); toast(`ข้ามด่าน ${arg} แล้ว ด่านนี้ยังนับเป็นการผ่านเพื่อปลดล็อก และไม่กระทบสิทธิรับโปรไฟล์`); },
   fly: arg => { Sc.flyToChar(arg); openChar(arg); },
   title: () => showTitle(),
   sound: () => soundModal(),
   hall: () => hallModal(),
   share: () => shareModal(),
+  snap: () => { $('#camctl [data-act=snap]')?.classList.remove('pulse'); shareModal({ view: 'current' }); },
   menu: () => menuModal(),
+  quiz: () => quizModal(),
+  reqs: arg => openModal(`<h2>ด่าน ${arg} · ${esc(St.LEVEL_BY_ID[+arg].title)}</h2>${reqBox(+arg, { title: 'สิ่งที่โรงเรียนยังต้องมีก่อนนับว่าผ่าน' })}<div class="btn-row"><button class="btn" data-act="board">กลับหน้าภารกิจ</button></div>`, { wide: true }),
+  seeNew: arg => { closeModal(); Sc.showNew(arg); },
+  cast: arg => castModal(arg === 'first'),
   finance: arg => financeModal(arg || 'overview'),
   buy: arg => buyModal(arg),
   quest: arg => questModal(arg),
@@ -105,8 +114,40 @@ export function refreshHUD() {
   $('#hud-fin').classList.toggle('crisis', e.crisis);
   $('#hud-crisis').hidden = !e.crisis;
   Sc.setFacilities(Object.keys(e.owned));
+  Sc.setLand(e.land);
+  const evs = Ec.activeEvents().map(v => v.id), evKey = evs.join(',');
+  if (evKey !== lastEvKey) { lastEvKey = evKey; Sc.setEvents(evs); }
   Sc.setStudentCount(e.students);
   Sc.setCrisis(e.crisis);
+  // ด่านที่รอเกณฑ์โรงเรียน: เมื่อโรงเรียนพร้อมแล้วให้นับว่าผ่าน
+  const openBefore = [2, 3, 4].map(t => St.tierOpen(t));
+  const done = Rq.promote();
+  if (done.length) {
+    Au.sfx.unlock?.();
+    for (const id of done) toast(`ด่าน ${id} ผ่านเกณฑ์ความพร้อมของโรงเรียนแล้ว นับว่าผ่านด่าน`, 'rank');
+    [2, 3, 4].forEach((t, i) => { if (!openBefore[i] && St.tierOpen(t)) toast(`ปลดล็อก <b>${TIERS[t - 1].th}</b>`, 'rank'); });
+    grantAwards();
+  }
+}
+let lastEvKey = null;
+function shortName(th) { return th.replace(/\s*\((?:1 ปี|แบบมาตรฐาน)\)/, '').replace(/ครบชุด$/, ''); }
+// กล่องเกณฑ์ความพร้อมของโรงเรียนประจำด่าน
+function reqBox(id, { title = 'เกณฑ์ความพร้อมของโรงเรียนในด่านนี้', links = true } = {}) {
+  const c = Rq.check(id);
+  if (!c.rows.length) return '';
+  const goBtn = r => {
+    if (!links || r.ok) return '';
+    const g = r.go || {};
+    if (g.item) return `<button class="btn sm go" data-act="buy" data-arg="${g.item}">จัดหา</button>`;
+    if (g.quest === 'land') return `<button class="btn sm go" data-act="quest" data-arg="land">ขยายพื้นที่</button>`;
+    if (g.quest) return `<button class="btn sm go" data-act="finance" data-arg="quests">หารายได้</button>`;
+    if (g.crisis) return `<button class="btn sm go" data-act="finance" data-arg="overview">ดูงบ</button>`;
+    if (g.students || g.meter) return `<button class="btn sm go" data-act="finance" data-arg="shop">ร้านค้า</button>`;
+    return '';
+  };
+  return `<div class="req-box ${c.ok ? 'ok' : ''}"><h4>${title}</h4><p class="small">${esc(Rq.WHY[id] || '')}</p>
+    <ul class="reqs">${c.rows.map(r => `<li class="${r.ok ? 'ok' : 'no'}"><span class="mk">${r.ok ? '✓' : '!'}</span><span>${esc(r.th)} <span class="now">(${esc(r.now)})</span></span>${goBtn(r)}</li>`).join('')}</ul>
+    ${c.rows.some(r => r.go?.meter && !r.ok) ? '<p class="tiny">ตัวชี้วัดเก่ง ดี มีสุข มาจากการตัดสินใจในด่านที่เล่นแล้ว (เล่นด่านเดิมซ้ำได้) และจากสิ่งที่โรงเรียนจัดหาอย่างถูกระเบียบ</p>' : ''}</div>`;
 }
 
 function syncWorld() {
@@ -179,7 +220,7 @@ function newGameForm(hadSave) {
       <input id="ng-name" maxlength="24" placeholder="เช่น ใจดี" autofocus>
     </label>
     <div class="btn-row"><button class="btn primary" id="ng-go">เข้าสู่เมืองบ้านสวน</button><button class="btn ghost" data-act="title">ย้อนกลับ</button></div>`, { closable: false });
-  const go = () => { St.newGame($('#ng-name').value.trim()); refreshHUD(); syncWorld(); closeModal(); playIntro(() => showRules(true)); };
+  const go = () => { St.newGame($('#ng-name').value.trim()); refreshHUD(); syncWorld(); closeModal(); playIntro(() => castModal(true)); };
   $('#ng-go').addEventListener('click', go);
   $('#ng-name').addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
 }
@@ -227,7 +268,7 @@ function showRules(first = false) {
           <li>ศึกษาเหตุผลความสำคัญของด่านและกรณีจริงที่ด่านอ้างอิง จากนั้นบันทึกสั้น ๆ ว่าหากเป็นโรงเรียนของท่านจะดำเนินการอย่างไร</li>
           <li>ไปพบตัวละครที่มีเครื่องหมาย <span class="mini-marker">!</span> ในเมือง แล้วเลือกวิธีทำงานกับบุคคลนั้น ได้แก่ สั่งการ สอนงาน สนับสนุน มอบหมาย หรือปรึกษาหารือ</li>
           <li>ตัดสินใจทีละขั้น ขั้นละ 5 ตัวเลือก ระบบแสดงผลที่ตามมา เหตุผล และแหล่งอ้างอิงทันที</li>
-          <li>สรุปบทเรียนท้ายด่าน ด่านจะผ่านเมื่อได้ EXP ไม่น้อยกว่าร้อยละ ${Math.round(PASS_RATIO * 100)} และเมื่อผ่านครบ 5 ด่าน ช่วงถัดไปจะเปิดให้เล่น</li>
+          <li>สรุปบทเรียนท้ายด่าน ด่านจะผ่านเมื่อได้ EXP ไม่น้อยกว่าร้อยละ ${Math.round(PASS_RATIO * 100)} <b>และ</b> โรงเรียนมีความพร้อมตามเกณฑ์ของด่าน เช่น มีสิ่งก่อสร้างหรือของที่จำเป็น ตัวชี้วัดเก่ง ดี มีสุขถึงระดับที่กำหนด ไม่อยู่ในภาวะวิกฤต มีนักเรียนหรือพื้นที่เพียงพอ ถ้ายังไม่พร้อม ด่านจะรอเกณฑ์โรงเรียน และช่วงถัดไปจะยังไม่เปิดจนกว่าจะผ่านครบ 5 ด่าน</li>
         </ol>
         <h3>การให้คะแนน</h3>
         <ul class="tight">
@@ -272,7 +313,7 @@ function showRules(first = false) {
 function statusChip(id) {
   const l = St.S.levels[id];
   const st = l?.attempt ? 'inprogress' : (l?.status || (St.levelOpen(id) ? 'open' : 'locked'));
-  const map = { open: 'พร้อมเล่น', inprogress: 'กำลังเล่น', passed: 'ผ่านแล้ว', failed: 'ยังไม่ผ่าน', skipped: 'ข้ามแล้ว', locked: 'ล็อก' };
+  const map = { open: 'พร้อมเล่น', inprogress: 'กำลังเล่น', passed: 'ผ่านแล้ว', failed: 'ยังไม่ผ่าน', skipped: 'ข้ามแล้ว', locked: 'ล็อก', pending: 'รอเกณฑ์โรงเรียน', passedExp: 'รอเกณฑ์โรงเรียน' };
   return `<span class="chip st-${st}">${map[st]}</span>`;
 }
 function questBoard() {
@@ -287,13 +328,15 @@ function questBoard() {
       return `<div class="q-row ${locked ? 'locked' : ''}" style="--area:${A.color}">
         <div class="q-num">${id}</div>
         <div class="q-main"><div class="q-title">${esc(L.title)} ${L.warning ? '<span class="chip warn-chip">มีคำเตือนเนื้อหา</span>' : ''}</div>
-          <div class="q-meta"><span class="area-dot"></span>${A.th} · <span class="dots" title="ความยาก">${DIFF_DOTS(L.difficulty)}</span> ${L.difficultyTh} · ${L.steps.length} ขั้น · ${best}</div></div>
+          <div class="q-meta"><span class="area-dot"></span>${A.th} · <span class="dots" title="ความยาก">${DIFF_DOTS(L.difficulty)}</span> ${L.difficultyTh} · ${L.steps.length} ขั้น · ${best}</div>
+          <div class="q-reqs">เกณฑ์โรงเรียน: ${Rq.check(id).rows.map(r => r.ok ? esc(r.th) + ' ✓' : `<b>${esc(r.th)}</b>`).join(' · ')}</div>
+          ${l?.status === 'pending' ? `<div class="btn-row left"><button class="btn sm" data-act="reqs" data-arg="${id}">ดูสิ่งที่ยังขาด</button></div>` : ''}</div>
         <div class="q-side">${statusChip(id)}${btn}</div></div>`;
     }).join('');
-    return `<section class="tier ${open ? '' : 'locked'}"><h3>${t.th} ${open ? '' : '<span class="chip">ผ่านช่วงก่อนหน้าให้ครบเพื่อปลดล็อก</span>'}</h3>${rows}</section>`;
+    return `<section class="tier ${open ? '' : 'locked'}"><h3>${t.th} ${open ? '' : '<span class="chip">ผ่านช่วงก่อนหน้าให้ครบ รวมเกณฑ์โรงเรียน เพื่อปลดล็อก</span>'}</h3>${rows}</section>`;
   }).join('');
   openModal(`<h2>ภารกิจ 20 ด่าน</h2>
-    <p class="small">งาน 4 ด้านวนสลับกัน ด้านละ 5 ด่าน ภายในช่วงเดียวกันเลือกเล่นด่านไหนก่อนก็ได้</p>
+    <p class="small">งาน 4 ด้านวนสลับกัน ด้านละ 5 ด่าน ภายในช่วงเดียวกันเลือกเล่นด่านไหนก่อนก็ได้ ด่านจะนับว่าผ่านเมื่อได้ EXP ถึงเกณฑ์ <b>และ</b> โรงเรียนมีความพร้อมตามเกณฑ์ของด่าน (สิ่งก่อสร้างหรือของที่ต้องมี ตัวชี้วัดเก่ง ดี มีสุข สถานะการเงิน จำนวนนักเรียน หรือพื้นที่)</p>
     <div class="legend">${Object.values(AREAS).map(a => `<span style="--area:${a.color}"><i class="area-dot"></i>${a.th}</span>`).join('')}</div>
     ${tiers}`, { wide: true });
 }
@@ -347,6 +390,7 @@ function renderBrief(L, att) {
     <div class="kolb"><span class="on">ประสบการณ์ตรง</span><span>สังเกตและสะท้อนคิด</span><span>สร้างความคิดรวบยอด</span><span>ทดลองปฏิบัติ</span></div>
     <section class="card soft"><h3>ทำไมเรื่องนี้สำคัญ</h3><p>${esc(A.why)}</p></section>
     <section class="story">${L.intro.map(p => `<p>${p}</p>`).join('')}</section>
+    ${reqBox(L.id, { title: 'นอกจาก EXP ด่านนี้จะผ่านได้เมื่อโรงเรียนมีความพร้อมดังนี้', links: false })}
     <details class="card soft" open><summary>กรณีจริงที่ด่านนี้อิง (ชื่อจริงถูกตัดออก)</summary><p class="small">${L.realCase}</p>
       ${L.ambiguity ? `<p class="small"><b>ความกำกวมของด่าน:</b> ${L.ambiguity}</p>` : ''}</details>
     <label class="field">ถ้าเป็นโรงเรียนของท่าน ท่านจะทำอะไรเป็นอย่างแรก (ไม่บังคับ บันทึกไว้เทียบตอนท้ายด่าน)
@@ -479,13 +523,16 @@ function finishLevelUI(L) {
   const cmdRows = Object.entries(att.commands).map(([c, r]) => `<li>${esc(CHARACTERS[c].name)}: ท่านเลือก <b>${COMMANDS[r.cmd].th}</b> · ความพร้อม ${r.readiness} · ${r.result === 'fit' ? 'เข้ากัน' : r.result === 'near' ? 'ใกล้เคียง' : 'ไม่เข้ากัน'}</li>`).join('');
   const res = St.finishLevel(L.id);
   const tick = res.passed ? Ec.semesterTick(L.id, Ec.meters()) : null;
+  const gate = res.passed ? Rq.gate(L.id) : null;
+  const pending = gate && !gate.ok;
   const pre = St.lv(L.id).reflectionBefore;
   activeLevel = null; syncWorld(); refreshHUD();
   const afterRank = St.rankFor();
   (res.passed ? Au.sfx.levelClear : Au.sfx.levelFail)();
   openModal(`<div class="lv-head" style="--area:${AREAS[L.area].color}"><span class="chip area">${AREAS[L.area].th}</span><h2>สรุปด่าน ${L.id} · ${esc(L.title)}</h2></div>
     <div class="kolb"><span>ประสบการณ์ตรง</span><span class="on">สังเกตและสะท้อนคิด</span><span class="on">สร้างความคิดรวบยอด</span><span class="on">ทดลองปฏิบัติ</span></div>
-    <div class="result ${res.passed ? 'pass' : 'fail'}"><b>${res.exp}</b> / ${res.max} EXP · ${res.passed ? 'ผ่านด่าน' : `ยังไม่ผ่าน (ต้องได้ ${Math.ceil(res.max * PASS_RATIO)})`}</div>
+    <div class="result ${res.passed && !pending ? 'pass' : 'fail'}"><b>${res.exp}</b> / ${res.max} EXP · ${pending ? 'การตัดสินใจผ่านเกณฑ์ แต่โรงเรียนยังไม่พร้อม' : res.passed ? 'ผ่านด่าน' : `ยังไม่ผ่าน (ต้องได้ ${Math.ceil(res.max * PASS_RATIO)})`}</div>
+    ${res.passed ? reqBox(L.id, { title: pending ? 'ด่านนี้จะนับว่าผ่านเมื่อโรงเรียนมีความพร้อมครบ' : 'โรงเรียนผ่านเกณฑ์ความพร้อมของด่านนี้' }) : ''}
     <div class="grid2">
       <section class="card"><h3>แบบแผนการตัดสินใจในด่านนี้</h3><div>${Object.entries(tagCount).map(([t, n]) => `<span class="chip tag" style="--tag:${TAGS[t].color}">${TAGS[t].th} × ${n}</span>`).join(' ')}</div>
         ${cmdRows ? `<h3>การทำงานกับคน</h3><ul class="tight">${cmdRows}</ul>` : ''}</section>
@@ -504,7 +551,7 @@ function finishLevelUI(L) {
   if (tick) {
     const d = tick.students - tick.studentsBefore;
     setTimeout(() => { Au.sfx.exp(); toast(`ได้รับงบรอบภาคเรียน · รายหัว +${Ec.fmt(tick.inPer)} · ค่าสาธารณูปโภคและค่าจ้าง −${Ec.fmt(tick.expense)} บาท<br>นักเรียน ${d >= 0 ? '+' : ''}${d} คน (รวม ${Ec.fmt(tick.students)} คน)`, 'good'); }, 1300);
-    if (tick.full) setTimeout(() => toast('จำนวนนักเรียนเต็มความจุของอาคารแล้ว หากต้องการรับนักเรียนเพิ่ม ต้องยื่นคำขอตั้งงบลงทุนอาคารเรียนหลังใหม่', 'rank'), 2400);
+    if (tick.full) setTimeout(() => toast('จำนวนนักเรียนเต็มความจุแล้ว หากต้องการรับเพิ่ม ต้องขยายพื้นที่โรงเรียน หรือยื่นคำขอตั้งงบลงทุนอาคารเรียนหลังใหม่ (ต้องมีพื้นที่ก่อน)', 'rank'), 2400);
     if (tick.crisisStart) setTimeout(() => crisisModal(), 1800);
     if (tick.crisisEnd) setTimeout(() => toast('โรงเรียนพ้นภาวะวิกฤตทางการเงินแล้ว', 'rank'), 1800);
   }
@@ -542,7 +589,7 @@ function openChar(id) {
     body = `<p>${esc(c.role)}</p><p class="small">ระดับ: <b>${r.th}</b> · ${r.sub}</p><p class="small">ผ่าน ${St.completedCount()}/20 ด่าน · ${St.totalExp()} EXP</p>
       <div class="btn-row"><button class="btn sm primary" data-act="board">ภารกิจ</button><button class="btn sm" data-act="book">สมุดผู้นำ</button></div>`;
   } else {
-    body = `<p class="small">${esc(c.role)}</p>
+    body = `<p class="small">${esc(c.role)}</p>${BIOS[id] ? `<p class="bio">${esc(BIOS[id].bio)}</p>` : ''}
       ${readiness ? `<p class="ready"><span class="chip">${readiness === 'ST' ? 'ผู้มีส่วนได้เสีย' : readiness}</span> ${esc(READINESS_TH[readiness])}</p>` : ''}
       ${c.readiness && c.readiness !== 'ST' ? `<div class="morale"><span>ขวัญกำลังใจ</span><div class="bar"><i style="width:${s.morale}%"></i></div><b>${s.morale}</b></div>` : ''}`;
     if (inMeet) {
@@ -782,6 +829,7 @@ function hallModal() {
 function menuModal() {
   openModal(`<h2>เมนู</h2>
     <div class="menu-grid">
+      <button class="btn" data-act="cast">ทำเนียบบุคลากร</button>
       <button class="btn" data-act="share">แชร์ภาพโรงเรียน</button>
       <button class="btn" data-act="visit">เยี่ยมโรงเรียนอื่น</button>
       <button class="btn" data-act="rules">กติกาและผลที่ได้รับ</button>
@@ -794,12 +842,26 @@ function menuModal() {
 
 // ---------------- ถ่ายภาพและแชร์ ----------------
 function gameUrl() { return location.origin + location.pathname.replace(/index\.html$/, ''); }
-async function makeShareCard() {
+async function makeShareCard(view = 'current', format = 'card') {
   closeSheet();
   await (document.fonts?.ready || Promise.resolve());
   const shot = new Image();
-  shot.src = Sc.snapshot(true);
+  shot.src = Sc.snapshot(view === 'wide');
   await shot.decode().catch(() => {});
+  if (format === 'frame') {
+    // ภาพเต็มเฟรมตามมุมที่ผู้เล่นจัดเอง พร้อมแถบข้อมูลเล็กด้านล่าง
+    const fw = shot.width, fh = shot.height, band = Math.round(fh * 0.12);
+    const c = document.createElement('canvas'); c.width = fw; c.height = fh + band;
+    const g = c.getContext('2d');
+    g.drawImage(shot, 0, 0);
+    g.fillStyle = '#FFF8EE'; g.fillRect(0, fh, fw, band);
+    const fs = Math.round(band * 0.3);
+    g.fillStyle = '#3A2E28'; g.font = `500 ${fs}px Mitr, sans-serif`; g.textBaseline = 'middle';
+    g.fillText(`${SCHOOL_NAME}${St.S.playerName ? ' · ผอ.' + St.S.playerName : ''}`, band * 0.35, fh + band * 0.36);
+    g.fillStyle = '#6B5A4E'; g.font = `400 ${Math.round(fs * 0.75)}px Sarabun, sans-serif`;
+    g.fillText(`${St.rankFor().th} · ${St.totalExp()} EXP · นักเรียน ${Ec.fmt(Ec.econ().students)} คน · รางวัล ${Aw.earnedCount()} · ${gameUrl().replace(/^https?:\/\//, '')}`, band * 0.35, fh + band * 0.72);
+    return c;
+  }
   const W = 1080, H = 1350, c = document.createElement('canvas'); c.width = W; c.height = H;
   const g = c.getContext('2d');
   g.fillStyle = '#FFF8EE'; g.fillRect(0, 0, W, H);
@@ -833,26 +895,39 @@ async function makeShareCard() {
   g.fillText('ร่วมเล่นได้ที่ ' + gameUrl().replace(/^https?:\/\//, ''), 60, 1300);
   return c;
 }
-async function shareModal() {
-  closeModal();
+let shareOpt = { view: 'current', format: 'card' };
+async function shareModal(opt) {
+  if (opt) Object.assign(shareOpt, opt);
+  closeModal(); closeSheet();
+  // รอให้หน้าต่างปิดก่อน ภาพจะได้เป็นมุมกล้องที่ผู้เล่นกำลังมองอยู่จริง
+  await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
   Au.sfx.shutter();
   $('#flash').classList.remove('go'); void $('#flash').offsetWidth; $('#flash').classList.add('go');
-  const c = await makeShareCard();
+  const c = await makeShareCard(shareOpt.view, shareOpt.format);
   const url = c.toDataURL('image/png');
   const blob = await new Promise(res => c.toBlob(res, 'image/png'));
   const file = new File([blob], 'ban-suan-school.png', { type: 'image/png' });
   const canFile = !!(navigator.canShare && navigator.canShare({ files: [file] }));
   const text = `โรงเรียนของฉันในเกมเส้นทางผู้บริหาร: ${St.rankFor().th} · ${St.totalExp()} EXP · ผ่าน ${St.completedCount()}/20 ด่าน`;
+  const seg = (k, v, th) => `<button class="tab ${shareOpt[k] === v ? 'on' : ''}" data-sk="${k}" data-sv="${v}">${th}</button>`;
   openModal(`<h2>แชร์ภาพโรงเรียน</h2>
-    <img class="share-img" src="${url}" alt="ภาพโรงเรียนของท่านพร้อมระดับ EXP และรางวัล">
+    <div class="share-opts">
+      <div><span class="small">มุมภาพ</span><div class="tabs">${seg('view', 'current', 'มุมที่ท่านจัดไว้')}${seg('view', 'wide', 'มุมกว้างทั้งโรงเรียน')}</div></div>
+      <div><span class="small">รูปแบบ</span><div class="tabs">${seg('format', 'card', 'การ์ดแนวตั้ง')}${seg('format', 'frame', 'ภาพเต็มเฟรม')}</div></div>
+    </div>
+    <img class="share-img ${shareOpt.format}" src="${url}" alt="ภาพโรงเรียนของท่านพร้อมระดับ EXP และรางวัล">
+    <p class="small center">ต้องการมุมอื่น กด "จัดมุมใหม่" แล้วหมุน ซูม หรือเลื่อนเมืองตามต้องการ จากนั้นกดปุ่มกล้องที่มุมขวาล่าง</p>
     <div class="btn-row">
       ${canFile ? `<button class="btn primary" id="sh-native">แชร์ไปยังแอป (Facebook, Instagram, LINE)</button>` : ''}
       <a class="btn ${canFile ? '' : 'primary'}" id="sh-dl" href="${url}" download="ban-suan-school.png">บันทึกภาพลงเครื่อง</a>
+      <button class="btn" id="sh-again">จัดมุมใหม่</button>
       <button class="btn" id="sh-fb">แชร์ลิงก์เกมทาง Facebook</button>
       <button class="btn" id="sh-line">แชร์ลิงก์เกมทาง LINE</button>
       <button class="btn ghost" id="sh-copy">คัดลอกข้อความ</button>
     </div>
     <p class="small">${canFile ? 'ปุ่มแรกเปิดเมนูแชร์ของเครื่อง เลือก Facebook, Instagram หรือ LINE ได้' : 'บนคอมพิวเตอร์ ให้บันทึกภาพลงเครื่องก่อน แล้วอัปโหลดไปยังสื่อสังคมออนไลน์'} ส่วนปุ่ม Facebook และ LINE จะแชร์ลิงก์เกม เพราะสองช่องทางนี้ไม่รับไฟล์ภาพจากเว็บโดยตรง สำหรับ Instagram ให้บันทึกภาพแล้วโพสต์จากแอป</p>`, { wide: true });
+  $('#modal-body').querySelectorAll('[data-sk]').forEach(b => b.addEventListener('click', () => shareModal({ [b.dataset.sk]: b.dataset.sv })));
+  $('#sh-again').addEventListener('click', () => { closeModal(); shareOpt.view = 'current'; toast('จัดมุมเมืองตามต้องการ แล้วกดปุ่มกล้องที่มุมขวาล่าง'); $('#camctl [data-act=snap]')?.classList.add('pulse'); });
   $('#sh-native')?.addEventListener('click', async () => { try { await navigator.share({ files: [file], title: 'เส้นทางผู้บริหาร เมืองบ้านสวน', text: text + ' ' + gameUrl() }); } catch {} });
   $('#sh-fb').addEventListener('click', () => window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(gameUrl()), '_blank', 'noopener'));
   $('#sh-line').addEventListener('click', () => window.open('https://social-plugins.line.me/lineit/share?url=' + encodeURIComponent(gameUrl()), '_blank', 'noopener'));
@@ -862,7 +937,7 @@ async function shareModal() {
 // ---------------- งบประมาณ ร้านค้า และเควสระดมทรัพยากร ----------------
 const VERDICT = {
   ok: ['ok', 'ใช้ได้ตามระเบียบ'], bad: ['bad', 'ขัดระเบียบ'], unv: ['unv', 'ยังไม่ยืนยันตัวบท'],
-  short: ['unv', 'เงินไม่พอ'], nocap: ['unv', 'ยังไม่ได้รับจัดสรร'], locked: ['unv', 'ยังเปิดซื้อไม่ได้'], owned: ['ok', 'มีแล้ว'],
+  short: ['unv', 'เงินไม่พอ'], nocap: ['unv', 'ยังไม่ได้รับจัดสรร'], locked: ['unv', 'ยังเปิดซื้อไม่ได้'], owned: ['ok', 'มีแล้ว'], noland: ['unv', 'ยังไม่มีพื้นที่'],
 };
 function walletRows() {
   const e = Ec.econ();
@@ -874,7 +949,7 @@ function walletRows() {
 }
 function financeTabs(active) {
   const tabs = [['overview', 'ภาพรวม'], ['shop', 'ร้านค้า'], ['quests', 'ระดมทรัพยากร']];
-  return `<div class="tabs">${tabs.map(([k, th]) => `<button class="tab ${k === active ? 'on' : ''}" data-act="finance" data-arg="${k}">${th}</button>`).join('')}</div>`;
+  return `<div class="tabs">${tabs.map(([k, th]) => `<button class="tab ${k === active.split(':')[0] ? 'on' : ''}" data-act="finance" data-arg="${k}">${th}</button>`).join('')}</div>`;
 }
 function financeModal(tab = 'overview') {
   const e = Ec.econ();
@@ -887,6 +962,7 @@ function financeModal(tab = 'overview') {
       <div class="fin-top">
         <div><b>${Ec.fmt(e.students)}</b><span>นักเรียน (${Ec.sizeLabel()})</span></div>
         <div><b>${Ec.fmt(e.capacity)}</b><span>ความจุของอาคาร</span></div>
+        <div><b>${1 + (e.land || 0)} แปลง</b><span>พื้นที่โรงเรียน (ขยายได้อีก ${Ec.LAND_MAX - (e.land || 0)})</span></div>
         <div><b>${Ec.fmt(e.lostToMisuse)}</b><span>เงินที่เสียจากการใช้ผิดประเภท</span></div>
       </div>
       <h3>เงินแต่ละประเภท (บาทในเกม)</h3>
@@ -896,19 +972,24 @@ function financeModal(tab = 'overview') {
       ${caps ? `<h3>งบลงทุน</h3><ul class="tight">${caps}</ul>` : ''}
       <h3>ความเคลื่อนไหวล่าสุด</h3>
       ${e.log.length ? `<ul class="log">${e.log.slice(0, 10).map(l => `<li>${esc(l.text)}${l.amount ? ` <b class="${l.amount < 0 ? 'neg' : 'pos'}">${l.amount > 0 ? '+' : ''}${Ec.fmt(l.amount)}</b>` : ''}</li>`).join('')}</ul>` : '<p class="small">ยังไม่มีรายการ ผ่านด่านแรกเพื่อรับงบรอบภาคเรียน</p>'}`;
-  } else if (tab === 'shop') {
-    body = `<p class="small">เลือกรายการ แล้วเลือกแหล่งเงิน หากแหล่งเงินขัดระเบียบ เงินจะถูกเรียกคืนและรายการจะไม่ได้รับการจัดหา หากยังยืนยันตัวบทไม่ได้ เกมจะไม่ตัดสินและไม่หักเงิน</p>
-      <div class="shop">${Ec.ITEMS.map(it => {
-        const owned = it.facility && e.owned[it.facility];
+  } else if (tab === 'shop' || tab.startsWith('shop:')) {
+    const grp = tab.includes(':') ? tab.split(':')[1] : 'building';
+    const sub = `<div class="tabs sub">${Object.entries(Ec.SHOP_GROUPS).map(([k, th]) => `<button class="tab ${k === grp ? 'on' : ''}" data-act="finance" data-arg="shop:${k}">${th}</button>`).join('')}</div>`;
+    body = `<p class="small">เลือกรายการ แล้วเลือกแหล่งเงิน หากแหล่งเงินขัดระเบียบ เงินจะถูกเรียกคืนและรายการจะไม่ได้รับการจัดหา หากยังยืนยันตัวบทไม่ได้ เกมจะไม่ตัดสินและไม่หักเงิน รายการที่ไม่มีเครื่องหมาย "ครั้งเดียว" ซื้อซ้ำได้</p>${sub}
+      <div class="shop">${Ec.ITEMS.filter(it => it.group === grp).map(it => {
+        const owned = it.oneTime !== false && it.facility && e.owned[it.facility];
         return `<button class="shop-item ${owned ? 'owned' : ''} ${it.locked ? 'locked' : ''}" data-act="buy" data-arg="${it.id}">
           <b>${esc(it.th)}</b><span class="small">${esc(it.desc)}</span>
+          <span class="tags">${it.oneTime !== false ? '<span class="chip">ครั้งเดียว</span>' : '<span class="chip">ซื้อซ้ำได้</span>'}${['keng', 'dee', 'suk'].filter(k => it[k]).map(k => `<span class="chip">${{ keng: 'เก่ง', dee: 'ดี', suk: 'มีสุข' }[k]} +${it[k]}</span>`).join('')}</span>
           <span class="price">${owned ? 'มีแล้ว' : it.locked ? 'ยังเปิดซื้อไม่ได้' : Ec.fmt(it.price) + ' บาท'}</span></button>`;
       }).join('')}</div>`;
   } else {
-    body = `<p class="small">หาเงินเข้าโรงเรียนโดยไม่ผลักภาระให้ผู้ปกครอง แต่ละเควสทำได้ช่วงละ 1 ครั้ง หากตัดสินใจขัดระเบียบจะไม่ได้รับเงิน</p>
+    const qz = quizStats();
+    body = `<div class="quiz-cta"><div><b>คำถามถูกหรือผิด</b><span class="small">ตอบถูกได้ ${Ec.fmt(QUIZ_REWARD)} บาทเข้าเงินรายได้สถานศึกษา · ตอบแล้ว ${qz.done}/${QUIZ.length} ข้อ ถูก ${qz.correct} ข้อ</span></div><button class="btn primary" data-act="quiz">ตอบคำถาม</button></div>
+      <p class="small">หาเงินเข้าโรงเรียนโดยไม่ผลักภาระให้ผู้ปกครอง แต่ละเควสทำได้ช่วงละ 1 ครั้ง หากตัดสินใจขัดระเบียบจะไม่ได้รับเงิน</p>
       <div class="shop">${Ec.QUESTS.map(q => {
         const a = Ec.questAvailable(q);
-        const rw = q.capitalQuest ? 'งบลงทุนเป็นรายการ' : q.reward.wallet ? `สูงสุด ${Ec.fmt(q.reward.amount)} บาท` : 'ขวัญกำลังใจครู';
+        const rw = q.landQuest ? `ที่ดิน 1 แปลง · ความจุ +${Ec.LAND_CAP} คน (มีแล้ว ${Ec.econ().land}/${Ec.LAND_MAX})` : q.capitalQuest ? 'งบลงทุนเป็นรายการ' : q.reward.wallet ? `สูงสุด ${Ec.fmt(q.reward.amount)} บาท` : 'ขวัญกำลังใจครู';
         return `<button class="shop-item ${a.ok ? '' : 'locked'}" data-act="quest" data-arg="${q.id}"><b>${esc(q.th)}</b>
           <span class="small">ผู้เสนอ: ${esc(CHARACTERS[q.by].name)}</span><span class="price">${a.ok ? rw : esc(a.why)}</span></button>`;
       }).join('')}</div>`;
@@ -917,7 +998,7 @@ function financeModal(tab = 'overview') {
 }
 function buyModal(id) {
   const it = Ec.ITEM[id], e = Ec.econ();
-  if (it.facility && e.owned[it.facility]) return toast('โรงเรียนมีรายการนี้แล้ว');
+  if (it.oneTime !== false && it.facility && e.owned[it.facility]) return toast('โรงเรียนมีรายการนี้แล้ว');
   if (it.locked) return openModal(`<h2>${esc(it.th)}</h2><div class="fb undetermined"><p>${esc(it.lockNote)}</p>
     <p class="small">แหล่งอ้างอิง: <a href="${Ec.SRC.capital2560}" target="_blank" rel="noopener">คู่มือการจัดตั้งงบลงทุน สพฐ. 2560</a> · <a href="${Ec.SRC.vehicle}" target="_blank" rel="noopener">สรุประเบียบรถราชการ</a></p></div>
     <div class="btn-row"><button class="btn" data-act="finance" data-arg="shop">กลับร้านค้า</button></div>`, { wide: true });
@@ -926,7 +1007,7 @@ function buyModal(id) {
     <h3>จะใช้เงินประเภทใด</h3>
     <div class="srcs">${srcs.map(k => `<button class="src" data-src="${k}" style="--w:${Ec.WALLETS[k].color}"><b>${Ec.WALLETS[k].th}</b><span>คงเหลือ ${Ec.fmt(Ec.balance(k, k === 'capital' ? id : undefined))} บาท</span></button>`).join('')}</div>
     <div id="buy-res"></div>
-    <div class="btn-row"><button class="btn ghost" data-act="finance" data-arg="shop">กลับร้านค้า</button></div>`, { wide: true });
+    <div class="btn-row"><button class="btn ghost" data-act="finance" data-arg="shop:${it.group}">กลับร้านค้า</button></div>`, { wide: true });
   showReader('tonkla', 'ก่อนจัดซื้อ ต้องตรวจว่าเงินประเภทนี้ใช้กับรายการนี้ได้ และรายการต้องอยู่ในแผนปฏิบัติการที่คณะกรรมการสถานศึกษาเห็นชอบแล้วครับ', true);
   $('#modal-body').querySelectorAll('.src').forEach(b => b.addEventListener('click', () => {
     const r = Ec.buy(id, b.dataset.src);
@@ -943,10 +1024,10 @@ function buyModal(id) {
     refreshHUD(); grantAwards();
     const inCrisis = Ec.econ().crisis && (r.ok || r.verdict === 'bad');
     if (inCrisis) setTimeout(() => crisisModal(), 2200);
-    else if (r.ok && it.facility) {
+    else if (r.ok) {
+      const key = it.facility || it.id;
       const fly = document.createElement('div'); fly.className = 'btn-row';
-      fly.innerHTML = '<button class="btn primary">ดูสิ่งก่อสร้างใหม่ในเมือง</button><button class="btn" data-act="finance" data-arg="shop">กลับร้านค้า</button>';
-      fly.firstChild.addEventListener('click', () => { closeModal(); Sc.flyToFacility(it.facility); });
+      fly.innerHTML = `<button class="btn primary" data-act="seeNew" data-arg="${key}">${it.facility ? 'ดูสิ่งที่จัดหาใหม่ในเมือง' : it.group === 'people' ? 'ดูบุคลากรใหม่ในเมือง' : 'ดูในเมือง (ใช้ในภาคเรียนนี้)'}</button><button class="btn" data-act="finance" data-arg="shop:${it.group}">กลับร้านค้า</button>`;
       $('#buy-res').appendChild(fly);
     }
     setTimeout(() => $('#buy-res')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 60);
@@ -961,7 +1042,7 @@ function questModal(id, step = 0, answers = []) {
     refreshHUD(); grantAwards();
     return openModal(`<h2>${esc(q.th)}</h2><div class="result ${r.factor ? 'pass' : 'fail'}">${esc(r.text)}</div>
       ${answers.map((a, i) => `<div class="fb ${a.v === 'bad' ? 'illegal' : a.v === 'ok' ? 'ok' : 'undetermined'}"><p class="small">ขั้นที่ ${i + 1}</p><p>${esc(a.t)}</p><p class="small">${esc(a.why)}${a.src ? ` (<a href="${a.src}" target="_blank" rel="noopener">แหล่งอ้างอิง</a>)` : ''}</p></div>`).join('')}
-      <div class="btn-row"><button class="btn primary" data-act="finance" data-arg="overview">ดูงบประมาณ</button><button class="btn ghost" data-act="close">กลับเมือง</button></div>`, { wide: true });
+      <div class="btn-row">${q.landQuest && !r.bad ? `<button class="btn primary" data-act="seeNew" data-arg="${Ec.econ().land >= 2 ? 'land2' : 'expansion'}">ดูที่ดินใหม่ในเมือง</button>` : ''}<button class="btn ${q.landQuest && !r.bad ? '' : 'primary'}" data-act="finance" data-arg="overview">ดูงบประมาณ</button><button class="btn ghost" data-act="close">กลับเมือง</button></div>`, { wide: true });
   }
   const st = q.steps[step];
   openModal(`<h2>${esc(q.th)}</h2><div class="step-prog">${q.steps.map((_, k) => `<i class="${k < step ? 'done' : k === step ? 'cur' : ''}"></i>`).join('')}</div>
@@ -1012,7 +1093,7 @@ function enterVisit(o) {
   try { const r = recentVisits().filter(x => JSON.stringify(x) !== JSON.stringify(o)); r.unshift(o); localStorage.setItem('banSuanVisits', JSON.stringify(r.slice(0, 6))); } catch {}
   closeModal(); closeSheet();
   document.body.classList.add('visiting');
-  Sc.setFacilities(o.f); Sc.setStudentCount(o.s); Sc.setCrisis(!!o.c); Sc.setTrophies(o.a || 0); Sc.setQuestMarkers([]);
+  Sc.setFacilities(o.f); Sc.setLand(o.ld || 0); Sc.setEvents(o.ev || []); lastEvKey = null; Sc.setStudentCount(o.s); Sc.setCrisis(!!o.c); Sc.setTrophies(o.a || 0); Sc.setQuestMarkers([]);
   const rk = RANKS[o.r];
   const bar = $('#visitbar');
   bar.hidden = false;
@@ -1030,4 +1111,83 @@ function leaveVisit() {
   if (location.search.includes('visit=')) history.replaceState(null, '', location.pathname);
   refreshHUD(); syncWorld();
   if (!St.hasSave()) showTitle();
+}
+
+// ---------------- ทำเนียบบุคลากร ----------------
+function castModal(first = false) {
+  const READY_SHORT = { R1: 'ความพร้อม R1', R2: 'ความพร้อม R2', R3: 'ความพร้อม R3', R4: 'ความพร้อม R4', ST: 'ผู้มีส่วนได้เสีย' };
+  const card = id => {
+    const c = CHARACTERS[id], b = BIOS[id];
+    return `<div class="cast-card">
+      <img src="${Sc.avatarImage(id)}" alt="">
+      <div><b>${esc(c.name)}</b><span class="small">${esc(c.role)}</span>
+        ${c.readiness ? `<span class="chip">${READY_SHORT[c.readiness]}</span>` : ''}
+        <p class="small">${esc(b.bio)}</p>
+        <p class="say">“${esc(b.hello)}”</p>
+        ${id !== 'player' ? `<button class="btn sm" data-meet="${id}">ไปพบในเมือง</button>` : ''}</div></div>`;
+  };
+  const groups = Object.entries(BIO_GROUPS).map(([g, th]) => `<h3>${th}</h3><div class="cast">${Object.keys(BIOS).filter(id => BIOS[id].group === g && id !== 'player').map(card).join('')}</div>`).join('');
+  openModal(`<h2>${first ? 'ทำความรู้จักบุคลากรของโรงเรียน' : 'ทำเนียบบุคลากร'}</h2>
+    <p class="small">ตัวละครทุกคนเป็นบุคคลสมมติ ระดับความพร้อม (R1–R4) อาจเปลี่ยนไปตามวิธีที่ท่านทำงานกับแต่ละคน และบางคนจะอยู่ในระดับต่างจากปกติเมื่อเกิดภาวะวิกฤต</p>
+    <div class="cast me">${card('player')}</div>
+    ${groups}
+    <div class="btn-row"><button class="btn primary" id="cast-ok">${first ? 'รับทราบ และอ่านกติกาการเล่น' : 'ปิด'}</button></div>`, { wide: true });
+  $('#cast-ok').addEventListener('click', () => { if (first) showRules(true); else closeModal(); });
+  $('#modal-body').querySelectorAll('[data-meet]').forEach(b => b.addEventListener('click', () => { closeModal(); Sc.flyToChar(b.dataset.meet); openChar(b.dataset.meet); }));
+}
+
+// ---------------- ป๊อปอัปคำถามถูกหรือผิด ----------------
+const QUIZ_REWARD = 8000;
+const QUIZ_GAP = 75000;   // เว้นระยะระหว่างลูกโป่งคำถาม (มิลลิวินาที)
+const QUIZ_HOSTS = ['prasert', 'malee', 'tonkla', 'arun', 'wilai', 'somsak', 'boonmee', 'guidance', 'pe', 'fah'];
+const AREA_TH = { budget: 'งบประมาณและพัสดุ', personnel: 'งานบุคคล', general: 'การบริหารทั่วไป', academic: 'วิชาการและภาวะผู้นำ' };
+function quizState() { return (St.S.quiz ||= { answered: {}, correct: 0, wrong: 0, next: Date.now() + 25000, host: null }); }
+function quizStats() { const q = quizState(); return { done: Object.keys(q.answered).length, correct: q.correct }; }
+function pickQuiz() {
+  const q = quizState();
+  let pool = QUIZ.filter(x => !(x.id in q.answered));
+  if (!pool.length) { q.answered = {}; pool = QUIZ.slice(); }     // ครบทุกข้อแล้ว เริ่มรอบใหม่
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+function quizTick() {
+  if (visiting || !St.S.startedAt || !St.S.seenRules) return;
+  if ($('#modal').classList.contains('show') || !$('#intro').hidden) return;
+  const q = quizState();
+  if (q.host) { Sc.setQuizBalloon(q.host, () => quizModal(q.host)); return; }
+  if (Date.now() < q.next) return;
+  q.host = QUIZ_HOSTS[Math.floor(Math.random() * QUIZ_HOSTS.length)];
+  St.save();
+  Sc.setQuizBalloon(q.host, () => quizModal(q.host));
+  Au.sfx.quest();
+  toast(`${esc(CHARACTERS[q.host].name)} มีคำถามมาให้ท่าน แตะลูกโป่ง <b>?</b> ตอบถูกได้เงินเข้าโรงเรียน`);
+}
+function quizModal(host) {
+  const st = quizState();
+  host = host || st.host || QUIZ_HOSTS[0];
+  const item = pickQuiz();
+  openModal(`<div class="quiz">
+      <span class="chip">${AREA_TH[item.area]}</span>
+      <h2>ถูกหรือผิด</h2>
+      <p class="quiz-q">${esc(item.q)}</p>
+      <div class="tf"><button class="btn tf-btn t" data-a="1">ถูก</button><button class="btn tf-btn f" data-a="0">ผิด</button></div>
+      <div id="quiz-res"></div>
+      <p class="tiny">ตอบถูกได้ ${Ec.fmt(QUIZ_REWARD)} บาทเข้าเงินรายได้สถานศึกษา (บาทในเกม) ตอบผิดไม่เสียเงิน แต่จะได้อ่านคำอธิบายพร้อมแหล่งอ้างอิง</p>
+    </div>`);
+  showReader(host, 'ท่านผู้อำนวยการ ข้อความนี้ถูกหรือผิดครับ/คะ', true);
+  $('#modal-body').querySelectorAll('.tf-btn').forEach(b => b.addEventListener('click', () => {
+    const ans = b.dataset.a === '1', ok = ans === item.a;
+    st.answered[item.id] = ok;
+    if (ok) { st.correct++; Ec.econ().wallets.income += QUIZ_REWARD; Ec.econ().log.unshift({ t: Date.now(), text: 'รางวัลตอบคำถามถูก', amount: QUIZ_REWARD }); Ec.checkCrisis(); }
+    else st.wrong++;
+    st.host = null; st.next = Date.now() + QUIZ_GAP;
+    Sc.setQuizBalloon(null);
+    St.save(); refreshHUD(); grantAwards();
+    (ok ? Au.sfx.exp : Au.sfx.bad)();
+    $('#modal-body').querySelectorAll('.tf-btn').forEach(x => { x.disabled = true; x.classList.toggle('chosen', x === b); });
+    $('#quiz-res').innerHTML = `<div class="fb ${ok ? 'ok' : 'illegal'}">
+      <div class="fb-head"><span class="chip ${ok ? 'ok' : 'bad'}">${ok ? 'ตอบถูก' : 'ยังไม่ถูก'}</span><span class="chip">ข้อความนี้${item.a ? 'ถูก' : 'ผิด'}</span>${ok ? `<span class="chip exp">+${Ec.fmt(QUIZ_REWARD)} บาท</span>` : ''}</div>
+      <p>${esc(item.why)}</p>
+      <p class="small">แหล่งอ้างอิง: <a href="${item.src}" target="_blank" rel="noopener">${esc(item.srcName || 'เปิดแหล่งอ้างอิง')}</a>${item.conf === 'secondary' ? ' (แหล่งรอง)' : ''}</p></div>
+      <div class="btn-row"><button class="btn primary" data-act="quiz">ข้อถัดไป</button><button class="btn ghost" data-act="close">กลับเมือง</button></div>`;
+  }));
 }

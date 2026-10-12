@@ -34,49 +34,92 @@ const UNV = why => ({ v: 'unv', why: why || 'ยังไม่พบตัว�
 
 // รายการในร้านค้า: cat ใช้จับคู่กับวัตถุประสงค์ของเงินบริจาค, facility = สิ่งที่ปรากฏในเมือง
 export const ITEMS = [
-  { id: 'reno', th: 'ปรับปรุงห้องเรียน 10 ห้อง', price: 60000, cat: 'building', facility: 'reno', rep: 3, keng: 2,
+  { id: 'reno', group: 'building', th: 'ปรับปรุงห้องเรียน 10 ห้อง', price: 60000, cat: 'building', facility: 'reno', rep: 3, keng: 2,
     desc: 'ทาสี เปลี่ยนพัดลม ซ่อมหน้าต่างและพื้นห้องเรียน',
     rules: { perhead: R_PERHEAD_OK, income: R_INCOME_OK, donation: R_DON('building'), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD, capital: R_CAP_ONLY } },
-  { id: 'water', th: 'ระบบน้ำดื่มสะอาดและเครื่องกรองน้ำ', price: 40000, cat: 'building', facility: 'water', rep: 3, suk: 3,
+  { id: 'water', group: 'building', th: 'ระบบน้ำดื่มสะอาดและเครื่องกรองน้ำ', price: 40000, cat: 'building', facility: 'water', rep: 3, suk: 3,
     desc: 'จุดบริการน้ำดื่มพร้อมเครื่องกรองและการตรวจคุณภาพน้ำ',
     rules: { perhead: { ...R_PERHEAD_OK, note: 'อนุมานจากหมวดครุภัณฑ์และค่าซ่อมแซมระบบประปา (แหล่งรอง)' }, income: R_INCOME_OK, donation: R_DON('building'), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD, capital: R_CAP_ONLY } },
-  { id: 'cctv', th: 'กล้องวงจรปิดรอบโรงเรียน', price: 80000, cat: 'safety', facility: 'cctv', rep: 2, dee: 3,
+  { id: 'cctv', group: 'equipment', th: 'กล้องวงจรปิดรอบโรงเรียน', price: 80000, cat: 'safety', facility: 'cctv', rep: 2, dee: 3,
     desc: 'กล้อง 16 จุด พร้อมระบบบันทึกภาพ (ต้องจัดทำประกาศการใช้ข้อมูลตาม PDPA)',
     rules: { perhead: { ...R_PERHEAD_OK, note: 'อนุมานจากหมวดครุภัณฑ์ (แหล่งรอง)' }, income: R_INCOME_OK, donation: R_DON('safety'), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD, capital: R_CAP_ONLY } },
-  { id: 'library', th: 'ห้องสมุดมีชีวิต', price: 150000, cat: 'learning', facility: 'library', rep: 5, keng: 4,
+  { id: 'library', group: 'equipment', th: 'ห้องสมุดมีชีวิต', price: 150000, cat: 'learning', facility: 'library', rep: 5, keng: 4,
     desc: 'หนังสือใหม่ มุมอ่าน และพื้นที่เรียนรู้ร่วมกัน',
     rules: { perhead: R_PERHEAD_OK, income: R_INCOME_OK, donation: R_DON('learning'), activity: R_ACTIVITY_BAD, capital: R_CAP_ONLY,
       student: { v: 'bad', why: 'ค่าหนังสือเรียนเป็นเงินที่ผูกกับหนังสือเรียนของนักเรียนแต่ละคน ไม่ใช่หนังสือห้องสมุด', src: SRC.sea12 } } },
-  { id: 'ict', th: 'ห้องปฏิบัติการคอมพิวเตอร์', price: 300000, cat: 'learning', facility: 'ict', rep: 6, keng: 5,
+  { id: 'ict', group: 'equipment', th: 'ห้องปฏิบัติการคอมพิวเตอร์', price: 300000, cat: 'learning', facility: 'ict', rep: 6, keng: 5,
     desc: 'คอมพิวเตอร์ 40 เครื่อง ตามเกณฑ์ราคากลางและคุณลักษณะพื้นฐานคอมพิวเตอร์',
     rules: { perhead: R_PERHEAD_OK, income: R_INCOME_OK, donation: R_DON('learning'), capital: R_CAP_ONLY, student: R_STUDENT_BAD,
       activity: { v: 'bad', why: 'กิจกรรม ICT ในเงินกิจกรรมพัฒนาคุณภาพผู้เรียนใช้จัดกิจกรรมให้นักเรียน ไม่ใช่ซื้อครุภัณฑ์คอมพิวเตอร์', src: SRC.sea12 } } },
-  { id: 'teacher', th: 'จ้างครูอัตราจ้างวิชาขาดแคลน 1 อัตรา (1 ปี)', price: 120000, cat: 'people', facility: null, rep: 4, keng: 5, oneTime: false,
+  { id: 'teacher', group: 'people', th: 'จ้างครูอัตราจ้างวิชาขาดแคลน 1 อัตรา (1 ปี)', price: 120000, cat: 'people', facility: null, rep: 4, keng: 5, oneTime: false,
     desc: 'ลดภาระสอนของครูคณิตศาสตร์และวิทยาศาสตร์',
     rules: { perhead: { v: 'ok', why: 'แนวทางปี 2568 ให้จ่ายค่าจ้างชั่วคราว เช่น ครูอัตราจ้าง จากค่าจัดการเรียนการสอนได้', src: SRC.guide2568 }, income: { v: 'unv', why: 'การจ้างจากเงินรายได้สถานศึกษาต้องตรวจวงเงินอำนาจอนุมัติตามประกาศ สพฐ. 2551 ซึ่งยังตรวจตัวบทไม่ได้', src: null },
       activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD, donation: R_DON('people'), capital: R_CAP_ONLY } },
-  { id: 'camp', th: 'ค่ายวิชาการและทัศนศึกษา ม.4', price: 50000, cat: 'activity', facility: null, rep: 3, keng: 2, suk: 3, oneTime: false,
+  { id: 'camp', group: 'activity', th: 'ค่ายวิชาการและทัศนศึกษา ม.4', price: 50000, cat: 'activity', facility: null, rep: 3, keng: 2, suk: 3, oneTime: false,
     desc: 'ค่าพาหนะ ที่พัก และวิทยากร สำหรับนักเรียน 120 คน',
     rules: { activity: { v: 'ok', why: 'ทัศนศึกษาและกิจกรรมวิชาการเป็น 2 ใน 5 กิจกรรม จ่ายค่าพาหนะ ที่พัก และวิทยากรได้ โดยต้องไม่เรียกเก็บเงินผู้ปกครองเพิ่ม', src: SRC.sea12 },
       perhead: UNV(), income: UNV(), donation: R_DON('activity'), student: R_STUDENT_BAD, capital: R_CAP_ONLY } },
-  { id: 'scholar', th: 'ทุนการศึกษานักเรียนขาดแคลน 20 ทุน', price: 30000, cat: 'scholar', facility: null, rep: 3, suk: 4, oneTime: false,
+  { id: 'scholar', group: 'welfare', th: 'ทุนการศึกษานักเรียนขาดแคลน 20 ทุน', price: 30000, cat: 'scholar', facility: null, rep: 3, suk: 4, oneTime: false,
     desc: 'ทุนละ 1,500 บาท สำหรับนักเรียนที่ครอบครัวมีรายได้น้อย',
     rules: { donation: R_DON('scholar'), student: R_STUDENT_BAD, perhead: UNV('ยังไม่พบตัวบทที่ระบุว่าจ่ายทุนการศึกษาจากค่าจัดการเรียนการสอนได้'), activity: UNV(), income: UNV('ยังไม่พบตัวบทที่ระบุว่าเงินรายได้สถานศึกษาจ่ายทุนการศึกษาได้'), capital: R_CAP_ONLY } },
-  { id: 'solar', th: 'แผงโซลาร์เซลล์บนหลังคาอาคาร', price: 350000, cat: 'building', facility: 'solar', rep: 4, saving: 8000,
+  { id: 'solar', group: 'building', th: 'แผงโซลาร์เซลล์บนหลังคาอาคาร', price: 350000, cat: 'building', facility: 'solar', rep: 4, saving: 8000,
     desc: 'ลดค่าไฟฟ้าของโรงเรียนในระยะยาว',
     rules: { perhead: UNV('ไม่พบกฎเฉพาะสำหรับแผงโซลาร์เซลล์'), income: UNV('ไม่พบกฎเฉพาะสำหรับแผงโซลาร์เซลล์'), donation: R_DON('building'), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD, capital: R_CAP_ONLY } },
-  { id: 'dome', th: 'โดมอเนกประสงค์และลานกีฬา', price: 500000, cat: 'building', facility: 'dome', rep: 6, suk: 4, capitalOk: true,
+  { id: 'dome', group: 'building', needLand: 1, th: 'โดมอเนกประสงค์และลานกีฬา', price: 500000, cat: 'building', facility: 'dome', rep: 6, suk: 4, capitalOk: true,
     desc: 'ลานกีฬามีหลังคาสำหรับกิจกรรมและการเข้าแถวช่วงฝนตก',
     rules: { perhead: { ...R_PERHEAD_OK, note: 'สิ่งก่อสร้างวงเงิน 500,000 บาท ต้องจัดจ้างตามวิธีเฉพาะเจาะจงหรือวิธีที่ระเบียบกำหนด' }, income: UNV('การก่อสร้างจากเงินรายได้สถานศึกษายังตรวจวงเงินอำนาจอนุมัติไม่ได้'), donation: R_DON('building'), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD, capital: { v: 'cap', item: 'dome', why: 'ใช้งบลงทุนได้หากได้รับจัดสรรสำหรับรายการนี้', src: SRC.capital2560 } } },
-  { id: 'newbldg', th: 'อาคารเรียนหลังใหม่ (แบบมาตรฐาน)', price: 4500000, cat: 'building', facility: 'newbldg', rep: 12, keng: 3, capitalOnly: true, capacity: 400,
+  { id: 'newbldg', group: 'building', needLand: 1, th: 'อาคารเรียนหลังใหม่ (แบบมาตรฐาน)', price: 4500000, cat: 'building', facility: 'newbldg', rep: 12, keng: 3, capitalOnly: true, capacity: 400,
     desc: 'รองรับนักเรียนเพิ่ม 400 คน ต้องยื่นคำขอตั้งงบลงทุนผ่านสำนักงานเขตพื้นที่',
     rules: { capital: { v: 'cap', item: 'newbldg', why: 'อาคารเรียนใช้แบบมาตรฐานและงบลงทุนที่โรงเรียนยื่นคำขอผ่านเขตพื้นที่ โดยเขตจัดลำดับตามความขาดแคลนห้องเรียน', src: SRC.capital2560 },
       perhead: UNV('ยังไม่พบตัวบทที่ระบุว่าใช้เงินรายหัวสร้างอาคารเรียนทั้งหลังได้'), income: UNV('ยังไม่พบตัวบทเรื่องการสร้างอาคารเรียนจากเงินรายได้สถานศึกษา'), donation: R_DON('building'), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD } },
-  { id: 'van', th: 'รถตู้โรงเรียน', price: 1400000, cat: 'vehicle', facility: 'van', rep: 3, locked: true,
+  { id: 'van', group: 'building', th: 'รถตู้โรงเรียน', price: 1400000, cat: 'vehicle', facility: 'van', rep: 3, locked: true,
     desc: 'รายการนี้ยังเปิดซื้อไม่ได้ เพราะการจัดหายานพาหนะมีระเบียบเฉพาะ',
     lockNote: 'คู่มือการจัดตั้งงบลงทุนของ สพฐ. (2560) กำหนดให้สำนักงานเขตพื้นที่เป็นผู้ขอรถตู้ ใช้ทดแทนรถที่ชำรุดหรือมีอายุเกิน 10 ปี และไม่พบรายการยานพาหนะสำหรับโรงเรียน ส่วนการซื้อรถด้วยเงินรายหัว เงินรายได้ หรือการรับบริจาครถ ยังต้องตรวจระเบียบว่าด้วยรถราชการก่อน เกมจึงไม่เปิดให้ซื้อ',
     rules: {} },
 ];
+
+// รายการเพิ่มเติม (รอบที่ 3)
+const R_REPAIR = { v: 'ok', why: 'แนวทางการใช้เงินอุดหนุน ปี 2568 ระบุค่าซ่อมแซมระบบไฟฟ้า ประปา และสิ่งปลูกสร้างไว้ในค่าจัดการเรียนการสอน โดยต้องอยู่ในแผนปฏิบัติการที่คณะกรรมการสถานศึกษาเห็นชอบ', src: SRC.guide2568 };
+const R_EQUIP = { ...R_PERHEAD_OK, note: 'อนุมานจากหมวดครุภัณฑ์ในงบลงทุนของค่าจัดการเรียนการสอน (แหล่งรอง) ต้องเทียบราคามาตรฐานครุภัณฑ์ก่อนจัดซื้อ' };
+const R_ACT = type => ({ v: 'ok', why: `${type}เป็นหนึ่งใน 5 กิจกรรมที่จ่ายจากเงินอุดหนุนกิจกรรมพัฒนาคุณภาพผู้เรียนได้ โดยต้องไม่เรียกเก็บเงินผู้ปกครองเพิ่ม`, src: SRC.sea12 });
+const ACT_RULES = type => ({ activity: R_ACT(type), perhead: UNV(), income: UNV(), donation: R_DON('activity'), student: R_STUDENT_BAD, capital: R_CAP_ONLY });
+const BLD_RULES = (extra = {}) => ({ perhead: R_REPAIR, income: R_INCOME_OK, donation: R_DON('building'), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD, capital: R_CAP_ONLY, ...extra });
+const EQ_RULES = (purpose = 'learning', extra = {}) => ({ perhead: R_EQUIP, income: R_INCOME_OK, donation: R_DON(purpose), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD, capital: R_CAP_ONLY, ...extra });
+ITEMS.push(
+  // อาคารสถานที่
+  { id: 'roof', group: 'building', th: 'ซ่อมหลังคาโรงอาหารที่รั่ว', price: 45000, cat: 'building', facility: 'roof', rep: 2, suk: 2, desc: 'เปลี่ยนแผ่นหลังคาและรางน้ำฝน', rules: BLD_RULES() },
+  { id: 'toiletReno', group: 'building', th: 'ปรับปรุงห้องน้ำนักเรียนทั้งหลัง', price: 180000, cat: 'building', facility: 'toiletReno', rep: 5, suk: 4, desc: 'เปลี่ยนสุขภัณฑ์ ระบบระบายอากาศ และทางลาดสำหรับผู้พิการ', rules: BLD_RULES() },
+  { id: 'electric', group: 'building', th: 'ปรับปรุงระบบไฟฟ้าและเปลี่ยนเป็นหลอด LED', price: 90000, cat: 'building', facility: 'electric', rep: 2, dee: 2, saving: 3000, desc: 'ลดความเสี่ยงไฟฟ้าลัดวงจรและลดค่าไฟฟ้า', rules: BLD_RULES() },
+  { id: 'bikepark', group: 'building', th: 'ลานจอดรถจักรยานมีหลังคา', price: 70000, cat: 'building', facility: 'bikepark', rep: 2, suk: 2, desc: 'รองรับจักรยาน 80 คัน ส่งเสริมการเดินทางที่ปลอดภัย', rules: BLD_RULES({ perhead: { ...R_PERHEAD_OK, note: 'สิ่งก่อสร้างในงบลงทุนของค่าจัดการเรียนการสอน' } }) },
+  { id: 'garden', group: 'building', th: 'สวนเกษตรและโรงเรือนเพื่อการเรียนรู้', price: 85000, cat: 'learning', facility: 'garden', rep: 3, keng: 2, suk: 2, desc: 'แปลงผัก โรงเรือน และระบบน้ำหยด สำหรับการเรียนรู้แบบโครงงาน', rules: BLD_RULES({ donation: R_DON('learning'), perhead: { ...R_PERHEAD_OK, note: 'สิ่งก่อสร้างขนาดเล็กในงบลงทุนของค่าจัดการเรียนการสอน (อนุมาน)' } }) },
+  // ครุภัณฑ์และสื่อ
+  { id: 'smartboard', group: 'equipment', th: 'จอสัมผัสอัจฉริยะ 10 ห้องเรียน', price: 450000, cat: 'learning', facility: 'smartboard', rep: 5, keng: 4, desc: 'จอแสดงผลแบบสัมผัสสำหรับการสอนแบบมีปฏิสัมพันธ์', rules: EQ_RULES() },
+  { id: 'scilab', group: 'equipment', th: 'วัสดุและอุปกรณ์ห้องปฏิบัติการวิทยาศาสตร์', price: 120000, cat: 'learning', facility: null, oneTime: false, rep: 3, keng: 3, desc: 'สารเคมี เครื่องแก้ว และชุดทดลองสำหรับหนึ่งปีการศึกษา (ห้ามแบ่งซื้อเป็นรายห้องปฏิบัติการ)', rules: EQ_RULES('learning', { perhead: { ...R_PERHEAD_OK, note: 'วัสดุการเรียนการสอนในค่าจัดการเรียนการสอน จัดซื้อรวมครั้งเดียว ห้ามแบ่งซื้อตามข้อ 20 ของระเบียบพัสดุ' } }) },
+  { id: 'band', group: 'equipment', th: 'เครื่องดนตรีวงโยธวาทิต', price: 250000, cat: 'learning', facility: 'band', rep: 4, suk: 3, desc: 'เครื่องเป่าและเครื่องกระทบสำหรับวงโยธวาทิตของโรงเรียน', rules: EQ_RULES() },
+  { id: 'sports', group: 'equipment', th: 'อุปกรณ์กีฬาครบชุด', price: 40000, cat: 'learning', facility: null, oneTime: false, rep: 2, suk: 3, desc: 'ลูกบอล ตาข่าย และอุปกรณ์กรีฑาสำหรับหนึ่งปีการศึกษา', rules: EQ_RULES('learning', { perhead: { ...R_PERHEAD_OK, note: 'อุปกรณ์กีฬาจัดอยู่ในค่าจัดการเรียนการสอน (แหล่งรอง)' } }) },
+  { id: 'nurse', group: 'equipment', th: 'ปรับปรุงห้องพยาบาลและเวชภัณฑ์', price: 35000, cat: 'safety', facility: 'nurse', rep: 2, suk: 3, desc: 'เตียงพยาบาล ตู้ยา และเวชภัณฑ์พื้นฐาน', rules: EQ_RULES('safety', { perhead: UNV('ยังไม่พบตัวบทเรื่องการจัดซื้อเวชภัณฑ์จากค่าจัดการเรียนการสอน') }) },
+  // บุคลากร
+  { id: 'janitor', group: 'people', th: 'จ้างนักการภารโรงเพิ่ม 1 อัตรา (1 ปี)', price: 108000, cat: 'people', facility: null, oneTime: false, rep: 2, suk: 3, desc: 'ช่วยดูแลความสะอาดและซ่อมบำรุงร่วมกับลุงบุญมี',
+    rules: { perhead: { v: 'ok', why: 'แนวทางปี 2568 ยกตัวอย่างค่าจ้างนักการภารโรงไว้ในค่าจ้างชั่วคราวที่จ่ายจากค่าจัดการเรียนการสอนได้', src: SRC.guide2568 }, income: UNV('การจ้างจากเงินรายได้สถานศึกษาต้องตรวจวงเงินอำนาจอนุมัติตามประกาศ สพฐ. 2551 ซึ่งยังตรวจตัวบทไม่ได้'), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD, donation: R_DON('people'), capital: R_CAP_ONLY } },
+  { id: 'foreign', group: 'people', th: 'จ้างครูชาวต่างประเทศสอนภาษาอังกฤษ (1 ปี)', price: 300000, cat: 'people', facility: null, oneTime: false, rep: 4, keng: 4, desc: 'ครูเจ้าของภาษาสอนสัปดาห์ละ 20 คาบ',
+    rules: { perhead: UNV('แนวทางปี 2568 ยกตัวอย่างครูอัตราจ้างไว้ แต่ยังไม่พบตัวบทที่กล่าวถึงครูชาวต่างประเทศโดยตรง'), income: UNV('การจ้างจากเงินรายได้สถานศึกษาต้องตรวจวงเงินอำนาจอนุมัติ'), donation: R_DON('people'), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD, capital: R_CAP_ONLY } },
+  { id: 'pd', group: 'people', th: 'เชิญวิทยากรอบรมครูเรื่องการวัดผลแนว PISA', price: 25000, cat: 'people', facility: null, oneTime: false, rep: 2, keng: 3, desc: 'อบรมเชิงปฏิบัติการ 2 วัน สำหรับครูทุกกลุ่มสาระ',
+    rules: { perhead: UNV('ยังไม่พบตัวบทเรื่องค่าพัฒนาครูในค่าจัดการเรียนการสอน'), income: UNV(), activity: UNV('เงินกิจกรรมพัฒนาคุณภาพผู้เรียนผูกกับกิจกรรมของนักเรียน 5 ประเภท ยังไม่พบตัวบทที่ระบุเรื่องการอบรมครู'), donation: R_DON('people'), student: R_STUDENT_BAD, capital: R_CAP_ONLY } },
+  // กิจกรรมนักเรียน
+  { id: 'scout', group: 'activity', th: 'ค่ายลูกเสือ-เนตรนารี ม.1', price: 40000, cat: 'activity', facility: null, oneTime: false, rep: 2, suk: 3, desc: 'เข้าค่ายพักแรม 2 วัน 1 คืน', rules: ACT_RULES('กิจกรรมคุณธรรม/ลูกเสือ') },
+  { id: 'coding', group: 'activity', th: 'ค่ายโค้ดดิ้งและเทคโนโลยี', price: 30000, cat: 'activity', facility: null, oneTime: false, rep: 2, keng: 3, desc: 'กิจกรรมเรียนรู้เทคโนโลยีสารสนเทศสำหรับนักเรียน ม.2', rules: ACT_RULES('กิจกรรมบริการสารสนเทศ (ICT)') },
+  { id: 'museum', group: 'activity', th: 'ทัศนศึกษาพิพิธภัณฑ์วิทยาศาสตร์ ม.1', price: 45000, cat: 'activity', facility: null, oneTime: false, rep: 2, keng: 2, suk: 2, desc: 'ไป-กลับภายในวัน นักเรียน 200 คน (ต้องขออนุญาตตามระเบียบการพานักเรียนไปนอกสถานศึกษา)', rules: ACT_RULES('กิจกรรมทัศนศึกษา') },
+  { id: 'moral', group: 'activity', th: 'ค่ายคุณธรรมจริยธรรม', price: 25000, cat: 'activity', facility: null, oneTime: false, rep: 2, suk: 3, desc: 'กิจกรรมพัฒนาคุณธรรมร่วมกับวัดในชุมชน', rules: ACT_RULES('กิจกรรมคุณธรรม') },
+  // ทุนและสวัสดิการ
+  { id: 'lunchSec', group: 'welfare', th: 'อาหารกลางวันสำหรับนักเรียน ม.ต้น ที่ขาดแคลน', price: 60000, cat: 'scholar', facility: null, oneTime: false, rep: 3, suk: 4, desc: 'อาหารกลางวันหนึ่งภาคเรียนสำหรับนักเรียน 60 คน',
+    rules: { student: { v: 'bad', why: 'เงินอุดหนุนค่าอาหารกลางวันตามมติคณะรัฐมนตรีครอบคลุมเฉพาะระดับอนุบาลถึง ป.6 ส่วนเงินของนักเรียนประเภทอื่นผูกกับวัตถุประสงค์เฉพาะ จึงนำมาใช้ไม่ได้', src: SRC.guide2568 },
+      donation: R_DON('scholar'), perhead: UNV('ยังไม่พบตัวบทที่ระบุว่าค่าจัดการเรียนการสอนจ่ายค่าอาหารนักเรียนมัธยมได้'), income: UNV(), activity: R_ACTIVITY_BAD, capital: R_CAP_ONLY } },
+  { id: 'uniform', group: 'welfare', th: 'จ่ายค่าเครื่องแบบนักเรียนตามสิทธิ', price: 50000, cat: 'student', facility: null, oneTime: false, rep: 2, suk: 3, desc: 'จ่ายเงินค่าเครื่องแบบให้นักเรียนตามสิทธิเรียนฟรี 15 ปี',
+    rules: { student: { v: 'ok', why: 'ค่าเครื่องแบบนักเรียนเป็นเงินอุดหนุนที่จัดสรรเพื่อนักเรียนโดยตรง ใช้ตามวัตถุประสงค์นี้ได้ และต้องจ่ายถึงตัวนักเรียนหรือผู้ปกครอง', src: SRC.guide2568 },
+      perhead: { v: 'bad', why: 'ค่าเครื่องแบบมีเงินอุดหนุนแยกไว้แล้ว การใช้ค่าจัดการเรียนการสอนแทนทำให้เงินผิดหมวดและซ้ำซ้อน', src: SRC.guide2568 }, income: UNV(), activity: R_ACTIVITY_BAD, donation: R_DON('scholar'), capital: R_CAP_ONLY } },
+);
+export const SHOP_GROUPS = { building: 'อาคารสถานที่', equipment: 'ครุภัณฑ์และสื่อ', people: 'บุคลากรและการพัฒนาครู', activity: 'กิจกรรมนักเรียน', welfare: 'ทุนและสวัสดิการ' };
+for (const it of ITEMS) if (it.oneTime !== false && !it.facility) it.facility = it.id;
 export const ITEM = Object.fromEntries(ITEMS.map(i => [i.id, i]));
 
 // เควสระดมทรัพยากร
@@ -133,6 +176,20 @@ export const QUESTS = [
           { t: 'ขอเป็นวงเงินก้อนโดยไม่ระบุรายการ เพื่อความยืดหยุ่น', v: 'bad', why: 'งบลงทุนจัดสรรเป็นรายการ คำขอที่ไม่ระบุรายการจะไม่ได้รับการพิจารณา', src: SRC.capital2560 },
         ] },
     ] },
+  { id: 'land', th: 'ขยายพื้นที่โรงเรียน (รับบริจาคที่ดินจากชุมชน)', reward: { wallet: null }, by: 'soonthorn', minTier: 2, landQuest: true,
+    steps: [
+      { q: 'เจ้าของที่ดินติดแนวรั้วโรงเรียนประสงค์ยกที่ดินให้โรงเรียน เพื่อใช้สร้างอาคารและลานกิจกรรม ท่านจะเริ่มอย่างไร (ขั้นตอนทางทะเบียนที่ดินของรัฐยังตรวจตัวบทไม่ครบ เกมตัดสินจากหลักความโปร่งใสและทรัพย์สินของทางราชการ ไม่ได้อ้างมาตรา)',
+        opts: [
+          { t: 'เสนอคณะกรรมการสถานศึกษาและรายงานเขตพื้นที่ รับบริจาคในนามทางราชการ ตรวจโฉนดและภาระผูกพัน แล้วดำเนินการโอนตามขั้นตอนของหน่วยงานที่ดูแลที่ดินของรัฐ', v: 'ok', why: 'ที่ดินที่ยกให้โรงเรียนรัฐเป็นทรัพย์สินของทางราชการ การรับต้องเป็นการรับในนามหน่วยงาน มีหลักฐาน และผ่านการรับรู้ของคณะกรรมการและต้นสังกัด' },
+          { t: 'ให้โอนที่ดินเข้าชื่อผู้อำนวยการไว้ก่อน เพราะขั้นตอนราชการใช้เวลานาน แล้วค่อยโอนต่อภายหลัง', v: 'bad', why: 'ทรัพย์สินที่บริจาคให้ราชการต้องไม่อยู่ในชื่อบุคคล แม้ตั้งใจดี ก็เปิดช่องให้เกิดข้อพิพาทและข้อสงสัยเรื่องประโยชน์ส่วนตน' },
+          { t: 'ตกลงด้วยวาจาและเริ่มใช้ที่ดินทันที เอกสารค่อยทำทีหลัง', v: 'warn', why: 'ได้ใช้พื้นที่เร็ว แต่หากเจ้าของหรือทายาทเปลี่ยนใจ โรงเรียนไม่มีหลักฐานสิทธิ และงบลงทุนสร้างอาคารบนที่ดินที่สิทธิไม่ชัดเจนจะถูกตั้งคำถาม' },
+        ] },
+      { q: 'ผู้บริจาคขอเงื่อนไขว่า หลานสองคนต้องได้เข้าห้องเรียนพิเศษโดยไม่ต้องสอบ ท่านจะตอบอย่างไร',
+        opts: [
+          { t: 'ขอบคุณ และชี้แจงว่าการรับนักเรียนต้องเป็นไปตามประกาศรับนักเรียนเหมือนทุกคน เสนอติดป้ายระลึกถึงผู้บริจาคแทน', v: 'ok', why: 'การรับบริจาคต้องไม่ผูกกับสิทธิพิเศษในการรับนักเรียน การให้เกียรติผู้บริจาคทำได้ด้วยวิธีที่ไม่กระทบสิทธิของผู้อื่น' },
+          { t: 'รับเงื่อนไข เพราะที่ดินมีมูลค่าสูงกว่าที่นั่งสองที่', v: 'bad', why: 'การแลกที่นั่งเรียนกับทรัพย์สินทำให้การรับนักเรียนไม่เท่าเทียม เป็นประเด็นที่ถูกร้องเรียนและตรวจสอบบ่อยในการรับนักเรียน' },
+        ] },
+    ] },
 ];
 export const QUEST = Object.fromEntries(QUESTS.map(q => [q.id, q]));
 
@@ -150,8 +207,10 @@ export function econ() {
     paidLevels: {},         // ด่านที่รับงบรอบภาคเรียนแล้ว
     log: [],                // ประวัติการเงิน
     crisis: false, lostToMisuse: 0, history: [],
+    land: 0, events: [],     // แปลงที่ดินที่ขยาย, ของ/กิจกรรมที่จัดหาในภาคเรียนนี้
   };
-  return S.econ;
+  const e = S.econ; e.land ??= 0; e.events ??= [];
+  return e;
 }
 export function fmt(n) { return Math.round(n).toLocaleString('th-TH'); }
 export function donationTotal(purpose) {
@@ -215,7 +274,8 @@ export function balance(wallet, item) {
 export function buy(itemId, wallet) {
   const e = econ(), it = ITEM[itemId];
   if (it.locked) return { ok: false, verdict: 'locked', why: it.lockNote };
-  if (it.facility && e.owned[it.facility]) return { ok: false, verdict: 'owned', why: 'โรงเรียนมีรายการนี้แล้ว' };
+  if (it.oneTime !== false && it.facility && e.owned[it.facility]) return { ok: false, verdict: 'owned', why: 'โรงเรียนมีรายการนี้แล้ว' };
+  if (it.needLand && (e.land || 0) < it.needLand) return { ok: false, verdict: 'noland', why: 'ยังไม่มีพื้นที่ก่อสร้าง ต้องขยายพื้นที่โรงเรียนก่อน (เควส "ขยายพื้นที่โรงเรียน" ในแท็บเควสระดมทรัพยากร)' };
   const j = judge(itemId, wallet);
   const bal = balance(wallet, itemId);
   if (j.v === 'short' || j.v === 'nocap') return { ok: false, verdict: j.v, why: j.why, src: j.src };
@@ -235,6 +295,7 @@ export function buy(itemId, wallet) {
   }
   take(wallet, it.price, j.purpose, itemId);
   if (it.facility) e.owned[it.facility] = Date.now();
+  else { const now = semCount(); e.events.push({ id: itemId, from: now, until: now + (it.group === 'people' ? 2 : 1), t: Date.now() }); }
   if (it.capacity) e.capacity += it.capacity;
   e.bought.push({ id: itemId, wallet, verdict: 'ok', t: Date.now() });
   addLog(`ซื้อ "${it.th}" จาก${WALLETS[wallet].short}`, -it.price);
@@ -242,6 +303,13 @@ export function buy(itemId, wallet) {
   checkCrisis(); St.save();
   return { ok: true, verdict: 'ok', why: j.why, src: j.src, note: j.note || it.rules[wallet]?.note, method };
 }
+export function semCount() { return Object.keys(econ().paidLevels).length; }
+// ของ/กิจกรรมที่ยังมีผลในภาคเรียนนี้ (ซื้อซ้ำได้ จึงแสดงในเมืองเฉพาะช่วงที่ใช้งาน)
+export function activeEvents() {
+  const e = econ(), now = semCount();
+  return e.events.filter(v => now < v.until && ITEM[v.id]);
+}
+export const LAND_MAX = 2, LAND_CAP = 150;
 export function procurementNote(price) {
   const parts = [];
   parts.push(price <= 500000 ? 'จัดซื้อจัดจ้างด้วยวิธีเฉพาะเจาะจงได้ (วงเงินไม่เกิน 500,000 บาท)' : 'วงเงินเกิน 500,000 บาท ต้องใช้วิธีที่ระเบียบกำหนด เช่น วิธีประกาศเชิญชวนทั่วไป');
@@ -256,6 +324,7 @@ export function questAvailable(q) {
   if (tierNow < q.minTier) return { ok: false, why: `เปิดเมื่อถึง${q.minTier === 2 ? 'ช่วงที่ 2' : 'ช่วงที่ ' + q.minTier}` };
   const d = e.questsDone[q.id];
   if (q.capitalQuest && e.capital.some(c => !c.used)) return { ok: false, why: 'มีคำขอที่รอการจัดสรรหรือยังไม่ได้ใช้อยู่แล้ว' };
+  if (q.landQuest && (e.land || 0) >= LAND_MAX) return { ok: false, why: 'ขยายพื้นที่ครบแล้ว' };
   if (d && d.tier === tierNow) return { ok: false, why: 'ทำแล้วในช่วงนี้ ทำได้อีกครั้งเมื่อถึงช่วงถัดไป' };
   return { ok: true };
 }
@@ -269,7 +338,14 @@ export function finishQuest(qid, answers) {
   let factor = bad ? 0 : (warn ? 0.6 : 1);
   e.questsDone[qid] = { t: Date.now(), tier: currentTier(), factor };
   const r = q.reward; let text = '';
-  if (q.capitalQuest) {
+  if (q.landQuest) {
+    if (!bad) {
+      e.land = Math.min(LAND_MAX, (e.land || 0) + 1); e.capacity += LAND_CAP;
+      text = `โรงเรียนได้รับที่ดินแปลงที่ ${e.land} รับนักเรียนได้เพิ่ม ${LAND_CAP} คน (ความจุ ${fmt(e.capacity)} คน)` + (factor < 1 ? ' แต่เอกสารยังไม่ครบ ชุมชนบางส่วนตั้งคำถาม' : '');
+      addLog(`ขยายพื้นที่โรงเรียน แปลงที่ ${e.land}`, 0);
+      if (factor < 1) for (const c of Object.values(St.S.chars)) c.morale = Math.max(10, c.morale - 3);
+    } else text = 'ผู้บริจาคถอนการบริจาค เพราะเงื่อนไขที่ตกลงกันขัดหลักการ โรงเรียนยังไม่ได้ที่ดิน';
+  } else if (q.capitalQuest) {
     const cap = answers.find(a => a.cap)?.cap;
     if (cap && !bad) {
       const it = ITEM[cap];
@@ -337,7 +413,7 @@ export function checkCrisis() {
 // ---------- รหัสเยี่ยมโรงเรียน ----------
 export function visitPayload(extra) {
   const e = econ();
-  return { v: 1, n: St.S.playerName || '', s: e.students, f: Object.keys(e.owned), c: e.crisis ? 1 : 0, ...extra };
+  return { v: 1, n: St.S.playerName || '', s: e.students, f: Object.keys(e.owned), c: e.crisis ? 1 : 0, ld: e.land || 0, ev: activeEvents().map(v => v.id), ...extra };
 }
 export function encodeVisit(o) {
   const bytes = new TextEncoder().encode(JSON.stringify(o));
@@ -354,6 +430,8 @@ export function decodeVisit(code) {
   if (!o || o.v !== 1 || typeof o.s !== 'number') throw new Error('รหัสโรงเรียนไม่ถูกต้อง');
   o.f = (o.f || []).filter(f => ITEMS.some(i => i.facility === f));
   o.n = String(o.n || '').slice(0, 24);
+  o.ld = Math.max(0, Math.min(LAND_MAX, +o.ld || 0));
+  o.ev = (o.ev || []).filter(id => ITEM[id]).slice(0, 20);
   return o;
 }
 

@@ -108,7 +108,7 @@ export function taskFit(task) {
 
 export function startAttempt(id) {
   const l = lv(id);
-  l.status = l.status === 'passed' ? 'passed' : 'inprogress';
+  l.status = (l.status === 'passed' || l.status === 'pending') ? l.status : 'inprogress';
   l.attempt = { step: 0, commands: {}, answers: [], order: shuffleOrders(id), phase: 'brief' };
   save();
   return l.attempt;
@@ -178,7 +178,7 @@ export function finishLevel(id, lesson = '') {
   const passed = exp >= Math.ceil(max * PASS_RATIO);
   l.record = { answers: l.attempt.answers.map(a => ({ first: a.first, final: a.final, retried: a.retried, exp: a.exp })), commands: l.attempt.commands, exp, at: Date.now() };
   l.bestExp = Math.max(l.bestExp || 0, exp);
-  if (passed) l.status = 'passed'; else if (l.status !== 'passed') l.status = 'failed';
+  if (passed) { if (l.status !== 'passed') l.status = 'passedExp'; } else if (l.status !== 'passed' && l.status !== 'pending') l.status = 'failed';
   if (lesson) l.lesson = lesson;
   l.attempt = null;
   save();
