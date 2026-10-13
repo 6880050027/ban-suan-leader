@@ -71,6 +71,7 @@ export function importCode(code) {
 }
 
 // ---- ด่าน ----
+export const TIER_COUNT = TIERS.length;
 export function tierOf(id) { return TIERS.find(t => t.levels.includes(id)); }
 export function levelDone(id) { const st = S.levels[id]?.status; return st === 'passed' || st === 'skipped'; }
 export function tierOpen(tierId) {

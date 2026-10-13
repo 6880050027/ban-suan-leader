@@ -352,7 +352,7 @@ export function questAvailable(q) {
   return { ok: true };
 }
 export function currentTier() {
-  let t = 1; for (let k = 2; k <= 4; k++) if (St.tierOpen(k)) t = k; return t;
+  let t = 1; for (let k = 2; k <= St.TIER_COUNT; k++) if (St.tierOpen(k)) t = k; return t;
 }
 // answers: array of chosen option objects; คืน {score, reward, text}
 export function finishQuest(qid, answers) {

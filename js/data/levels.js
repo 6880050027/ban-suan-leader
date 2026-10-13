@@ -4797,3 +4797,7 @@ export const LEVELS = [
   ]
  }
 ];
+
+// ด่าน 21 ขึ้นไป (คลังชุดที่ 2)
+import { LEVELS2 } from './levels2.js';
+LEVELS.push(...LEVELS2);

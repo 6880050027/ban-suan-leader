@@ -3,6 +3,8 @@
 import * as St from './state.js';
 import { CHARACTERS } from './data/world.js';
 import * as Ec from './economy.js';
+import { LEVELS } from './data/levels.js';
+const NL = LEVELS.length;
 
 function stats() {
   const P = St.computeProfile();
@@ -32,10 +34,11 @@ export const AWARDS = [
   { id: 'noPassive', group: 'admin', th: 'รางวัลผู้บริหารไม่นิ่งดูดาย', how: 'ผ่านอย่างน้อย 10 ด่าน โดยไม่เลือกตัวเลือกแนวนิ่งเฉยหรือหลีกเลี่ยงเลย', test: s => s.passedCount >= 10 && s.P.flag === 0 },
   { id: 'crisis', group: 'admin', th: 'รางวัลผู้นำฝ่าวิกฤต', how: 'ผ่านช่วงที่ 4 ครบ โดยเล่นจริงอย่างน้อย 3 ด่าน', test: s => [16, 17, 18, 19, 20].every(id => St.levelDone(id)) && [16, 17, 18, 19, 20].filter(s.passed).length >= 3 },
   { id: 'reflective', group: 'admin', th: 'รางวัลนักสะท้อนคิด', how: 'บันทึกบทเรียนที่จะนำไปใช้ในโรงเรียนของตนเองท้ายด่านอย่างน้อย 10 ด่าน', test: s => s.lessons >= 10 },
-  { id: 'allRound', group: 'admin', th: 'รางวัลผู้บริหารรอบด้าน', how: 'ผ่านครบ 20 ด่าน และได้ EXP ไม่น้อยกว่าร้อยละ 70 ในงานทั้ง 4 ด้าน', test: s => s.done === 20 && ['academic', 'personnel', 'budget', 'general'].every(a => s.areaRatio(a) >= 0.7) },
+  { id: 'allRound', group: 'admin', th: 'รางวัลผู้บริหารรอบด้าน', how: `ผ่านครบ ${NL} ด่าน และได้ EXP ไม่น้อยกว่าร้อยละ 70 ในงานทั้ง 4 ด้าน`, test: s => s.done === NL && ['academic', 'personnel', 'budget', 'general'].every(a => s.areaRatio(a) >= 0.7) },
   { id: 'quizMaster', group: 'admin', th: 'รางวัลผู้บริหารรอบรู้ระเบียบ', how: 'ตอบคำถามถูกหรือผิดถูกต้องอย่างน้อย 20 ข้อ', test: () => (St.S.quiz?.correct || 0) >= 20 },
   { id: 'readyLeader', group: 'admin', th: 'รางวัลผู้นำรับมือเหตุไม่คาดฝัน', how: 'รับมือการ์ดสถานการณ์กะทันหันได้เหมาะสมอย่างน้อย 5 ใบ ทั้งเหตุวิกฤตและคำขอที่ควรปฏิเสธ', test: () => (St.S.cards?.ok || 0) >= 5 },
-  { id: 'complete', group: 'admin', th: 'เกียรติบัตรผู้สำเร็จเส้นทางผู้บริหาร', how: 'ผ่านครบ 20 ด่าน', test: s => s.done === 20 },
+  { id: 'pro', group: 'admin', th: 'รางวัลผู้อำนวยการมืออาชีพ', how: 'ผ่านช่วงที่ 5 และ 6 ครบ (ด่าน 21–30) โดยเล่นจริงอย่างน้อย 7 ด่าน', test: s => [21, 22, 23, 24, 25, 26, 27, 28, 29, 30].every(id => St.levelDone(id)) && [21, 22, 23, 24, 25, 26, 27, 28, 29, 30].filter(s.passed).length >= 7 },
+  { id: 'complete', group: 'admin', th: 'เกียรติบัตรผู้สำเร็จเส้นทางผู้บริหาร', how: `ผ่านครบ ${NL} ด่าน`, test: s => s.done === NL },
   // ---- รางวัลครูและบุคลากร (สะท้อนผลจากวิธีที่ท่านทำงานกับบุคคลนั้น) ----
   { id: 'tonkla', group: 'staff', who: 'tonkla', th: 'รางวัลครูรุ่นใหม่ก้าวหน้า', how: 'ครูต้นกล้าได้รับการสั่งการหรือสอนงานที่เหมาะกับความพร้อมอย่างน้อย 2 ครั้ง', test: s => s.ch('tonkla').credits >= 2 },
   { id: 'malee', group: 'staff', who: 'malee', th: 'รางวัลรองผู้อำนวยการผู้เติบโต', how: 'รองฯ มาลีได้รับการสอนงานที่เหมาะกับความพร้อมอย่างน้อย 2 ครั้ง', test: s => s.ch('malee').credits >= 2 },

@@ -68,7 +68,7 @@ const ACTIONS = {
   close: () => closeModal(),
   closeSheet: () => closeSheet(),
   start: arg => openLevel(+arg),
-  skip: arg => { if (!St.LEVEL_BY_ID[+arg].warning && !Rq.check(+arg).ok) { openModal(`<h2>ยังข้ามด่าน ${arg} ไม่ได้</h2><p>ข้ามด่านได้เมื่อโรงเรียนมีความพร้อมตามเกณฑ์ของด่านนั้นแล้วเท่านั้น</p>${reqBox(+arg)}<div class="btn-row"><button class="btn" data-act="board">กลับหน้าภารกิจ</button></div>`, { wide: true }); return; } const t = St.tierOf(+arg).id; const before = t < 4 && St.tierOpen(t + 1); St.skipLevel(+arg); closeModal(); afterLevelChange(+arg, 0, before); toast(`ข้ามด่าน ${arg} แล้ว ด่านนี้ยังนับเป็นการผ่านเพื่อปลดล็อก และไม่กระทบสิทธิรับโปรไฟล์`); },
+  skip: arg => { if (!St.LEVEL_BY_ID[+arg].warning && !Rq.check(+arg).ok) { openModal(`<h2>ยังข้ามด่าน ${arg} ไม่ได้</h2><p>ข้ามด่านได้เมื่อโรงเรียนมีความพร้อมตามเกณฑ์ของด่านนั้นแล้วเท่านั้น</p>${reqBox(+arg)}<div class="btn-row"><button class="btn" data-act="board">กลับหน้าภารกิจ</button></div>`, { wide: true }); return; } const t = St.tierOf(+arg).id; const before = t < TIERS.length && St.tierOpen(t + 1); St.skipLevel(+arg); closeModal(); afterLevelChange(+arg, 0, before); toast(`ข้ามด่าน ${arg} แล้ว ด่านนี้ยังนับเป็นการผ่านเพื่อปลดล็อก และไม่กระทบสิทธิรับโปรไฟล์`); },
   fly: arg => { Sc.flyToChar(arg); openChar(arg); },
   title: () => showTitle(),
   sound: () => soundModal(),
@@ -104,7 +104,7 @@ export function refreshHUD() {
     $(`#m-${k} .bar i`).style.width = (v ?? 0) + '%';
     $(`#m-${k} b`).textContent = v == null ? '–' : v;
   }
-  $('#hud-progress').textContent = `${St.completedCount()}/20 ด่าน`;
+  $('#hud-progress').textContent = `${St.completedCount()}/${LEVELS.length} ด่าน`;
   Sc.setPlayerScale(r.scale);
   Sc.setTrophies(Aw.earnedCount());
   for (const id of Object.keys(CHARACTERS)) if (CHARACTERS[id].readiness && id !== 'player') Sc.setMood(id, St.S.chars[id].morale);
@@ -121,12 +121,13 @@ export function refreshHUD() {
   Sc.setStudentCount(e.students);
   Sc.setCrisis(e.crisis);
   // ด่านที่รอเกณฑ์โรงเรียน: เมื่อโรงเรียนพร้อมแล้วให้นับว่าผ่าน
-  const openBefore = [2, 3, 4].map(t => St.tierOpen(t));
+  const tierIds = TIERS.slice(1).map(t => t.id);
+  const openBefore = tierIds.map(t => St.tierOpen(t));
   const done = Rq.promote();
   if (done.length) {
     Au.sfx.unlock?.();
     for (const id of done) toast(`ด่าน ${id} ผ่านเกณฑ์ความพร้อมของโรงเรียนแล้ว นับว่าผ่านด่าน`, 'rank');
-    [2, 3, 4].forEach((t, i) => { if (!openBefore[i] && St.tierOpen(t)) toast(`ปลดล็อก <b>${TIERS[t - 1].th}</b>`, 'rank'); });
+    tierIds.forEach((t, i) => { if (!openBefore[i] && St.tierOpen(t)) toast(`ปลดล็อก <b>${TIERS[t - 1].th}</b>`, 'rank'); });
     grantAwards();
   }
 }
@@ -199,8 +200,8 @@ function showTitle() {
     <div class="title-screen">
       <div class="title-badge">เกมจำลองสถานการณ์เพื่อเตรียมความพร้อมผู้บริหารสถานศึกษา</div>
       <h1>เส้นทางผู้บริหาร<br><span>เมืองบ้านสวน</span></h1>
-      <p class="lead">ท่านได้รับแต่งตั้งเป็นผู้อำนวยการ${esc(SCHOOL_NAME)} โรงเรียนมัธยมศึกษาขนาดกลาง สังกัด ${esc(AREA_OFFICE)} ในปีการศึกษา 2570 ภารกิจของท่านคือพัฒนาครูและนักเรียนให้ "เก่ง ดี มีสุข" ผ่านการบริหารงาน 4 ด้านตามกฎกระทรวงกระจายอำนาจฯ พ.ศ. 2550 ใน 20 ด่าน ตั้งแต่งานประจำไปจนถึงภาวะวิกฤต</p>
-      ${has ? `<p class="small">ข้อมูลที่บันทึกไว้: ${esc(St.S.playerName ? 'ผอ.' + St.S.playerName : 'ไม่ระบุชื่อ')} · ผ่าน ${St.completedCount()}/20 ด่าน · ${St.totalExp()} EXP</p>` : ''}
+      <p class="lead">ท่านได้รับแต่งตั้งเป็นผู้อำนวยการ${esc(SCHOOL_NAME)} โรงเรียนมัธยมศึกษาขนาดกลาง สังกัด ${esc(AREA_OFFICE)} ในปีการศึกษา 2570 ภารกิจของท่านคือพัฒนาครูและนักเรียนให้ "เก่ง ดี มีสุข" ผ่านการบริหารงาน 4 ด้านตามกฎกระทรวงกระจายอำนาจฯ พ.ศ. 2550 ใน ${LEVELS.length} ด่าน ตั้งแต่งานประจำ ภาวะวิกฤต ไปจนถึงการวางระบบระยะยาวและการตรวจสอบจากภายนอก</p>
+      ${has ? `<p class="small">ข้อมูลที่บันทึกไว้: ${esc(St.S.playerName ? 'ผอ.' + St.S.playerName : 'ไม่ระบุชื่อ')} · ผ่าน ${St.completedCount()}/${LEVELS.length} ด่าน · ${St.totalExp()} EXP</p>` : ''}
       <div class="btn-row center">
         ${has ? `<button class="btn primary" id="t-continue" autofocus>เล่นต่อ</button>` : ''}
         <button class="btn ${has ? '' : 'primary'}" id="t-new" ${has ? '' : 'autofocus'}>เริ่มเกมใหม่</button>
@@ -337,7 +338,7 @@ function questBoard() {
     }).join('');
     return `<section class="tier ${open ? '' : 'locked'}"><h3>${t.th} ${open ? '' : '<span class="chip">ผ่านช่วงก่อนหน้าให้ครบ รวมเกณฑ์โรงเรียน เพื่อปลดล็อก</span>'}</h3>${rows}</section>`;
   }).join('');
-  openModal(`<h2>ภารกิจ 20 ด่าน</h2>
+  openModal(`<h2>ภารกิจ ${LEVELS.length} ด่าน</h2>
     <p class="small">งาน 4 ด้านวนสลับกัน ด้านละ 5 ด่าน ภายในช่วงเดียวกันเลือกเล่นด่านไหนก่อนก็ได้ ด่านจะนับว่าผ่านเมื่อได้ EXP ถึงเกณฑ์ <b>และ</b> โรงเรียนมีความพร้อมตามเกณฑ์ของด่าน (สิ่งก่อสร้างหรือของที่ต้องมี ตัวชี้วัดเก่ง ดี มีสุข สถานะการเงิน จำนวนนักเรียน หรือพื้นที่)</p>
     <div class="legend">${Object.values(AREAS).map(a => `<span style="--area:${a.color}"><i class="area-dot"></i>${a.th}</span>`).join('')}</div>
     ${tiers}`, { wide: true });
@@ -516,7 +517,7 @@ function logStep(L, st, o) {
 function finishLevelUI(L) {
   const beforeRank = St.rankFor().index;
   const tierBefore = St.tierOf(L.id).id;
-  const nextTierOpenBefore = tierBefore < 4 && St.tierOpen(tierBefore + 1);
+  const nextTierOpenBefore = tierBefore < TIERS.length && St.tierOpen(tierBefore + 1);
   const att = St.lv(L.id).attempt;
   // แนวการนำที่เลือกในด่านนี้
   const tagCount = {};
@@ -567,9 +568,9 @@ function finishLevelUI(L) {
 function afterLevelChange(id, beforeRank, nextTierOpenBefore) {
   refreshHUD(); syncWorld(); grantAwards();
   const t = St.tierOf(id).id;
-  if (t < 4 && !nextTierOpenBefore && St.tierOpen(t + 1)) toast(`ปลดล็อก <b>${TIERS[t].th}</b>`, 'rank');
+  if (t < TIERS.length && !nextTierOpenBefore && St.tierOpen(t + 1)) toast(`ปลดล็อก <b>${TIERS[t].th}</b>`, 'rank');
   if (t === 2 && TIERS[1].levels.every(St.levelDone) && !St.S.debrief.midShown) { St.S.debrief.midShown = true; St.save(); setTimeout(() => leaderBook('mid'), 600); }
-  if (St.completedCount() === 20 && !St.S.debrief.finalShown) { St.S.debrief.finalShown = true; St.save(); setTimeout(() => leaderBook('final'), 600); }
+  if (St.completedCount() === LEVELS.length && !St.S.debrief.finalShown) { St.S.debrief.finalShown = true; St.save(); setTimeout(() => leaderBook('final'), 600); }
 }
 
 // ---------------- Character sheet ----------------
@@ -589,7 +590,7 @@ function openChar(id) {
   let body = '';
   if (isPlayer) {
     const r = St.rankFor();
-    body = `<p>${esc(c.role)}</p><p class="small">ระดับ: <b>${r.th}</b> · ${r.sub}</p><p class="small">ผ่าน ${St.completedCount()}/20 ด่าน · ${St.totalExp()} EXP</p>
+    body = `<p>${esc(c.role)}</p><p class="small">ระดับ: <b>${r.th}</b> · ${r.sub}</p><p class="small">ผ่าน ${St.completedCount()}/${LEVELS.length} ด่าน · ${St.totalExp()} EXP</p>
       <div class="btn-row"><button class="btn sm primary" data-act="board">ภารกิจ</button><button class="btn sm" data-act="book">สมุดผู้นำ</button></div>`;
   } else {
     body = `<p class="small">${esc(c.role)}</p>${BIOS[id] ? `<p class="bio">${esc(BIOS[id].bio)}</p>` : ''}
@@ -702,7 +703,7 @@ function leaderBook(kind) {
   const ex = P.top.map(t => (P.examples[t] || []).slice(-2).map(e => `<li><span class="chip tag" style="--tag:${TAGS[t].color}">${TAGS[t].th}</span> ด่าน ${e.lv}: ${strip(e.text)}</li>`).join('')).join('');
   const lessons = Object.entries(St.S.levels).filter(([, l]) => l.lesson).map(([id, l]) => `<li>ด่าน ${id}: ${esc(l.lesson)}</li>`).join('');
   openModal(`<div class="book">
-    <div class="book-head"><div><span class="chip">${kind === 'mid' ? 'สรุปกลางทาง หลังช่วงที่ 2' : kind === 'final' ? 'สรุปปลายทาง ครบ 20 ด่าน' : 'สมุดผู้นำ'}</span>
+    <div class="book-head"><div><span class="chip">${kind === 'mid' ? 'สรุปกลางทาง หลังช่วงที่ 2' : kind === 'final' ? `สรุปปลายทาง ครบ ${LEVELS.length} ด่าน` : 'สมุดผู้นำ'}</span>
       <h2>แนวโน้มการตัดสินใจในเกมนี้: ${pr.th}</h2>
       <p class="small">${esc(St.S.playerName ? 'ผอ.' + St.S.playerName : '')} · คำนวณจาก ${P.steps} การตัดสินใจ และการทำงานกับคน ${P.cmdTotal} ครั้ง · เกณฑ์: ${esc(pr.rule)}</p></div>
       <button class="btn sm" id="bk-print">พิมพ์ / บันทึก PDF</button></div>
@@ -884,7 +885,7 @@ async function makeShareCard(view = 'current', format = 'card') {
   g.fillText(`${St.S.playerName ? 'ผอ.' + St.S.playerName + ' · ' : ''}${r.th} · นักเรียน ${Ec.fmt(Ec.econ().students)} คน`, 60, 982);
   // สถิติ
   const stat = (x, big, small) => { g.fillStyle = '#FBEFE3'; g.beginPath(); g.roundRect(x, 1015, 305, 130, 24); g.fill(); g.fillStyle = '#D9714F'; g.font = '500 54px Mitr, sans-serif'; g.fillText(big, x + 28, 1085); g.fillStyle = '#6B5A4E'; g.font = '400 28px Sarabun, sans-serif'; g.fillText(small, x + 28, 1125); };
-  stat(60, String(St.totalExp()), 'EXP สะสม'); stat(387, `${St.completedCount()}/20`, 'ด่านที่ผ่าน'); stat(714, String(aw), 'รางวัลในหอเกียรติยศ');
+  stat(60, String(St.totalExp()), 'EXP สะสม'); stat(387, `${St.completedCount()}/${LEVELS.length}`, 'ด่านที่ผ่าน'); stat(714, String(aw), 'รางวัลในหอเกียรติยศ');
   // เก่ง ดี มีสุข
   const bars = [['เก่ง', m.keng, '#5B8DD6'], ['ดี', m.dee, '#6FAF7A'], ['มีสุข', m.suk, '#E07A9B']];
   bars.forEach(([lab, v, col], i) => {
@@ -911,7 +912,7 @@ async function shareModal(opt) {
   const blob = await new Promise(res => c.toBlob(res, 'image/png'));
   const file = new File([blob], 'ban-suan-school.png', { type: 'image/png' });
   const canFile = !!(navigator.canShare && navigator.canShare({ files: [file] }));
-  const text = `โรงเรียนของฉันในเกมเส้นทางผู้บริหาร: ${St.rankFor().th} · ${St.totalExp()} EXP · ผ่าน ${St.completedCount()}/20 ด่าน`;
+  const text = `โรงเรียนของฉันในเกมเส้นทางผู้บริหาร: ${St.rankFor().th} · ${St.totalExp()} EXP · ผ่าน ${St.completedCount()}/${LEVELS.length} ด่าน`;
   const seg = (k, v, th) => `<button class="tab ${shareOpt[k] === v ? 'on' : ''}" data-sk="${k}" data-sv="${v}">${th}</button>`;
   openModal(`<h2>แชร์ภาพโรงเรียน</h2>
     <div class="share-opts">
@@ -1076,7 +1077,7 @@ function crisisModal() {
 let visiting = null;
 function myVisitCode() {
   const m = Ec.meters();
-  return Ec.encodeVisit(Ec.visitPayload({ e: St.totalExp(), r: St.rankFor().index, a: Aw.earnedCount(), l: St.completedCount(), m: [m.keng, m.dee, m.suk] }));
+  return Ec.encodeVisit(Ec.visitPayload({ e: St.totalExp(), r: St.rankFor().index, a: Aw.earnedCount(), l: St.completedCount(), lt: LEVELS.length, m: [m.keng, m.dee, m.suk] }));
 }
 function recentVisits() { try { return JSON.parse(localStorage.getItem('banSuanVisits') || '[]'); } catch { return []; } }
 function visitModal() {
@@ -1105,7 +1106,7 @@ function enterVisit(o) {
   const bar = $('#visitbar');
   bar.hidden = false;
   bar.innerHTML = `<div><b>กำลังเยี่ยม${esc(SCHOOL_NAME)} ของ ผอ.${esc(o.n || 'ไม่ระบุชื่อ')}</b>
-    <span class="small">${rk ? esc(rk.th) + ' · ' : ''}${Ec.fmt(o.e || 0)} EXP · ผ่าน ${o.l || 0}/20 ด่าน · นักเรียน ${Ec.fmt(o.s)} คน (${Ec.sizeLabel(o.s)}) · รางวัล ${o.a || 0}${o.c ? ' · อยู่ในภาวะวิกฤต' : ''}</span>
+    <span class="small">${rk ? esc(rk.th) + ' · ' : ''}${Ec.fmt(o.e || 0)} EXP · ผ่าน ${o.l || 0}/${o.lt || 20} ด่าน · นักเรียน ${Ec.fmt(o.s)} คน (${Ec.sizeLabel(o.s)}) · รางวัล ${o.a || 0}${o.c ? ' · อยู่ในภาวะวิกฤต' : ''}</span>
     ${o.m ? `<span class="small">เก่ง ${o.m[0] ?? '–'} · ดี ${o.m[1] ?? '–'} · มีสุข ${o.m[2] ?? '–'}</span>` : ''}</div>
     <button class="btn sm primary" data-act="leaveVisit">กลับโรงเรียนของฉัน</button>`;
   Sc.resetView();
