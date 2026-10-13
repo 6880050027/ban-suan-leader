@@ -118,6 +118,26 @@ ITEMS.push(
     rules: { student: { v: 'ok', why: 'ค่าเครื่องแบบนักเรียนเป็นเงินอุดหนุนที่จัดสรรเพื่อนักเรียนโดยตรง ใช้ตามวัตถุประสงค์นี้ได้ และต้องจ่ายถึงตัวนักเรียนหรือผู้ปกครอง', src: SRC.guide2568 },
       perhead: { v: 'bad', why: 'ค่าเครื่องแบบมีเงินอุดหนุนแยกไว้แล้ว การใช้ค่าจัดการเรียนการสอนแทนทำให้เงินผิดหมวดและซ้ำซ้อน', src: SRC.guide2568 }, income: UNV(), activity: R_ACTIVITY_BAD, donation: R_DON('scholar'), capital: R_CAP_ONLY } },
 );
+// รายการเพิ่มเติม (รอบที่ 4): เปิดซื้อตามจำนวนด่านที่ผ่าน (minLv) บางรายการช่วยลดความเสียหายจากการ์ดวิกฤต (guards)
+ITEMS.push(
+  { id: 'treecare', group: 'building', minLv: 1, th: 'ตัดแต่งและค้ำยันต้นไม้ใหญ่โดยรุกขกร', price: 30000, cat: 'safety', facility: 'treecare', rep: 1, dee: 1, guards: 'tree', desc: 'ตัดกิ่งที่เสี่ยงหักและค้ำยันต้นไม้ริมทางเดิน ลดความเสียหายเมื่อเกิดพายุ', rules: BLD_RULES() },
+  { id: 'pump', group: 'building', minLv: 2, th: 'ระบบสูบน้ำและคันกั้นน้ำรอบอาคาร', price: 220000, cat: 'safety', facility: 'pump', rep: 2, dee: 2, guards: 'flood', desc: 'บ่อพักน้ำ เครื่องสูบน้ำ และคันกั้นน้ำแนวอาคารเรียน ลดความเสียหายเมื่อน้ำท่วม', rules: BLD_RULES() },
+  { id: 'generator', group: 'equipment', minLv: 2, th: 'เครื่องกำเนิดไฟฟ้าสำรอง', price: 180000, cat: 'safety', facility: 'generator', rep: 1, dee: 2, guards: 'blackout', desc: 'จ่ายไฟให้ห้องพยาบาล ห้องคอมพิวเตอร์ และไฟฉุกเฉินเมื่อไฟดับ', rules: EQ_RULES('safety') },
+  { id: 'wifi', group: 'equipment', minLv: 3, th: 'ระบบอินเทอร์เน็ตไร้สายทั่วโรงเรียน', price: 160000, cat: 'learning', facility: 'wifi', rep: 3, keng: 2, desc: 'จุดกระจายสัญญาณทุกอาคาร รองรับการเรียนออนไลน์และการสอบด้วยคอมพิวเตอร์', rules: EQ_RULES() },
+  { id: 'airpurifier', group: 'equipment', minLv: 4, th: 'ห้องปลอดฝุ่นพร้อมเครื่องฟอกอากาศ', price: 120000, cat: 'safety', facility: 'airpurifier', rep: 2, suk: 3, guards: 'haze', desc: 'ห้องเรียนปิดพร้อมเครื่องฟอกอากาศสำหรับนักเรียนกลุ่มเสี่ยงช่วงฝุ่นสูง', rules: EQ_RULES('safety') },
+  { id: 'fire', group: 'equipment', minLv: 5, th: 'ระบบสัญญาณเตือนและอุปกรณ์ดับเพลิง', price: 95000, cat: 'safety', facility: 'fire', rep: 2, dee: 3, desc: 'สัญญาณเตือนอัคคีภัยทุกอาคาร ถังดับเพลิง และป้ายทางหนีไฟ', rules: EQ_RULES('safety') },
+  { id: 'langlab', group: 'equipment', minLv: 6, th: 'ศูนย์การเรียนรู้ภาษาและวัฒนธรรมต่างประเทศ', price: 380000, cat: 'learning', facility: 'langlab', rep: 5, keng: 4, desc: 'ห้องปฏิบัติการภาษา มุมวัฒนธรรม และระบบเชื่อมต่อห้องเรียนกับโรงเรียนต่างประเทศ', rules: EQ_RULES() },
+  { id: 'maker', group: 'equipment', minLv: 8, needLand: 1, th: 'ห้อง STEM และเมกเกอร์สเปซ', price: 350000, cat: 'learning', facility: 'maker', rep: 5, keng: 4, desc: 'เครื่องพิมพ์สามมิติ ชุดหุ่นยนต์ และโต๊ะปฏิบัติการสำหรับงานโครงงาน (สร้างบนที่ดินแปลงที่ 1)', rules: EQ_RULES() },
+  { id: 'hall', group: 'building', minLv: 12, needLand: 2, th: 'หอประชุมอเนกประสงค์', price: 2800000, cat: 'building', facility: 'hall', rep: 8, suk: 4, capitalOk: true, desc: 'หอประชุมขนาด 800 ที่นั่ง ใช้จัดกิจกรรมและเป็นที่พักพิงชั่วคราวยามภัยพิบัติ (ต้องมีที่ดินแปลงที่ 2)',
+    rules: { capital: { v: 'cap', why: 'สิ่งก่อสร้างวงเงินสูงต้องได้รับจัดสรรงบลงทุนเป็นรายการ', src: SRC.capital2560 }, perhead: UNV('วงเงินระดับนี้เป็นงบลงทุน ยังไม่พบตัวบทที่ให้ใช้ค่าจัดการเรียนการสอน'), income: UNV(), donation: R_DON('building'), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD } },
+  { id: 'counselor', group: 'people', minLv: 9, th: 'จ้างนักจิตวิทยาประจำโรงเรียน (1 ปี)', price: 240000, cat: 'people', facility: null, oneTime: false, rep: 3, suk: 5, desc: 'ดูแลสุขภาพจิตนักเรียนและทำงานร่วมกับครูแนะแนว',
+    rules: { perhead: UNV('ยังไม่พบตัวบทที่ระบุค่าจ้างนักจิตวิทยาในค่าจัดการเรียนการสอน'), income: UNV(), donation: R_DON('scholar'), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD, capital: R_CAP_ONLY } },
+  { id: 'plcnet', group: 'people', minLv: 7, th: 'วัน PLC ข้ามโรงเรียนในเครือข่าย', price: 20000, cat: 'people', facility: null, oneTime: false, rep: 2, keng: 2, desc: 'ครูแลกเปลี่ยนแผนการสอนและสังเกตชั้นเรียนกับโรงเรียนเครือข่าย 1 วัน',
+    rules: { perhead: UNV('ยังไม่พบตัวบทเรื่องค่าพัฒนาครูในค่าจัดการเรียนการสอน'), income: UNV(), activity: R_ACTIVITY_BAD, donation: R_DON('learning'), student: R_STUDENT_BAD, capital: R_CAP_ONLY } },
+  { id: 'langcamp', group: 'activity', minLv: 5, th: 'ค่ายภาษาและวัฒนธรรมนานาชาติ', price: 60000, cat: 'activity', facility: null, oneTime: false, rep: 3, keng: 2, suk: 2, desc: 'นักเรียนฝึกสื่อสารกับเพื่อนต่างวัฒนธรรมผ่านกิจกรรมและโครงงาน 2 วัน', rules: ACT_RULES('กิจกรรมวิชาการ') },
+  { id: 'eyes', group: 'welfare', minLv: 3, th: 'ตรวจสายตาและแว่นตาสำหรับนักเรียนขาดแคลน', price: 40000, cat: 'scholar', facility: null, oneTime: false, rep: 2, suk: 3, keng: 1, desc: 'ร่วมกับหน่วยบริการสาธารณสุขตรวจสายตาและมอบแว่นตา 80 อัน',
+    rules: { donation: R_DON('scholar'), perhead: UNV(), income: UNV(), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD, capital: R_CAP_ONLY } },
+);
 export const SHOP_GROUPS = { building: 'อาคารสถานที่', equipment: 'ครุภัณฑ์และสื่อ', people: 'บุคลากรและการพัฒนาครู', activity: 'กิจกรรมนักเรียน', welfare: 'ทุนและสวัสดิการ' };
 for (const it of ITEMS) if (it.oneTime !== false && !it.facility) it.facility = it.id;
 export const ITEM = Object.fromEntries(ITEMS.map(i => [i.id, i]));
@@ -173,6 +193,7 @@ export const QUESTS = [
         opts: [
           { t: 'อาคารเรียนหลังใหม่ โดยแนบข้อมูลจำนวนนักเรียนกับจำนวนห้องเรียนที่ขาด', v: 'ok', cap: 'newbldg', why: 'เขตพื้นที่จัดลำดับคำขออาคารเรียนตามความขาดแคลนห้องเรียน ข้อมูลประกอบจึงสำคัญ', src: SRC.capital2560 },
           { t: 'โดมอเนกประสงค์และลานกีฬา พร้อมแผนการใช้งาน', v: 'ok', cap: 'dome', why: 'สิ่งก่อสร้างประกอบที่มีแผนการใช้ชัดเจนสามารถเสนอขอได้ตามขั้นตอนเดียวกัน', src: SRC.capital2560 },
+          { t: 'หอประชุมอเนกประสงค์ พร้อมหลักฐานว่ามีที่ดินรองรับและแผนใช้เป็นที่พักพิงยามภัยพิบัติ', v: 'ok', cap: 'hall', why: 'สิ่งก่อสร้างที่มีที่ดินพร้อมและแผนการใช้ชัดเจนเสนอขอได้ตามขั้นตอนเดียวกัน แต่เขตจะจัดลำดับตามความจำเป็น', src: SRC.capital2560 },
           { t: 'ขอเป็นวงเงินก้อนโดยไม่ระบุรายการ เพื่อความยืดหยุ่น', v: 'bad', why: 'งบลงทุนจัดสรรเป็นรายการ คำขอที่ไม่ระบุรายการจะไม่ได้รับการพิจารณา', src: SRC.capital2560 },
         ] },
     ] },
@@ -275,6 +296,7 @@ export function buy(itemId, wallet) {
   const e = econ(), it = ITEM[itemId];
   if (it.locked) return { ok: false, verdict: 'locked', why: it.lockNote };
   if (it.oneTime !== false && it.facility && e.owned[it.facility]) return { ok: false, verdict: 'owned', why: 'โรงเรียนมีรายการนี้แล้ว' };
+  if (it.minLv && St.completedCount() < it.minLv) return { ok: false, verdict: 'lvlock', why: `เปิดซื้อเมื่อผ่านครบ ${it.minLv} ด่าน` };
   if (it.needLand && (e.land || 0) < it.needLand) return { ok: false, verdict: 'noland', why: 'ยังไม่มีพื้นที่ก่อสร้าง ต้องขยายพื้นที่โรงเรียนก่อน (เควส "ขยายพื้นที่โรงเรียน" ในแท็บเควสระดมทรัพยากร)' };
   const j = judge(itemId, wallet);
   const bal = balance(wallet, itemId);
@@ -303,6 +325,7 @@ export function buy(itemId, wallet) {
   checkCrisis(); St.save();
   return { ok: true, verdict: 'ok', why: j.why, src: j.src, note: j.note || it.rules[wallet]?.note, method };
 }
+export function guardOwned(hazard) { const e = econ(); return ITEMS.some(i => i.guards === hazard && i.facility && e.owned[i.facility]); }
 export function semCount() { return Object.keys(econ().paidLevels).length; }
 // ของ/กิจกรรมที่ยังมีผลในภาคเรียนนี้ (ซื้อซ้ำได้ จึงแสดงในเมืองเฉพาะช่วงที่ใช้งาน)
 export function activeEvents() {

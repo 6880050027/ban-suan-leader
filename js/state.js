@@ -84,7 +84,8 @@ export function maxExp(id) {
   return L.steps.length * 30 + (COMMAND_TASKS[id]?.length || 0) * COMMAND_EXP.fit;
 }
 export function totalExp() {
-  return Object.values(S.levels).reduce((a, l) => a + (l.bestExp || 0), 0);
+  // EXP จากด่าน + EXP จากการ์ดสถานการณ์กะทันหัน (ติดลบได้ แต่รวมแล้วไม่ต่ำกว่า 0)
+  return Math.max(0, Object.values(S.levels).reduce((a, l) => a + (l.bestExp || 0), 0) + (S.cards?.exp || 0));
 }
 export function rankFor(exp = totalExp()) {
   let r = RANKS[0], i = 0;

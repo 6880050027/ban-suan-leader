@@ -730,10 +730,11 @@ export function cinematic(at, dist, az, dur = 2.6) {
 // ตำแหน่งและความสูงป้ายของสิ่งที่จัดหา [x, z, ความสูงป้าย]
 const FAC_POS = { garden: [17, 17, 3], bikepark: [-20, 16.8, 3.2], reno: [-19, -6, 3.6], water: [-15.5, 15.6, 4], cctv: [-4, 0, 4], library: [14, -18, 5.5], ict: [-19, -18.5, 6], solar: [10, 10, 2.6],
   dome: [13, -32.5, 8], newbldg: [-9, -32.5, 13], roof: [-20, 11, 7.6], toiletReno: [17, 13, 4.3], electric: [2.6, 4, 4.6], smartboard: [-19, -7.4, 10.5], nurse: [20.8, 7.6, 3.6], band: [14.5, -4, 5.2],
-  expansion: [0, -32.5, 2], land2: [40.5, -32.5, 4.5] };
+  expansion: [0, -32.5, 2], land2: [44.5, -32.5, 4.5],
+  treecare: [10, 16, 5], pump: [21.4, -14.2, 3], generator: [21.5, -11.3, 3], wifi: [-10.3, -14.9, 12.5], airpurifier: [-11.8, -17.6, 4], fire: [9.2, -7.7, 3.4], langlab: [3.5, -18.5, 5], maker: [-19.3, -32.5, 5], hall: [34.5, -32.5, 8.5] };
 // ของที่ซื้อซ้ำได้และกิจกรรม: แสดงในเมืองเฉพาะภาคเรียนที่ใช้งาน [x, z, ความสูงป้าย]
 const EV_POS = { teacher: [-11, -4.6, 3.8], foreign: [-26, -4.4, 3.8], janitor: [-28.5, 12, 3.8], scilab: [-21, -4.4, 2.6], pd: [-16, -4.4, 3.2], coding: [-6.5, -4.6, 2.6],
-  uniform: [5, -6, 2.6], sports: [6.5, 4.5, 2.6], camp: [-9, 10.5, 3.4], scout: [0.5, 10.5, 3.4], moral: [-4, 13.2, 3.8], museum: [-35, -6, 4.4], scholar: [-25, 6.6, 3.6], lunchSec: [-17, 5, 2.6] };
+  uniform: [5, -6, 2.6], sports: [6.5, 4.5, 2.6], camp: [-9, 10.5, 3.4], scout: [0.5, 10.5, 3.4], moral: [-4, 13.2, 3.8], museum: [-35, -6, 4.4], scholar: [-25, 6.6, 3.6], lunchSec: [-17, 5, 2.6], counselor: [-4.5, -13.6, 3.8], plcnet: [-3.4, -7.4, 3.2], langcamp: [-4, 3.6, 3.4], eyes: [21.5, 10.6, 2.6] };
 export function flyToFacility(id) { const p = FAC_POS[id] || EV_POS[id]; if (p) flyTo(new THREE.Vector3(p[0], 0, p[1]), id === 'cctv' || id === 'electric' ? 62 : id === 'land2' || id === 'expansion' ? 58 : 34, 0.5); }
 
 // ---------- ป้ายชื่อของที่จัดหาและกิจกรรม ----------
@@ -763,8 +764,8 @@ function updateTags(dist) {
 
 // ---------- กิจกรรมและของที่ใช้ในภาคเรียนนี้ ----------
 let eventGroup = null, eventsNow = [], eventChars = [];
-const NPC_NAME = { teacher: 'ครูวิชาขาดแคลนที่จ้างเพิ่ม', foreign: 'ครูชาวต่างประเทศที่จ้างเพิ่ม', janitor: 'นักการภารโรงที่จ้างเพิ่ม' };
-const NPC_LOOK = { teacher: { shirt: '#7FA7D9', skin: '#E8B98F', hair: '#2B1D16', acc: 'tie' }, foreign: { shirt: '#F2C14E', skin: '#F3D3BC', hair: '#C9A15A', acc: null }, janitor: { shirt: '#6FAF7A', skin: '#C99772', hair: '#3B2A22', acc: 'cap' } };
+const NPC_NAME = { counselor: 'นักจิตวิทยาประจำโรงเรียน', teacher: 'ครูวิชาขาดแคลนที่จ้างเพิ่ม', foreign: 'ครูชาวต่างประเทศที่จ้างเพิ่ม', janitor: 'นักการภารโรงที่จ้างเพิ่ม' };
+const NPC_LOOK = { counselor: { shirt: '#B59AD6', skin: '#F2C9A5', hair: '#3B2A22', acc: 'long' }, teacher: { shirt: '#7FA7D9', skin: '#E8B98F', hair: '#2B1D16', acc: 'tie' }, foreign: { shirt: '#F2C14E', skin: '#F3D3BC', hair: '#C9A15A', acc: null }, janitor: { shirt: '#6FAF7A', skin: '#C99772', hair: '#3B2A22', acc: 'cap' } };
 function tent(g, x, z, color) {
   const t = mesh(new THREE.ConeGeometry(1.3, 1.7, 4), clay(color)); t.position.set(x, 0.85, z); t.rotation.y = Math.PI / 4; g.add(t);
   const door = mesh(new THREE.PlaneGeometry(0.5, 0.8), clay('#5A3D2B', { noBump: true })); door.position.set(x, 0.45, z + 0.93); door.rotation.x = -0.5; g.add(door);
@@ -789,6 +790,13 @@ function bus(g, x, z, color) {
   b.position.set(x, 0, z); g.add(b);
 }
 const EV_BUILD = {
+  plcnet: g => { banner(g, -3.4, -7.7, '#4AA3A2', 2.6); for (let k = 0; k < 3; k++) { const c = mesh(rbox(0.5, 0.5, 0.5, 0.08), clay('#FFFFFF')); c.position.set(-4.3 + k * 0.9, 0.25, -6.9); g.add(c); } },
+  langcamp: g => { const cols = ['#C0392B', '#2E86C1', '#F1C40F', '#27AE60', '#8E44AD', '#E67E22'];
+    cols.forEach((c, k) => { const a = k / cols.length * Math.PI * 2; const x = -4 + Math.cos(a) * 2.2, z = 3.6 + Math.sin(a) * 1.6;
+      const p = mesh(new THREE.CylinderGeometry(0.05, 0.05, 2.4, 6), clay('#DDDDDD')); p.position.set(x, 1.2, z); g.add(p);
+      const f = mesh(new THREE.BoxGeometry(0.7, 0.42, 0.03), clay(c, { noBump: true })); f.position.set(x + 0.36, 2.2, z); g.add(f); });
+    table(g, -4, 3.6, '#FFFFFF', 1.8); },
+  eyes: g => { table(g, 21.5, 10.6, '#FFFFFF', 1.6); for (let k = 0; k < 3; k++) { const gl = mesh(new THREE.TorusGeometry(0.12, 0.03, 6, 12), clay('#2C3E57')); gl.position.set(21 + k * 0.45, 0.92, 10.6); gl.rotation.x = Math.PI / 2; g.add(gl); } },
   scilab: g => { crates(g, -21, -4.4, '#5B8DD6'); const f = mesh(new THREE.ConeGeometry(0.3, 0.6, 12), clay('#BFE3F2', { emissive: '#7FD3FF', ei: 0.5 })); f.position.set(-20.5, 1.8, -4.4); g.add(f); },
   pd: g => { banner(g, -16, -5.4, '#9B7BC8', 3); for (let k = 0; k < 4; k++) { const c = mesh(rbox(0.5, 0.5, 0.5, 0.08), clay('#F2C14E')); c.position.set(-17.2 + k * 0.8, 0.25, -3.8); g.add(c); } },
   coding: g => { table(g, -6.5, -4.6, '#FFFFFF'); for (const dx of [-0.6, 0.6]) { const l = mesh(rbox(0.6, 0.4, 0.05, 0.02), clay('#2C3E57', { emissive: '#4FC3F7', ei: 0.8, noBump: true })); l.position.set(-6.5 + dx, 1.08, -4.75); l.rotation.x = -0.25; g.add(l); } },
@@ -979,16 +987,70 @@ function buildFacilities() {
   // ที่ดินแปลงที่ 2 (ตะวันออกเฉียงเหนือ): ลานกีฬาและกิจกรรม
   g = fgroup('land2');
   { const p = mesh(rbox(23, 0.3, 9, 0.2), clay('#BFDC98'), { cast: false }); p.position.set(40.5, 0.06, -32.5); g.add(p);
-    const court = mesh(rbox(12, 0.12, 6, 0.1), clay('#E07A5F'), { cast: false }); court.position.set(38, 0.22, -32.5); g.add(court);
-    const line = mesh(new THREE.BoxGeometry(0.12, 0.04, 6), clay('#FFFFFF', { noBump: true }), { cast: false }); line.position.set(38, 0.3, -32.5); g.add(line);
-    for (const s of [-1, 1]) { const hoop = mesh(new THREE.TorusGeometry(0.35, 0.05, 6, 14), clay('#E0473B')); hoop.rotation.x = Math.PI / 2; hoop.position.set(38 + s * 5.3, 2.6, -32.5); g.add(hoop);
-      const board = mesh(rbox(0.12, 1, 1.6, 0.05), clay('#FFFFFF')); board.position.set(38 + s * 5.8, 3, -32.5); g.add(board);
-      const pole = mesh(new THREE.CylinderGeometry(0.08, 0.08, 3, 8), clay('#8C8C8C')); pole.position.set(38 + s * 6.1, 1.5, -32.5); g.add(pole); }
-    for (const [x, z] of [[47.5, -30], [49.5, -34.5], [45.5, -35.5]]) { const t = mesh(new THREE.IcosahedronGeometry(1.1, 1), clay('#7DBB5E')); t.position.set(x, 1.8, z); g.add(t);
+    const court = mesh(rbox(12, 0.12, 6, 0.1), clay('#E07A5F'), { cast: false }); court.position.set(44.5, 0.22, -32.5); g.add(court);
+    const line = mesh(new THREE.BoxGeometry(0.12, 0.04, 6), clay('#FFFFFF', { noBump: true }), { cast: false }); line.position.set(44.5, 0.3, -32.5); g.add(line);
+    for (const s of [-1, 1]) { const hoop = mesh(new THREE.TorusGeometry(0.35, 0.05, 6, 14), clay('#E0473B')); hoop.rotation.x = Math.PI / 2; hoop.position.set(44.5 + s * 5.3, 2.6, -32.5); g.add(hoop);
+      const board = mesh(rbox(0.12, 1, 1.6, 0.05), clay('#FFFFFF')); board.position.set(44.5 + s * 5.8, 3, -32.5); g.add(board);
+      const pole = mesh(new THREE.CylinderGeometry(0.08, 0.08, 3, 8), clay('#8C8C8C')); pole.position.set(44.5 + s * 6.1, 1.5, -32.5); g.add(pole); }
+    for (const [x, z] of [[31, -29.6], [31, -35.4]]) { const t = mesh(new THREE.IcosahedronGeometry(1.1, 1), clay('#7DBB5E')); t.position.set(x, 1.8, z); g.add(t);
       const tr = mesh(new THREE.CylinderGeometry(0.15, 0.2, 1.2, 8), clay('#8A5A3C')); tr.position.set(x, 0.6, z); g.add(tr); }
     lotFence(g, 29.5, 51.5, -36.5, -28.5); }
   // รั้วแปลงที่ 1
   lotFence(facilities.expansion, -21.5, 21.5, -36.5, -28.5, true);
+  // ---- รายการรอบที่ 4 ----
+  // ตัดแต่งและค้ำยันต้นไม้
+  g = fgroup('treecare');
+  for (const [x, z] of [[-12, 17], [10, 16], [-28, 6], [-28, 16], [20, 18], [-28, -6]]) {
+    for (const a of [0.6, 2.7, 4.8]) { const p = mesh(new THREE.CylinderGeometry(0.07, 0.07, 2.4, 6), clay('#B07A4F')); p.position.set(x + Math.cos(a) * 0.8, 1.05, z + Math.sin(a) * 0.8); p.rotation.set(Math.sin(a) * 0.35, 0, -Math.cos(a) * 0.35); g.add(p); }
+    const band = mesh(new THREE.TorusGeometry(0.32, 0.06, 6, 14), clay('#FFFFFF')); band.rotation.x = Math.PI / 2; band.position.set(x, 1.6, z); g.add(band);
+  }
+  // ระบบสูบน้ำและคันกั้นน้ำ
+  g = fgroup('pump');
+  { const h = mesh(rbox(2.2, 1.8, 1.6, 0.15), clay('#9FB3BF')); h.position.set(21.4, 0.9, -14.2); g.add(h);
+    const pipe = mesh(new THREE.CylinderGeometry(0.15, 0.15, 3, 10), clay('#3E5C8A')); pipe.rotation.z = Math.PI / 2; pipe.position.set(21.4, 0.5, -12.7); g.add(pipe);
+    const bag = clay('#CDB991');
+    for (const [x1, x2, z] of [[-30, -6, 18.3], [6, 13, 18.3], [-29, -10, -7.4], [-9, 8, -8.1]]) for (let x = x1; x < x2; x += 0.95) { const b = mesh(rbox(0.9, 0.35, 0.5, 0.15), bag); b.position.set(x + 0.45, 0.2, z); g.add(b); } }
+  // เครื่องกำเนิดไฟฟ้าสำรอง
+  g = fgroup('generator');
+  { const b = mesh(rbox(1.9, 1.3, 1.2, 0.15), clay('#E3B341')); b.position.set(21.5, 0.65, -11.3); g.add(b);
+    const ex = mesh(new THREE.CylinderGeometry(0.1, 0.1, 1, 8), clay('#5A5A5A')); ex.position.set(22.1, 1.7, -11.6); g.add(ex);
+    const pnl = mesh(new THREE.BoxGeometry(0.6, 0.4, 0.05), clay('#2C3E57', { emissive: '#6FE07A', ei: 0.6, noBump: true })); pnl.position.set(21.2, 0.85, -10.68); g.add(pnl); }
+  // อินเทอร์เน็ตไร้สาย: เสาสัญญาณข้างอาคาร
+  g = fgroup('wifi');
+  for (const [x, z, h] of [[-10.3, -14.9, 11], [8.6, -15.4, 8.5], [19.6, 0.3, 6.5]]) {
+    const m = mesh(new THREE.CylinderGeometry(0.06, 0.09, h, 8), clay('#E9E9E9', { noBump: true })); m.position.set(x, h / 2, z); g.add(m);
+    for (const k of [0, 1, 2]) { const r = mesh(new THREE.TorusGeometry(0.25 + k * 0.22, 0.04, 6, 16, Math.PI / 2), clay('#4FC3F7', { emissive: '#4FC3F7', ei: 0.8, noBump: true })); r.position.set(x, h + 0.1, z); r.rotation.set(0, 0, Math.PI / 4); g.add(r); }
+  }
+  // ห้องปลอดฝุ่น
+  g = fgroup('airpurifier');
+  { const b = mesh(rbox(3.4, 2.6, 2.8, 0.25), new THREE.MeshStandardMaterial({ color: '#DDF2F0', transparent: true, opacity: 0.75, roughness: 0.2 })); b.position.set(-11.8, 1.3, -17.6); g.add(b);
+    const r = mesh(rbox(3.8, 0.3, 3.2, 0.12), clay('#7FC2BC')); r.position.set(-11.8, 2.75, -17.6); g.add(r);
+    const fan = mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.12, 16), clay('#FFFFFF', { emissive: '#BFEFFF', ei: 0.5 })); fan.rotation.x = Math.PI / 2; fan.position.set(-11.8, 1.6, -16.15); g.add(fan); }
+  // ระบบดับเพลิง: ถังดับเพลิงและกริ่งเตือนหน้าอาคาร
+  g = fgroup('fire');
+  for (const [x, z] of [[-10.5, -6.9], [9.2, -7.7], [11.2, 6.4], [-14.2, 7.7], [-8.6, -14.6], [14.2, -7.7]]) {
+    const st = mesh(rbox(0.5, 0.9, 0.4, 0.08), clay('#FFFFFF')); st.position.set(x, 0.45, z); g.add(st);
+    const ext = mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.6, 12), clay('#D7372B')); ext.position.set(x, 1.15, z); g.add(ext);
+    const bell = mesh(new THREE.SphereGeometry(0.18, 12, 8), clay('#E0473B', { emissive: '#E0473B', ei: 0.4 })); bell.position.set(x, 2.6, z - 0.1); g.add(bell);
+  }
+  // ศูนย์ภาษาและวัฒนธรรม
+  g = fgroup('langlab');
+  { const b = mesh(rbox(7, 3.4, 3.6, 0.3), clay('#FFF1E6')); b.position.set(3.5, 1.7, -18.5); g.add(b);
+    const r = mesh(rbox(7.6, 0.45, 4.2, 0.15), clay('#D9824A')); r.position.set(3.5, 3.6, -18.5); g.add(r);
+    for (let k = 0; k < 3; k++) { const w = mesh(rbox(1.5, 1.2, 0.12, 0.08), clay('#FFE6A8', { emissive: '#FFC86B', ei: 0.35 })); w.position.set(1.3 + k * 2.2, 1.9, -16.68); g.add(w); }
+    const cols = ['#C0392B', '#2E86C1', '#F1C40F', '#27AE60', '#8E44AD'];
+    cols.forEach((c, k) => { const p = mesh(new THREE.CylinderGeometry(0.05, 0.05, 3.2, 6), clay('#DDDDDD')); p.position.set(0.6 + k * 1.45, 1.6, -16.2); g.add(p);
+      const f = mesh(new THREE.BoxGeometry(0.75, 0.45, 0.03), clay(c, { noBump: true })); f.position.set(0.98 + k * 1.45, 2.95, -16.2); g.add(f); }); }
+  // ห้อง STEM และเมกเกอร์สเปซ (ที่ดินแปลงที่ 1)
+  g = fgroup('maker');
+  { const b = mesh(rbox(3.2, 3.2, 6, 0.3), clay('#E8EEF8')); b.position.set(-19.3, 1.6, -32.5); g.add(b);
+    const r = mesh(rbox(3.6, 0.4, 6.4, 0.15), clay('#F28C6B')); r.position.set(-19.3, 3.4, -32.5); g.add(r);
+    const gear = mesh(new THREE.TorusGeometry(0.55, 0.18, 8, 8), clay('#F2C14E')); gear.position.set(-17.65, 2.2, -32.5); gear.rotation.y = Math.PI / 2; g.add(gear); }
+  // หอประชุม (ที่ดินแปลงที่ 2)
+  g = fgroup('hall');
+  { const b = mesh(rbox(8, 5, 7, 0.4), clay('#F6E7C8')); b.position.set(34.5, 2.5, -32.5); g.add(b);
+    const roof = mesh(new THREE.CylinderGeometry(4.6, 4.6, 8.4, 24, 1, false, 0, Math.PI), clay('#9B7BC8')); roof.rotation.z = Math.PI / 2; roof.rotation.y = Math.PI / 2; roof.scale.set(1, 1, 0.55); roof.position.set(34.5, 5, -32.5); g.add(roof);
+    const door = mesh(rbox(2.4, 2.6, 0.2, 0.1), clay('#A86F4C')); door.position.set(34.5, 1.3, -28.95); g.add(door); }
 }
 function lotFence(g, x1, x2, z1, z2, gate = false) {
   const mat = clay('#F6E7C8');
@@ -1030,6 +1092,106 @@ export function setCrisis(on) {
   if (sunLight) sunLight.intensity = on ? 1.3 : 2.3;
   if (hemiLight) hemiLight.intensity = on ? 0.9 : 1.15;
   renderer.toneMappingExposure = on ? 0.92 : 1.05;
+}
+
+
+// ---------- ภัยในเมือง (การ์ดวิกฤต) ----------
+let hazard = null;   // { type, group, t, level, leaving, rain }
+const HAZ_SKY = { flood: '#7F8B8E', blackout: '#3E4A57', tree: '#A9B6B4', haze: '#CDBB9C' };
+export function setHazard(type, { mitigated = false } = {}) {
+  if (hazard?.type === type && !hazard.leaving) return;
+  clearHazardNow();
+  if (!type) return;
+  const g = new THREE.Group(); g.userData.dynamic = true; scene.add(g);
+  hazard = { type, group: g, t: 0, t0: performance.now(), level: 0, leaving: false, mitigated };
+  if (type === 'flood') {
+    // ผืนน้ำขุ่นคลุมทั้งเมือง สูงขึ้นช้า ๆ มีคลื่นเล็ก ๆ และเศษขยะลอย
+    const geo = new THREE.PlaneGeometry(116, 84, 58, 42);
+    const mat = new THREE.MeshStandardMaterial({ color: '#8A8262', roughness: 0.12, metalness: 0.2, transparent: true, opacity: 0.88 });
+    const w = new THREE.Mesh(geo, mat); w.rotation.x = -Math.PI / 2; w.position.set(2, -0.4, 2); w.receiveShadow = true; g.add(w);
+    hazard.water = w; hazard.base = Float32Array.from(geo.attributes.position.array);
+    hazard.target = mitigated ? 0.55 : 1.15;
+    hazard.debris = [];
+    for (let i = 0; i < 26; i++) {
+      const d = mesh(i % 3 ? rbox(0.5, 0.18, 0.35, 0.06) : new THREE.CylinderGeometry(0.1, 0.1, 0.5, 8), clay(['#C9A27A', '#7FA37A', '#E9E9E9', '#5B8DD6'][i % 4]));
+      d.position.set(-30 + Math.random() * 54, 0, -20 + Math.random() * 40); d.rotation.y = Math.random() * 6; g.add(d);
+      hazard.debris.push({ m: d, ph: Math.random() * 6, vx: (Math.random() - 0.5) * 0.4, vz: (Math.random() - 0.5) * 0.4 });
+    }
+    addRain(g, 1400);
+  } else if (type === 'blackout') {
+    hazard.dim = mitigated ? 0.55 : 0.25;
+    hazard.glow = [];
+    scene.traverse(o => { if (o.isMesh && o.material?.emissiveIntensity > 0) { o.userData.ei0 ??= o.material.emissiveIntensity; hazard.glow.push(o); } });
+    if (mitigated) { // ไฟสำรองติดที่ห้องพยาบาลและห้องคอมพิวเตอร์
+      for (const [x, z] of [[20.8, 9.2], [-19, -16.3], [0, -8.3]]) { const l = new THREE.PointLight('#FFE7A8', 18, 14); l.position.set(x, 3, z); g.add(l); }
+    }
+    const sparks = mesh(new THREE.SphereGeometry(0.25, 10, 8), clay('#FFF2A8', { emissive: '#FFD84D', ei: 2, noBump: true })); sparks.position.set(-15, 3.2, 8.6); g.add(sparks); hazard.spark = sparks;
+    const wire = mesh(new THREE.CylinderGeometry(0.04, 0.04, 4, 6), clay('#222222', { noBump: true })); wire.position.set(-15, 1.8, 8.6); wire.rotation.z = 0.5; g.add(wire);
+  } else if (type === 'tree') {
+    // ต้นไม้ใหญ่ล้มขวางทางเข้า กิ่งพาดสายไฟ
+    const t = new THREE.Group();
+    const trunk = mesh(new THREE.CylinderGeometry(0.45, 0.6, 9, 12), clay('#7A5236')); trunk.rotation.z = Math.PI / 2; trunk.position.set(0, 0.6, 0); t.add(trunk);
+    for (const [x, y, z, r] of [[4.4, 1.6, 0, 1.8], [5.2, 1.2, 1.4, 1.4], [3.6, 1.1, -1.5, 1.5], [5.8, 1.9, -0.6, 1.3]]) { const c = mesh(new THREE.IcosahedronGeometry(r, 1), clay('#6AAE50')); c.position.set(x, y, z); t.add(c); }
+    const root = mesh(new THREE.CylinderGeometry(1.3, 0.6, 0.6, 10), clay('#8A5A3C')); root.rotation.z = Math.PI / 2; root.position.set(-4.6, 0.9, 0); t.add(root);
+    t.position.set(-1.5, 0, 15.5); t.rotation.y = 0.35; g.add(t); hazard.tree = t;
+    for (const x of [-6.5, 5.5]) { const cone = mesh(new THREE.ConeGeometry(0.3, 0.8, 10), clay('#F28C3A')); cone.position.set(x, 0.4, 14.2); g.add(cone); }
+    addRain(g, mitigated ? 300 : 700);
+  } else if (type === 'haze') {
+    hazard.fog = mitigated ? [85, 220] : [55, 185];
+  }
+}
+function addRain(g, n) {
+  const pos = new Float32Array(n * 6);
+  for (let i = 0; i < n; i++) { const x = -50 + Math.random() * 104, y = Math.random() * 40, z = -36 + Math.random() * 78; pos.set([x, y, z, x - 0.15, y - 1.1, z], i * 6); }
+  const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  const r = new THREE.LineSegments(geo, new THREE.LineBasicMaterial({ color: '#D9E6EA', transparent: true, opacity: 0.55 }));
+  g.add(r); hazard.rain = r;
+}
+export function clearHazard() { if (hazard) hazard.leaving = true; }
+export function hazardNow() { return hazard && !hazard.leaving ? hazard.type : null; }
+function clearHazardNow() {
+  if (!hazard) return;
+  scene.remove(hazard.group);
+  restoreAtmosphere();
+  hazard = null;
+}
+function restoreAtmosphere() {
+  const sky = new THREE.Color(crisisOn ? '#B9BDBA' : '#BFE3E0');
+  scene.background = sky; scene.fog.color = sky; scene.fog.near = 110; scene.fog.far = 230;
+  if (sunLight) sunLight.intensity = crisisOn ? 1.3 : 2.3;
+  if (hemiLight) hemiLight.intensity = crisisOn ? 0.9 : 1.15;
+  renderer.toneMappingExposure = crisisOn ? 0.92 : 1.05;
+  scene.traverse(o => { if (o.isMesh && o.userData.ei0 != null) o.material.emissiveIntensity = o.userData.ei0; });
+}
+function tickHazard(dt, t) {
+  if (!hazard) return;
+  const h = hazard;
+  // ใช้เวลาจริง ไม่ผูกกับจำนวนเฟรม เครื่องช้าก็ยังเห็นน้ำขึ้นภายในเวลาเดียวกัน
+  const now = performance.now();
+  if (h.leaving && !h.l0) { h.l0 = now; h.lk = h.level || 1; }
+  const k = h.leaving ? Math.max(0, h.lk - (now - h.l0) / 5000) : Math.min(1, (now - h.t0) / 6000);
+  h.level = k;
+  const sky = new THREE.Color(crisisOn ? '#B9BDBA' : '#BFE3E0').lerp(new THREE.Color(HAZ_SKY[h.type]), k);
+  scene.background = sky; scene.fog.color = sky;
+  if (h.type === 'flood' && h.water) {
+    h.water.position.y = -0.4 + (h.target + 0.4) * k;
+    const p = h.water.geometry.attributes.position, b = h.base;
+    for (let i = 0; i < p.count; i++) { const x = b[i * 3], y = b[i * 3 + 1]; p.array[i * 3 + 2] = Math.sin(x * 0.35 + t * 1.3) * 0.06 + Math.cos(y * 0.42 + t * 1.1) * 0.05; }
+    p.needsUpdate = true; h.water.geometry.computeVertexNormals();
+    for (const d of h.debris) { d.m.position.y = h.water.position.y + 0.05 + Math.sin(t * 1.8 + d.ph) * 0.05; d.m.position.x += d.vx * dt; d.m.position.z += d.vz * dt; d.m.rotation.y += dt * 0.2; d.m.visible = h.water.position.y > 0.1; }
+    if (sunLight) sunLight.intensity = 2.3 - 1.2 * k;
+  }
+  if (h.type === 'blackout') {
+    const dim = 1 - (1 - h.dim) * k;
+    if (sunLight) sunLight.intensity = 2.3 * (1 - 0.85 * k * (h.mitigated ? 0.8 : 1)); if (hemiLight) hemiLight.intensity = 1.15 * (1 - 0.55 * k);
+    renderer.toneMappingExposure = 1.05 * (1 - 0.28 * k) * (0.9 + 0.1 * dim);
+    for (const o of h.glow) o.material.emissiveIntensity = o.userData.ei0 * (1 - 0.92 * k);
+    if (h.spark) h.spark.visible = !h.leaving && Math.sin(t * 23) > 0.3;
+  }
+  if (h.type === 'haze' && h.fog) { scene.fog.near = 110 + (h.fog[0] - 110) * k; scene.fog.far = 230 + (h.fog[1] - 230) * k; if (sunLight) sunLight.intensity = 2.3 - 0.9 * k; }
+  if (h.type === 'tree' && h.tree && h.leaving) h.tree.position.y = -3 * (1 - k);
+  if (h.rain) { const p = h.rain.geometry.attributes.position; for (let i = 0; i < p.count; i += 2) { let y = p.array[i * 3 + 1] - dt * 38; if (y < 0) y += 40; p.array[i * 3 + 1] = y; p.array[i * 3 + 4] = y - 1.1; } p.needsUpdate = true; h.rain.material.opacity = 0.55 * k; }
+  if (h.leaving && k <= 0) clearHazardNow();
 }
 
 // ---------- ถ้วยรางวัลในหอเกียรติยศ ----------
@@ -1186,6 +1348,7 @@ function tick() {
       pos.needsUpdate = true;
     }
   }
+  tickHazard(dt, t);
   if (pulse) {
     pulse.t += dt;
     const k = (pulse.t % 1.4) / 1.4;

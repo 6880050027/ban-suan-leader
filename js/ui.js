@@ -1,7 +1,7 @@
 // หน้าจอ ภารกิจ การสั่งงานตัวละคร สมุดผู้นำ และการบันทึก
 import { LEVELS } from './data/levels.js';
 import {
-  AREAS, TIERS, TAGS, COMMANDS, READINESS_TH, CHARACTERS, COMMAND_TASKS, COMMAND_REACTIONS,
+  AREAS, TIERS, TAGS, COMMANDS, READINESS_TH, CUES, CHARACTERS, COMMAND_TASKS, COMMAND_REACTIONS,
   PASS_RATIO, RANKS, BIOS, BIO_GROUPS, COMMON_ADVICE, VALIDITY_NOTE, TEACHER_VIEW, SCHOOL_NAME, AREA_OFFICE, REF, COMMAND_EXP,
 } from './data/world.js';
 import * as St from './state.js';
@@ -11,6 +11,7 @@ import * as Aw from './awards.js';
 import * as Ec from './economy.js';
 import * as Rq from './requirements.js';
 import { QUIZ } from './data/quiz.js';
+import { CARDS, CARD } from './data/cards.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -34,7 +35,7 @@ const ROUTINE = {
 export function init() {
   bindHUD();
   Sc.setFacilityNames(Object.fromEntries(Ec.ITEMS.flatMap(i => [[i.id, shortName(i.th)], [i.facility || i.id, shortName(i.th)]])));
-  setInterval(quizTick, 4000);
+  setInterval(() => { quizTick(); cardTick(); }, 4000);
   refreshSoundIcon();
   refreshHUD();
   if (St.hasSave()) { St.load(); refreshHUD(); syncWorld(); }
@@ -276,7 +277,8 @@ function showRules(first = false) {
           <li><b>ขั้นสะท้อนแนวการนำ:</b> ทุกตัวเลือกไม่ขัดระเบียบ จึงไม่มีคำตอบที่ถูกเพียงข้อเดียว</li>
           <li><b>ยังไม่ยืนยันตัวบท:</b> ตัวเลือกที่ยังไม่ได้ตรวจสอบกับตัวบทต้นฉบับจะไม่นำมาตัดสินถูกหรือผิด</li>
           <li><b>ด้านแนวการนำ:</b> ทุกตัวเลือกจัดอยู่ใน 7 แนวการนำ หรือเป็นพฤติกรรมนิ่งเฉยหรือหลีกเลี่ยง ค่า EXP แสดงความเหมาะสมกับสถานการณ์ ไม่ได้จัดอันดับว่าแนวใดดีกว่า</li>
-          <li><b>การทำงานกับบุคลากร:</b> หากวิธีที่เลือกสอดคล้องกับระดับความพร้อม (R1–R4 ตาม Hersey และ Blanchard) จะได้ ${COMMAND_EXP.fit} EXP หากใกล้เคียงจะได้ ${COMMAND_EXP.near} EXP และบุคลากรจะพัฒนาขึ้นในด่านต่อไป</li>
+          <li><b>การทำงานกับบุคลากร:</b> หากวิธีที่เลือกสอดคล้องกับระดับความพร้อม (R1–R4 ตาม Hersey และ Blanchard) จะได้ ${COMMAND_EXP.fit} EXP หากใกล้เคียงจะได้ ${COMMAND_EXP.near} EXP และบุคลากรจะพัฒนาขึ้นในด่านต่อไป เกมไม่บอกระดับความพร้อมล่วงหน้า ท่านต้องอ่านจากพฤติกรรมที่เห็นในสถานการณ์ แล้วเกมจะเฉลยหลังเลือก</li>
+          <li><b>การ์ดสถานการณ์กะทันหัน:</b> ระหว่างเกมจะมีข่าวด่วนจากเขตพื้นที่ลอยมา ทั้งเหตุวิกฤต (น้ำท่วม ไฟดับ ต้นไม้ล้ม ฝุ่น) และนโยบายหรือคำขอเร่งด่วน ท่านเลือกตอบรับหรือปฏิเสธ บางคำขอไม่ควรทำตาม การปฏิเสธเรื่องที่ควรทำหรือรับเรื่องที่ไม่ควรรับจะเสีย EXP ส่วนการรับมือที่เหมาะสมได้ EXP และบางครั้งได้เงินสนับสนุน ของบางรายการในร้านค้าช่วยลดความเสียหายจากเหตุวิกฤตได้</li>
         </ul>
       </section>
       <section class="card">
@@ -581,7 +583,8 @@ function openChar(id) {
   const readiness = task ? St.taskReadiness(task) : c.readiness;
   const isPlayer = id === 'player';
   const sheet = $('#sheet');
-  const cmdList = readiness === 'ST' ? ['consult', 'direct', 'delegate'] : ['direct', 'coach', 'support', 'delegate'];
+  // แสดงวิธีทำงานครบ 5 แบบกับทุกคน ผู้เล่นต้องอ่านสถานการณ์และบทบาทเอง
+  const cmdList = ['direct', 'coach', 'support', 'delegate', 'consult'];
   const routineDone = s.routineAt === St.completedCount();
   let body = '';
   if (isPlayer) {
@@ -590,10 +593,9 @@ function openChar(id) {
       <div class="btn-row"><button class="btn sm primary" data-act="board">ภารกิจ</button><button class="btn sm" data-act="book">สมุดผู้นำ</button></div>`;
   } else {
     body = `<p class="small">${esc(c.role)}</p>${BIOS[id] ? `<p class="bio">${esc(BIOS[id].bio)}</p>` : ''}
-      ${readiness ? `<p class="ready"><span class="chip">${readiness === 'ST' ? 'ผู้มีส่วนได้เสีย' : readiness}</span> ${esc(READINESS_TH[readiness])}</p>` : ''}
       ${c.readiness && c.readiness !== 'ST' ? `<div class="morale"><span>ขวัญกำลังใจ</span><div class="bar"><i style="width:${s.morale}%"></i></div><b>${s.morale}</b></div>` : ''}`;
     if (inMeet) {
-      body += `<div class="task-box"><h4>ด่าน ${lvId}: เลือกวิธีทำงานกับ${esc(c.name)}</h4><p class="small">${task.note}</p>
+      body += `<div class="task-box"><h4>ด่าน ${lvId}: เลือกวิธีทำงานกับ${esc(c.name)}</h4>${done ? '' : `<p class="cue">${esc(CUES[lvId + ':' + id] || 'สังเกตจากบทบาท ประวัติ และสิ่งที่บุคคลนี้ทำไปแล้ว แล้วเลือกวิธีทำงานที่เหมาะกับเขาในสถานการณ์นี้')}</p><p class="tiny">ลองวิเคราะห์ว่าเขาทำงานนี้ได้แค่ไหน และเต็มใจหรือมั่นใจเพียงใด เกมจะเฉลยหลังท่านเลือก</p>`}
         ${done ? cmdFeedback(id, done) + nextAfterMeet(lvId) : `<div class="cmds">${cmdList.map(k => `<button class="cmd" data-cmd="${k}"><b>${COMMANDS[k].th}</b><span>${COMMANDS[k].hint}</span></button>`).join('')}</div>`}</div>`;
     } else if (c.readiness) {
       body += `<div class="task-box soft"><h4>งานประจำ: ${esc(ROUTINE[id] || 'งานทั่วไป')}</h4>
@@ -636,7 +638,8 @@ function cmdFeedback(id, d) {
   const line = COMMAND_REACTIONS[key][0];
   return `<div class="fb ${d.result === 'fit' ? 'ok' : d.result === 'near' ? 'undetermined' : 'illegal'}">
     <p class="say">“${esc(line)}”</p>
-    <p class="small">ท่านเลือก <b>${COMMANDS[d.cmd].th}</b> · ความพร้อมในด่านนี้ ${d.readiness} · วิธีที่เข้ากันคือ <b>${COMMANDS[d.fit].th}</b> → ${d.result === 'fit' ? `เข้ากัน +${COMMAND_EXP.fit} EXP` : d.result === 'near' ? `ใกล้เคียง +${COMMAND_EXP.near} EXP` : 'ไม่เข้ากัน 0 EXP'}</p>
+    <p class="small"><b>เฉลย:</b> ${esc(READINESS_TH[d.readiness])}${(() => { const t = (COMMAND_TASKS[currentAttemptLevel()] || []).find(x => x.c === id); return t?.note ? ` — ${esc(t.note)}` : ''; })()}</p>
+    <p class="small">ท่านเลือก <b>${COMMANDS[d.cmd].th}</b> · วิธีที่เข้ากันคือ <b>${COMMANDS[d.fit].th}</b> → ${d.result === 'fit' ? `เข้ากัน +${COMMAND_EXP.fit} EXP` : d.result === 'near' ? `ใกล้เคียง +${COMMAND_EXP.near} EXP` : 'ไม่เข้ากัน 0 EXP'}</p>
     <p class="small">หมายเหตุ: หลักฐานเชิงประจักษ์ของโมเดล Hersey–Blanchard ยังอ่อน เกมใช้เพื่อฝึกการอ่านคน ไม่ได้อ้างว่าคำสั่งที่เข้าคู่ได้ผลดีกว่าเสมอ</p></div>`;
 }
 function nextAfterMeet(lvId) {
@@ -978,14 +981,16 @@ function financeModal(tab = 'overview') {
     body = `<p class="small">เลือกรายการ แล้วเลือกแหล่งเงิน หากแหล่งเงินขัดระเบียบ เงินจะถูกเรียกคืนและรายการจะไม่ได้รับการจัดหา หากยังยืนยันตัวบทไม่ได้ เกมจะไม่ตัดสินและไม่หักเงิน รายการที่ไม่มีเครื่องหมาย "ครั้งเดียว" ซื้อซ้ำได้</p>${sub}
       <div class="shop">${Ec.ITEMS.filter(it => it.group === grp).map(it => {
         const owned = it.oneTime !== false && it.facility && e.owned[it.facility];
-        return `<button class="shop-item ${owned ? 'owned' : ''} ${it.locked ? 'locked' : ''}" data-act="buy" data-arg="${it.id}">
+        const lvLock = it.minLv && St.completedCount() < it.minLv;
+        return `<button class="shop-item ${owned ? 'owned' : ''} ${it.locked || lvLock ? 'locked' : ''}" data-act="buy" data-arg="${it.id}">
           <b>${esc(it.th)}</b><span class="small">${esc(it.desc)}</span>
-          <span class="tags">${it.oneTime !== false ? '<span class="chip">ครั้งเดียว</span>' : '<span class="chip">ซื้อซ้ำได้</span>'}${['keng', 'dee', 'suk'].filter(k => it[k]).map(k => `<span class="chip">${{ keng: 'เก่ง', dee: 'ดี', suk: 'มีสุข' }[k]} +${it[k]}</span>`).join('')}</span>
-          <span class="price">${owned ? 'มีแล้ว' : it.locked ? 'ยังเปิดซื้อไม่ได้' : Ec.fmt(it.price) + ' บาท'}</span></button>`;
+          <span class="tags">${it.oneTime !== false ? '<span class="chip">ครั้งเดียว</span>' : '<span class="chip">ซื้อซ้ำได้</span>'}${['keng', 'dee', 'suk'].filter(k => it[k]).map(k => `<span class="chip">${{ keng: 'เก่ง', dee: 'ดี', suk: 'มีสุข' }[k]} +${it[k]}</span>`).join('')}${it.guards ? '<span class="chip guard">ช่วยรับมือเหตุวิกฤต</span>' : ''}</span>
+          <span class="price">${owned ? 'มีแล้ว' : it.locked ? 'ยังเปิดซื้อไม่ได้' : lvLock ? `เปิดเมื่อผ่าน ${it.minLv} ด่าน · ${Ec.fmt(it.price)} บาท` : Ec.fmt(it.price) + ' บาท'}</span></button>`;
       }).join('')}</div>`;
   } else {
     const qz = quizStats();
-    body = `<div class="quiz-cta"><div><b>คำถามถูกหรือผิด</b><span class="small">ตอบถูกได้ ${Ec.fmt(QUIZ_REWARD)} บาทเข้าเงินรายได้สถานศึกษา · ตอบแล้ว ${qz.done}/${QUIZ.length} ข้อ ถูก ${qz.correct} ข้อ</span></div><button class="btn primary" data-act="quiz">ตอบคำถาม</button></div>
+    const due = quizDue();
+    body = `<div class="quiz-cta"><div><b>คำถามถูกหรือผิด</b><span class="small">ตอบถูกได้ ${Ec.fmt(QUIZ_REWARDS[1])}–${Ec.fmt(QUIZ_REWARDS[3])} บาทตามระดับความยาก (ตอนนี้เปิดถึงระดับ${QUIZ_LV_TH[quizMaxLv()]}) · ตอบแล้ว ${qz.done}/${QUIZ.length} ข้อ ถูก ${qz.correct} ข้อ${due.ok ? '' : ` · ${due.why}`}</span></div>${due.ok ? '<button class="btn primary" data-act="quiz">ตอบคำถาม</button>' : ''}</div>
       <p class="small">หาเงินเข้าโรงเรียนโดยไม่ผลักภาระให้ผู้ปกครอง แต่ละเควสทำได้ช่วงละ 1 ครั้ง หากตัดสินใจขัดระเบียบจะไม่ได้รับเงิน</p>
       <div class="shop">${Ec.QUESTS.map(q => {
         const a = Ec.questAvailable(q);
@@ -999,6 +1004,7 @@ function financeModal(tab = 'overview') {
 function buyModal(id) {
   const it = Ec.ITEM[id], e = Ec.econ();
   if (it.oneTime !== false && it.facility && e.owned[it.facility]) return toast('โรงเรียนมีรายการนี้แล้ว');
+  if (it.minLv && St.completedCount() < it.minLv) return toast(`รายการนี้เปิดซื้อเมื่อผ่านครบ ${it.minLv} ด่าน (ตอนนี้ผ่าน ${St.completedCount()} ด่าน)`);
   if (it.locked) return openModal(`<h2>${esc(it.th)}</h2><div class="fb undetermined"><p>${esc(it.lockNote)}</p>
     <p class="small">แหล่งอ้างอิง: <a href="${Ec.SRC.capital2560}" target="_blank" rel="noopener">คู่มือการจัดตั้งงบลงทุน สพฐ. 2560</a> · <a href="${Ec.SRC.vehicle}" target="_blank" rel="noopener">สรุประเบียบรถราชการ</a></p></div>
     <div class="btn-row"><button class="btn" data-act="finance" data-arg="shop">กลับร้านค้า</button></div>`, { wide: true });
@@ -1046,7 +1052,7 @@ function questModal(id, step = 0, answers = []) {
   }
   const st = q.steps[step];
   openModal(`<h2>${esc(q.th)}</h2><div class="step-prog">${q.steps.map((_, k) => `<i class="${k < step ? 'done' : k === step ? 'cur' : ''}"></i>`).join('')}</div>
-    <p>${esc(st.q)}</p><div class="opts">${st.opts.map((o, k) => `<button class="opt" data-k="${k}"><span class="opt-l">${THAI_LETTERS[k]}</span><span class="opt-t">${esc(o.t)}</span></button>`).join('')}</div>
+    <p>${esc(st.q)}</p><div class="opts">${st.opts.map((_, i) => i).sort(() => Math.random() - 0.5).map((k, n) => `<button class="opt" data-k="${k}"><span class="opt-l">${THAI_LETTERS[n]}</span><span class="opt-t">${esc(st.opts[k].t)}</span></button>`).join('')}</div>
     <div class="btn-row"><button class="btn ghost" data-act="finance" data-arg="quests">ยกเลิก</button></div>`, { wide: true });
   showReader(q.by, step === 0 ? 'ขอเสนอแนวทางหาทรัพยากรให้โรงเรียนครับ/ค่ะ ขอให้ท่านพิจารณา' : 'ขั้นต่อไปครับ/ค่ะ', step === 0);
   $('#modal-body').querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => {
@@ -1093,6 +1099,7 @@ function enterVisit(o) {
   try { const r = recentVisits().filter(x => JSON.stringify(x) !== JSON.stringify(o)); r.unshift(o); localStorage.setItem('banSuanVisits', JSON.stringify(r.slice(0, 6))); } catch {}
   closeModal(); closeSheet();
   document.body.classList.add('visiting');
+  Sc.clearHazard(); $('#news')?.remove();
   Sc.setFacilities(o.f); Sc.setLand(o.ld || 0); Sc.setEvents(o.ev || []); lastEvKey = null; Sc.setStudentCount(o.s); Sc.setCrisis(!!o.c); Sc.setTrophies(o.a || 0); Sc.setQuestMarkers([]);
   const rk = RANKS[o.r];
   const bar = $('#visitbar');
@@ -1115,20 +1122,18 @@ function leaveVisit() {
 
 // ---------------- ทำเนียบบุคลากร ----------------
 function castModal(first = false) {
-  const READY_SHORT = { R1: 'ความพร้อม R1', R2: 'ความพร้อม R2', R3: 'ความพร้อม R3', R4: 'ความพร้อม R4', ST: 'ผู้มีส่วนได้เสีย' };
   const card = id => {
     const c = CHARACTERS[id], b = BIOS[id];
     return `<div class="cast-card">
       <img src="${Sc.avatarImage(id)}" alt="">
       <div><b>${esc(c.name)}</b><span class="small">${esc(c.role)}</span>
-        ${c.readiness ? `<span class="chip">${READY_SHORT[c.readiness]}</span>` : ''}
         <p class="small">${esc(b.bio)}</p>
         <p class="say">“${esc(b.hello)}”</p>
         ${id !== 'player' ? `<button class="btn sm" data-meet="${id}">ไปพบในเมือง</button>` : ''}</div></div>`;
   };
   const groups = Object.entries(BIO_GROUPS).map(([g, th]) => `<h3>${th}</h3><div class="cast">${Object.keys(BIOS).filter(id => BIOS[id].group === g && id !== 'player').map(card).join('')}</div>`).join('');
   openModal(`<h2>${first ? 'ทำความรู้จักบุคลากรของโรงเรียน' : 'ทำเนียบบุคลากร'}</h2>
-    <p class="small">ตัวละครทุกคนเป็นบุคคลสมมติ ระดับความพร้อม (R1–R4) อาจเปลี่ยนไปตามวิธีที่ท่านทำงานกับแต่ละคน และบางคนจะอยู่ในระดับต่างจากปกติเมื่อเกิดภาวะวิกฤต</p>
+    <p class="small">ตัวละครทุกคนเป็นบุคคลสมมติ เกมไม่บอกระดับความพร้อมของแต่ละคนไว้ล่วงหน้า ท่านต้องอ่านจากบทบาท ประวัติ และพฤติกรรมในแต่ละสถานการณ์ ความพร้อมของคนเดียวกันเปลี่ยนได้ตามวิธีที่ท่านทำงานกับเขา และเมื่อเกิดวิกฤต</p>
     <div class="cast me">${card('player')}</div>
     ${groups}
     <div class="btn-row"><button class="btn primary" id="cast-ok">${first ? 'รับทราบ และอ่านกติกาการเล่น' : 'ปิด'}</button></div>`, { wide: true });
@@ -1136,25 +1141,137 @@ function castModal(first = false) {
   $('#modal-body').querySelectorAll('[data-meet]').forEach(b => b.addEventListener('click', () => { closeModal(); Sc.flyToChar(b.dataset.meet); openChar(b.dataset.meet); }));
 }
 
+
+// ---------------- การ์ดสถานการณ์กะทันหัน (หนังสือพิมพ์ลอยมาจากเขต) ----------------
+const CARD_PENALTY = { wrong: 15, trapWrong: 20, bad: 10 };
+function cardState() { return (St.S.cards ||= { seen: {}, exp: 0, nextSem: 2, notBefore: 0, active: null, ok: 0 }); }
+function pickCard() {
+  const c = cardState(), tier = Ec.currentTier();
+  const pool = CARDS.filter(x => !c.seen[x.id] && x.minTier <= tier);
+  if (!pool.length) return null;
+  // สลับระหว่างเหตุวิกฤตกับนโยบาย ไม่ให้ซ้ำแบบเดิมติดกัน
+  const last = c.lastKind;
+  const pref = pool.filter(x => x.kind !== last);
+  const from = pref.length ? pref : pool;
+  return from[Math.floor(Math.random() * from.length)];
+}
+function cardTick() {
+  if (visiting || !St.S.startedAt || !St.S.seenRules) return;
+  if ($('#modal').classList.contains('show') || !$('#intro').hidden || $('#news')) return;
+  if (currentAttemptLevel()) return;             // ไม่แทรกกลางด่าน
+  const c = cardState();
+  if (c.active) return showCard(CARD[c.active]);  // เคยเปิดค้างไว้ (เช่น รีเฟรชหน้า)
+  if (Ec.semCount() < c.nextSem || Date.now() < c.notBefore) return;
+  const card = pickCard(); if (!card) return;
+  c.active = card.id; St.save();
+  showCard(card);
+}
+function showCard(card) {
+  if (!card || $('#news')) return;
+  closeSheet();
+  const guard = card.guard && Ec.guardOwned(card.hazard);
+  if (card.hazard) { Sc.resetView(); Sc.setHazard(card.hazard, { mitigated: guard }); }
+  Au.sfx.quest();
+  const el = document.createElement('div');
+  el.id = 'news'; el.className = 'news-wrap';
+  const kindTh = card.kind === 'crisis' ? 'เหตุวิกฤต' : 'นโยบายและคำขอด่วน';
+  el.innerHTML = `<article class="news ${card.kind}" role="dialog" aria-modal="true" aria-labelledby="news-h">
+    <header class="news-mast"><span>บ้านสวนรายวัน</span><small>ข่าวด่วนจากสำนักงานเขตพื้นที่ · ปีการศึกษา 2570</small></header>
+    <div class="news-from"><span class="chip">${kindTh}</span> ${esc(card.from)}</div>
+    <h2 id="news-h">${esc(card.headline)}</h2>
+    <div class="news-body"><p>${esc(card.lead)}</p>
+      ${guard ? `<p class="news-guard">โรงเรียนมี "${esc(Ec.ITEMS.find(i => i.guards === card.hazard).th)}" อยู่แล้ว ความเสียหายจะน้อยกว่าที่ควรเป็น</p>` : ''}</div>
+    <p class="news-ask">ท่านจะตอบรับเรื่องนี้หรือไม่ ${card.kind === 'policy' ? '(คำขอบางเรื่องไม่ควรทำตาม อ่านให้ดีก่อนตัดสินใจ)' : ''}</p>
+    <div class="news-btns"><button class="btn" data-ans="accept">${esc(card.acceptTh)}</button><button class="btn" data-ans="decline">${esc(card.declineTh)}</button></div>
+  </article>`;
+  setTimeout(() => {
+    document.body.appendChild(el);
+    el.querySelectorAll('[data-ans]').forEach(b => b.addEventListener('click', () => { el.classList.add('out'); setTimeout(() => el.remove(), 450); resolveCard(card, b.dataset.ans); }));
+  }, card.hazard ? 2600 : 600);
+}
+function cardDamage(card, frac) {
+  if (!card.damage || !frac) return 0;
+  const guard = card.guard && Ec.guardOwned(card.hazard);
+  const amt = Math.round(card.damage * frac * (guard ? 0.3 : 1) / 1000) * 1000;
+  const e = Ec.econ(); e.wallets.perhead -= amt; e.log.unshift({ t: Date.now(), text: `ค่าซ่อมแซมหลังเหตุ: ${card.headline.slice(0, 40)}`, amount: -amt }); Ec.checkCrisis();
+  return amt;
+}
+function finishCard(card, exp, money, dmg, html) {
+  const c = cardState();
+  c.seen[card.id] = { t: Date.now(), exp }; c.active = null; c.lastKind = card.kind;
+  c.exp = (c.exp || 0) + exp;
+  if (exp > 0) c.ok = (c.ok || 0) + 1;
+  c.nextSem = Ec.semCount() + 1 + (Math.random() < 0.5 ? 1 : 0); c.notBefore = Date.now() + 90000;
+  if (money) { const e = Ec.econ(); e.wallets.income += money; e.log.unshift({ t: Date.now(), text: card.reward.moneyTh || 'ได้รับการสนับสนุนหลังรับมือเหตุ', amount: money }); }
+  St.save(); refreshHUD(); grantAwards();
+  (exp > 0 ? Au.sfx.levelClear : Au.sfx.bad)();
+  openModal(`<h2>${esc(card.headline)}</h2>${html}
+    <div class="result ${exp > 0 ? 'pass' : 'fail'}">${exp > 0 ? '+' : ''}${exp} EXP${money ? ` · เงินรายได้สถานศึกษา +${Ec.fmt(money)} บาท` : ''}${dmg ? ` · ค่าซ่อมแซม −${Ec.fmt(dmg)} บาท` : ''}</div>
+    <div class="btn-row"><button class="btn primary" data-act="close">กลับเมือง</button></div>`, { wide: true });
+  const close = () => { Sc.clearHazard(); $('#modal-close').removeEventListener('click', close); };
+  $('#modal-body [data-act=close]').addEventListener('click', close); $('#modal-close').addEventListener('click', close);
+}
+function resolveCard(card, ans) {
+  const right = ans === card.right;
+  if (!right) {
+    const pen = card.trap ? CARD_PENALTY.trapWrong : CARD_PENALTY.wrong;
+    for (const ch of Object.values(St.S.chars)) ch.morale = Math.max(10, ch.morale - 4);
+    const dmg = card.kind === 'crisis' ? cardDamage(card, 1) : 0;
+    return finishCard(card, -pen, 0, dmg, `<div class="fb illegal"><div class="fb-head"><span class="chip bad">${card.trap ? 'ไม่ควรตอบรับ' : 'ไม่ควรปฏิเสธ'}</span></div><p>${esc(card.wrongWhy)}</p>${card.wrongSrc ? `<p class="small">แหล่งอ้างอิง: <a href="${card.wrongSrc}" target="_blank" rel="noopener">เปิดแหล่งอ้างอิง</a> (แหล่งรอง)</p>` : ''}</div>`);
+  }
+  const st = card.step;
+  const order = st.opts.map((_, i) => i).sort(() => Math.random() - 0.5);   // สลับลำดับตัวเลือก ไม่ให้คำตอบที่ดีอยู่ข้อแรกเสมอ
+  openModal(`<div class="lv-head"><span class="chip">${card.trap ? 'ท่านเลือกปฏิเสธ ถูกทางแล้ว' : 'ท่านตอบรับ'}</span><h2>${esc(card.headline)}</h2></div>
+    <p>${esc(st.q)}</p><div class="opts">${order.map((k, n) => `<button class="opt" data-k="${k}"><span class="opt-l">${THAI_LETTERS[n]}</span><span class="opt-t">${esc(st.opts[k].t)}</span></button>`).join('')}</div>`, { wide: true, closable: false });
+  $('#modal-body').querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => {
+    const o = st.opts[+b.dataset.k];
+    const exp = o.v === 'ok' ? card.reward.exp : o.v === 'warn' ? Math.round(card.reward.exp / 3) : -CARD_PENALTY.bad;
+    const money = o.v === 'ok' ? (card.reward.money || 0) : 0;
+    if (o.v === 'ok' && card.reward.morale) for (const ch of Object.values(St.S.chars)) ch.morale = Math.min(100, ch.morale + card.reward.morale);
+    const dmg = card.kind === 'crisis' ? cardDamage(card, o.v === 'ok' ? 0 : o.v === 'warn' ? 0.5 : 1) : 0;
+    finishCard(card, exp, money, dmg, `<div class="fb ${o.v === 'ok' ? 'ok' : o.v === 'bad' ? 'illegal' : 'undetermined'}"><div class="fb-head"><span class="chip ${o.v === 'ok' ? 'ok' : o.v === 'bad' ? 'bad' : 'unv'}">${o.v === 'ok' ? 'เหมาะสม' : o.v === 'bad' ? 'ไม่เหมาะสม' : 'พอใช้ได้ แต่ยังมีจุดอ่อน'}</span></div>
+      <p>${esc(o.t)}</p><p class="small">${esc(o.why)}${o.src ? ` (<a href="${o.src}" target="_blank" rel="noopener">แหล่งอ้างอิง</a>${o.conf === 'secondary' ? ' แหล่งรอง' : ''})` : ''}</p></div>
+      ${o.v !== 'ok' ? `<p class="small">ทางที่เหมาะสมกว่า: ${esc(st.opts.find(x => x.v === 'ok').t)}</p>` : ''}`);
+  }));
+}
+
 // ---------------- ป๊อปอัปคำถามถูกหรือผิด ----------------
+// รางวัลตามความยาก 1 = ข้อเท็จจริงพื้นฐาน, 2 = ประยุกต์กับสถานการณ์, 3 = รายละเอียดเชิงลึกหรือหลายเงื่อนไข
+const QUIZ_REWARDS = { 1: 5000, 2: 8000, 3: 12000 };
 const QUIZ_REWARD = 8000;
-const QUIZ_GAP = 75000;   // เว้นระยะระหว่างลูกโป่งคำถาม (มิลลิวินาที)
+const QUIZ_GAP = 150000;  // เว้นระยะระหว่างลูกโป่งคำถาม (มิลลิวินาที) ยิ่งตอบมากยิ่งห่างขึ้นเล็กน้อย
+const QUIZ_LV_TH = { 1: 'พื้นฐาน', 2: 'ประยุกต์', 3: 'เชิงลึก' };
+// ระดับยากที่เปิดตามความก้าวหน้า และจำนวนข้อที่ตอบได้สะสม (มาทีละน้อยตามจำนวนด่านที่ผ่าน)
+function quizMaxLv() { const n = St.completedCount(); return n >= 10 ? 3 : n >= 4 ? 2 : 1; }
+function quizCap() { return 3 + St.completedCount() * 3; }
 const QUIZ_HOSTS = ['prasert', 'malee', 'tonkla', 'arun', 'wilai', 'somsak', 'boonmee', 'guidance', 'pe', 'fah'];
 const AREA_TH = { budget: 'งบประมาณและพัสดุ', personnel: 'งานบุคคล', general: 'การบริหารทั่วไป', academic: 'วิชาการและภาวะผู้นำ' };
 function quizState() { return (St.S.quiz ||= { answered: {}, correct: 0, wrong: 0, next: Date.now() + 25000, host: null }); }
 function quizStats() { const q = quizState(); return { done: Object.keys(q.answered).length, correct: q.correct }; }
+// ไม่ถามซ้ำ: ข้อที่ตอบแล้ว (ถูกหรือผิด) จะไม่กลับมาอีก ยากขึ้นตามความก้าวหน้า
 function pickQuiz() {
   const q = quizState();
-  let pool = QUIZ.filter(x => !(x.id in q.answered));
-  if (!pool.length) { q.answered = {}; pool = QUIZ.slice(); }     // ครบทุกข้อแล้ว เริ่มรอบใหม่
-  return pool[Math.floor(Math.random() * pool.length)];
+  if (q.cur && !(q.cur in q.answered)) { const c = QUIZ.find(x => x.id === q.cur); if (c) return c; }
+  const left = QUIZ.filter(x => !(x.id in q.answered));
+  for (let lv = quizMaxLv(); lv >= 1; lv--) {
+    const pool = left.filter(x => (x.lv || 2) === lv);
+    if (pool.length) { const it = pool[Math.floor(Math.random() * pool.length)]; q.cur = it.id; St.save(); return it; }
+  }
+  return null;
+}
+function quizDue() {
+  const q = quizState();
+  if (Object.keys(q.answered).length >= quizCap()) return { ok: false, why: `ผ่านด่านเพิ่มอีก 1 ด่าน แล้วจะมีคำถามข้อใหม่` };
+  if (!QUIZ.some(x => !(x.id in q.answered) && (x.lv || 2) <= quizMaxLv())) return { ok: false, why: Object.keys(q.answered).length >= QUIZ.length ? 'ท่านตอบครบทุกข้อแล้ว' : 'คำถามระดับยากขึ้นจะเปิดเมื่อผ่านด่านเพิ่ม' };
+  if (!q.host && Date.now() < q.next) return { ok: false, why: `คำถามข้อถัดไปจะมาในราว ${Math.max(1, Math.ceil((q.next - Date.now()) / 60000))} นาที` };
+  return { ok: true };
 }
 function quizTick() {
   if (visiting || !St.S.startedAt || !St.S.seenRules) return;
   if ($('#modal').classList.contains('show') || !$('#intro').hidden) return;
   const q = quizState();
   if (q.host) { Sc.setQuizBalloon(q.host, () => quizModal(q.host)); return; }
-  if (Date.now() < q.next) return;
+  if (!quizDue().ok) return;
   q.host = QUIZ_HOSTS[Math.floor(Math.random() * QUIZ_HOSTS.length)];
   St.save();
   Sc.setQuizBalloon(q.host, () => quizModal(q.host));
@@ -1164,30 +1281,36 @@ function quizTick() {
 function quizModal(host) {
   const st = quizState();
   host = host || st.host || QUIZ_HOSTS[0];
+  const due = quizDue();
+  if (!due.ok) return toast(due.why);
   const item = pickQuiz();
+  if (!item) return toast('ยังไม่มีคำถามข้อใหม่');
+  const reward = QUIZ_REWARDS[item.lv || 2];
   openModal(`<div class="quiz">
-      <span class="chip">${AREA_TH[item.area]}</span>
+      <span class="chip">${AREA_TH[item.area]}</span> <span class="chip">ระดับ${QUIZ_LV_TH[item.lv || 2]}</span>
       <h2>ถูกหรือผิด</h2>
       <p class="quiz-q">${esc(item.q)}</p>
       <div class="tf"><button class="btn tf-btn t" data-a="1">ถูก</button><button class="btn tf-btn f" data-a="0">ผิด</button></div>
       <div id="quiz-res"></div>
-      <p class="tiny">ตอบถูกได้ ${Ec.fmt(QUIZ_REWARD)} บาทเข้าเงินรายได้สถานศึกษา (บาทในเกม) ตอบผิดไม่เสียเงิน แต่จะได้อ่านคำอธิบายพร้อมแหล่งอ้างอิง</p>
+      <p class="tiny">ตอบถูกได้ ${Ec.fmt(reward)} บาทเข้าเงินรายได้สถานศึกษา (บาทในเกม) ตอบผิดไม่เสียเงิน แต่จะได้อ่านคำอธิบายพร้อมแหล่งอ้างอิง</p>
     </div>`);
   showReader(host, 'ท่านผู้อำนวยการ ข้อความนี้ถูกหรือผิดครับ/คะ', true);
   $('#modal-body').querySelectorAll('.tf-btn').forEach(b => b.addEventListener('click', () => {
     const ans = b.dataset.a === '1', ok = ans === item.a;
     st.answered[item.id] = ok;
-    if (ok) { st.correct++; Ec.econ().wallets.income += QUIZ_REWARD; Ec.econ().log.unshift({ t: Date.now(), text: 'รางวัลตอบคำถามถูก', amount: QUIZ_REWARD }); Ec.checkCrisis(); }
+    if (st.answered[item.id] !== undefined && b.disabled) return;
+    if (ok) { st.correct++; Ec.econ().wallets.income += reward; Ec.econ().log.unshift({ t: Date.now(), text: 'รางวัลตอบคำถามถูก', amount: reward }); Ec.checkCrisis(); }
     else st.wrong++;
-    st.host = null; st.next = Date.now() + QUIZ_GAP;
+    st.host = null; st.cur = null; st.next = Date.now() + QUIZ_GAP + Object.keys(st.answered).length * 6000;
     Sc.setQuizBalloon(null);
     St.save(); refreshHUD(); grantAwards();
     (ok ? Au.sfx.exp : Au.sfx.bad)();
     $('#modal-body').querySelectorAll('.tf-btn').forEach(x => { x.disabled = true; x.classList.toggle('chosen', x === b); });
     $('#quiz-res').innerHTML = `<div class="fb ${ok ? 'ok' : 'illegal'}">
-      <div class="fb-head"><span class="chip ${ok ? 'ok' : 'bad'}">${ok ? 'ตอบถูก' : 'ยังไม่ถูก'}</span><span class="chip">ข้อความนี้${item.a ? 'ถูก' : 'ผิด'}</span>${ok ? `<span class="chip exp">+${Ec.fmt(QUIZ_REWARD)} บาท</span>` : ''}</div>
+      <div class="fb-head"><span class="chip ${ok ? 'ok' : 'bad'}">${ok ? 'ตอบถูก' : 'ยังไม่ถูก'}</span><span class="chip">ข้อความนี้${item.a ? 'ถูก' : 'ผิด'}</span>${ok ? `<span class="chip exp">+${Ec.fmt(reward)} บาท</span>` : ''}</div>
       <p>${esc(item.why)}</p>
       <p class="small">แหล่งอ้างอิง: <a href="${item.src}" target="_blank" rel="noopener">${esc(item.srcName || 'เปิดแหล่งอ้างอิง')}</a>${item.conf === 'secondary' ? ' (แหล่งรอง)' : ''}</p></div>
-      <div class="btn-row"><button class="btn primary" data-act="quiz">ข้อถัดไป</button><button class="btn ghost" data-act="close">กลับเมือง</button></div>`;
+      <div class="btn-row"><button class="btn primary" data-act="close">กลับเมือง</button></div>
+      <p class="tiny center">คำถามข้อถัดไปจะมาเองในเมือง ข้อที่ตอบแล้วจะไม่กลับมาอีก</p>`;
   }));
 }
