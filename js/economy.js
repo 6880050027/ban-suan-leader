@@ -265,6 +265,10 @@ export function econ() {
     land: 0, events: [],     // แปลงที่ดินที่ขยาย, ของ/กิจกรรมที่จัดหาในภาคเรียนนี้
   };
   const e = S.econ; e.land ??= 0; e.events ??= [];
+  if (!e.bonusV2) {   // เซฟเก่าเก็บโบนัสของที่ซื้อสะสมไว้ (และติดเพดาน 15) เปลี่ยนเป็นคิดสดจากของที่มี เหลือไว้เฉพาะผลจากการใช้เงินผิดประเภท
+    e.bonus = { keng: 0, suk: 0, dee: Math.max(-15, -5 * (e.bought || []).filter(x => x.verdict === 'bad').length) };
+    e.bonusV2 = 1;
+  }
   return e;
 }
 export function fmt(n) { return Math.round(n).toLocaleString('th-TH'); }
@@ -365,7 +369,7 @@ export function buy(itemId, wallet) {
   if (it.capacity) e.capacity += it.capacity;
   e.bought.push({ id: itemId, wallet, verdict: 'ok', t: Date.now() });
   addLog(`ซื้อ "${it.th}" จาก${WALLETS[wallet].short}`, -it.price);
-  if (it.keng || it.suk || it.dee) { e.bonus = e.bonus || { keng: 0, dee: 0, suk: 0 }; for (const k of ['keng', 'dee', 'suk']) e.bonus[k] = Math.min(15, (e.bonus[k] || 0) + (it[k] || 0)); }
+  // ผลต่อตัวชี้วัดคิดสดจากของที่มีอยู่ ดู itemBonus()
   checkCrisis(); St.save();
   return { ok: true, verdict: 'ok', why: j.why, src: j.src, note: j.note || it.rules[wallet]?.note, method };
 }
@@ -519,10 +523,21 @@ export function decodeVisit(code) {
 }
 
 // ตัวชี้วัดเก่ง ดี มีสุข หลังรวมผลของสิ่งอำนวยความสะดวกและภาวะวิกฤต
+// ผลของของที่มีต่อตัวชี้วัด: สิ่งก่อสร้างมีผลถาวร ของ/กิจกรรมที่ซื้อซ้ำได้มีผลเฉพาะภาคเรียนที่ใช้
+export const BONUS_CAP = { owned: 25, events: 12 };
+export function itemBonus() {
+  const e = econ(), own = { keng: 0, dee: 0, suk: 0 }, ev = { keng: 0, dee: 0, suk: 0 };
+  for (const it of ITEMS) if (it.facility && e.owned[it.facility]) for (const k in own) own[k] += it[k] || 0;
+  for (const v of activeEvents()) { const it = ITEM[v.id]; for (const k in ev) ev[k] += it[k] || 0; }
+  const out = {};
+  for (const k in own) out[k] = Math.min(BONUS_CAP.owned, own[k]) + Math.min(BONUS_CAP.events, ev[k]);
+  return out;
+}
 export function meters() {
   const m = St.schoolMeters();
-  const e = econ(), b = e.bonus || {};
-  const adj = (v, k) => v == null ? null : Math.max(0, Math.min(100, Math.round(v + (b[k] || 0) - (e.crisis ? 15 : 0))));
+  const e = econ(), b = e.bonus || {}, ib = itemBonus();
+  // ยังไม่ได้เล่นด่าน: ใช้ 50 เป็นฐานเมื่อมีของที่ให้ผลแล้ว เพื่อให้เห็นผลของการจัดหา
+  const adj = (v, k) => { const add = (b[k] || 0) + (ib[k] || 0); if (v == null && !add) return null; return Math.max(0, Math.min(100, Math.round((v ?? 50) + add - (e.crisis ? 15 : 0)))); };
   return { ...m, keng: adj(m.keng, 'keng'), dee: adj(m.dee, 'dee'), suk: adj(m.suk, 'suk') };
 }
 

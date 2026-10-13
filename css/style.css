@@ -525,3 +525,5 @@ body.visiting #hud, body.visiting #dock, body.visiting #tracker { display: none;
 
 .don-uses { margin: 4px 0 8px; display: flex; flex-wrap: wrap; gap: 4px; font-size: .78rem; }
 .don-item { cursor: pointer; border: 1px solid var(--line, #e6dccb); }
+
+.chip.wrap { white-space: normal; max-width: 100%; line-height: 1.35; padding: 3px 10px; border-radius: 12px; text-align: left; }

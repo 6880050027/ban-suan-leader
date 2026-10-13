@@ -26,6 +26,7 @@ const THAI_LETTERS = ['ก', 'ข', 'ค', 'ง', 'จ', 'ฉ', 'ช', 'ซ', '�
 const DIFF_DOTS = d => '●'.repeat(d) + '○'.repeat(4 - d);
 
 let activeLevel = null; // id ของด่านที่กำลังเล่น
+let lastLevelAct = 0;   // เวลาล่าสุดที่ผู้เล่นทำอะไรในด่าน (ใช้กันการ์ดแทรกกลางด่าน)
 let modalStack = [];
 
 // งานประจำของตัวละครเมื่อไม่มีภารกิจ (ใช้ฝึกอ่านความพร้อม ไม่ให้ EXP)
@@ -391,6 +392,7 @@ function levelHeader(L, att) {
 }
 
 function renderPhase() {
+  lastLevelAct = Date.now();
   const id = activeLevel; const L = St.LEVEL_BY_ID[id]; const l = St.lv(id); const att = l.attempt;
   if (!att) return;
   if (att.phase === 'brief') return renderBrief(L, att);
@@ -685,6 +687,7 @@ export function onClockMode(mode) {
   else if (mode === 'night') toast('ค่ำแล้ว โรงเรียนปิด ไฟส่องสว่างรอบอาคารเปิด', '');
 }
 export function onCharClick(id) {
+  if (activeLevel) lastLevelAct = Date.now();
   if (visiting) return toast('ท่านกำลังเยี่ยมโรงเรียนของผู้อื่น โปรดกลับโรงเรียนของตนเองก่อนทำงานกับบุคลากร');
   if (id.startsWith('student')) return toast('นักเรียนกำลังทำกิจกรรมในสนาม ทุกการตัดสินใจของท่านส่งผลถึงนักเรียนในท้ายที่สุด');
   Sc.flyToChar(id); openChar(id);
@@ -1049,7 +1052,7 @@ function financeModal(tab = 'overview') {
         const lvLock = it.minLv && St.completedCount() < it.minLv;
         return `<button class="shop-item ${owned ? 'owned' : ''} ${it.locked || lvLock ? 'locked' : ''}" data-act="buy" data-arg="${it.id}">
           <b>${esc(it.th)}</b><span class="small">${esc(it.desc)}</span>
-          <span class="tags">${it.oneTime !== false ? '<span class="chip">ครั้งเดียว</span>' : '<span class="chip">ซื้อซ้ำได้</span>'}${['keng', 'dee', 'suk'].filter(k => it[k]).map(k => `<span class="chip">${{ keng: 'เก่ง', dee: 'ดี', suk: 'มีสุข' }[k]} +${it[k]}</span>`).join('')}${it.guards ? '<span class="chip guard">ช่วยรับมือเหตุวิกฤต</span>' : ''}${(() => { const d = Ec.donationOnly(it.id); return d ? `<span class="chip">ใช้เงินบริจาคเพื่อ${Ec.PURPOSE_TH[d.purpose]}${d.quest ? ` (เควส: ${esc(d.quest.th)})` : ''}</span>` : ''; })()}</span>
+          <span class="tags">${it.oneTime !== false ? '<span class="chip">ครั้งเดียว</span>' : '<span class="chip">ซื้อซ้ำได้</span>'}${['keng', 'dee', 'suk'].filter(k => it[k]).map(k => `<span class="chip">${{ keng: 'เก่ง', dee: 'ดี', suk: 'มีสุข' }[k]} +${it[k]}${it.oneTime === false ? (it.group === 'people' ? ' 2 ภาคเรียน' : ' 1 ภาคเรียน') : ''}</span>`).join('')}${it.guards ? '<span class="chip guard">ช่วยรับมือเหตุวิกฤต</span>' : ''}${(() => { const d = Ec.donationOnly(it.id); return d ? `<span class="chip wrap">ใช้เงินบริจาคเพื่อ${Ec.PURPOSE_TH[d.purpose]}${d.quest ? ` (เควส: ${esc(d.quest.th)})` : ''}</span>` : ''; })()}</span>
           <span class="price">${owned ? 'มีแล้ว' : it.locked ? 'ยังเปิดซื้อไม่ได้' : lvLock ? `เปิดเมื่อผ่าน ${it.minLv} ด่าน · ${Ec.fmt(it.price)} บาท` : Ec.fmt(it.price) + ' บาท'}</span></button>`;
       }).join('')}</div>`;
   } else {
@@ -1081,7 +1084,7 @@ function buyModal(id) {
     <div class="btn-row"><button class="btn ghost" data-act="finance" data-arg="shop:${it.group}">กลับร้านค้า</button></div>`, { wide: true });
   showReader('tonkla', 'ก่อนจัดซื้อ ต้องตรวจว่าเงินประเภทนี้ใช้กับรายการนี้ได้ และรายการต้องอยู่ในแผนปฏิบัติการที่คณะกรรมการสถานศึกษาเห็นชอบแล้วครับ', true);
   $('#modal-body').querySelectorAll('.src').forEach(b => b.addEventListener('click', () => {
-    const r = Ec.buy(id, b.dataset.src);
+    const mBefore = Ec.meters(); const r = Ec.buy(id, b.dataset.src);
     const [cls, lab] = VERDICT[r.verdict] || ['unv', ''];
     const link = r.src ? ` (<a href="${r.src}" target="_blank" rel="noopener">แหล่งอ้างอิง</a>)` : '';
     let html = `<div class="fb ${cls === 'bad' ? 'illegal' : cls === 'ok' ? 'ok' : 'undetermined'}"><div class="fb-head"><span class="chip ${cls}">${lab}</span>${r.lost ? `<span class="chip bad">เสียเงิน ${Ec.fmt(r.lost)} บาท</span>` : ''}</div><p>${esc(r.why || '')}${link}</p>`;
@@ -1089,7 +1092,12 @@ function buyModal(id) {
     if (r.ok) html += `<p class="small"><b>ขั้นตอนพัสดุที่ต้องทำต่อ:</b></p><ul class="tight small">${r.method.map(m => `<li>${esc(m)}</li>`).join('')}</ul>`;
     html += '</div>';
     $('#buy-res').innerHTML = html;
-    if (r.ok) { Au.sfx.levelClear(); $('#modal-body').querySelectorAll('.src').forEach(x => x.disabled = true); toast(`จัดหา "${esc(it.th)}" แล้ว`, 'good'); }
+    if (r.ok) {
+      Au.sfx.levelClear(); $('#modal-body').querySelectorAll('.src').forEach(x => x.disabled = true);
+      const mA = Ec.meters(), TH = { keng: 'เก่ง', dee: 'ดี', suk: 'มีสุข' };
+      const ch = ['keng', 'dee', 'suk'].filter(k => it[k]).map(k => mA[k] !== mBefore[k] ? `${TH[k]} ${mBefore[k] ?? '–'} → ${mA[k]}` : `${TH[k]} ไม่เพิ่ม (ของประเภทนี้ให้ผลถึงเพดานแล้ว)`);
+      toast(`จัดหา "${esc(it.th)}" แล้ว${ch.length ? '<br>' + ch.join(' · ') + (it.oneTime === false ? (it.group === 'people' ? ' (มีผล 2 ภาคเรียน)' : ' (มีผลภาคเรียนนี้)') : '') : ''}`, 'good');
+    }
     else if (r.verdict === 'bad') { Au.sfx.bad(); $('#modal-body').querySelectorAll('.src').forEach(x => x.disabled = true); }
     else Au.sfx.cmdMiss();
     refreshHUD(); grantAwards();
@@ -1212,7 +1220,13 @@ const CARD_PENALTY = { wrong: 15, trapWrong: 20, bad: 10 };
 function cardState() { return (St.S.cards ||= { seen: {}, exp: 0, nextSem: 2, notBefore: 0, active: null, ok: 0 }); }
 function pickCard() {
   const c = cardState(), tier = Ec.currentTier();
-  const pool = CARDS.filter(x => !c.seen[x.id] && x.minTier <= tier);
+  let pool = CARDS.filter(x => !c.seen[x.id] && x.minTier <= tier);
+  if (!pool.length) {
+    // การ์ดใหม่หมดแล้ว: วนการ์ดเดิม เริ่มจากใบที่เคยตอบพลาด แล้วจึงใบที่เห็นนานที่สุด (รางวัลครึ่งหนึ่ง)
+    const old = CARDS.filter(x => x.minTier <= tier && c.seen[x.id] && x.id !== c.lastId);
+    const wrong = old.filter(x => (c.seen[x.id].exp || 0) <= 0);
+    pool = wrong.length ? wrong : old.sort((a, b) => c.seen[a.id].t - c.seen[b.id].t).slice(0, 4);
+  }
   if (!pool.length) return null;
   // สลับระหว่างเหตุวิกฤตกับนโยบาย ไม่ให้ซ้ำแบบเดิมติดกัน
   const last = c.lastKind;
@@ -1223,7 +1237,7 @@ function pickCard() {
 function cardTick() {
   if (visiting || !St.S.startedAt || !St.S.seenRules) return;
   if ($('#modal').classList.contains('show') || !$('#intro').hidden || $('#news')) return;
-  if (currentAttemptLevel()) return;             // ไม่แทรกกลางด่าน
+  if (currentAttemptLevel() && Date.now() - lastLevelAct < 5 * 60 * 1000) return;   // ไม่แทรกระหว่างเล่นด่าน (ด่านที่เปิดค้างไว้นานเกิน 5 นาทีไม่กันการ์ด)
   const c = cardState();
   if (c.active) return showCard(CARD[c.active]);  // เคยเปิดค้างไว้ (เช่น รีเฟรชหน้า)
   if (Ec.semCount() < c.nextSem || Date.now() < c.notBefore) return;
@@ -1270,7 +1284,7 @@ function cardDamage(card, frac) {
 }
 function finishCard(card, exp, money, dmg, html) {
   const c = cardState();
-  c.seen[card.id] = { t: Date.now(), exp }; c.active = null; c.lastKind = card.kind;
+  c.seen[card.id] = { t: Date.now(), exp }; c.active = null; c.lastKind = card.kind; c.lastId = card.id;
   c.exp = (c.exp || 0) + exp;
   if (exp > 0) c.ok = (c.ok || 0) + 1;
   c.nextSem = Ec.semCount() + 1 + (Math.random() < 0.5 ? 1 : 0); c.notBefore = Date.now() + 90000;
@@ -1297,7 +1311,8 @@ function resolveCard(card, ans) {
     <p>${esc(st.q)}</p><div class="opts">${order.map((k, n) => `<button class="opt" data-k="${k}"><span class="opt-l">${THAI_LETTERS[n]}</span><span class="opt-t">${esc(st.opts[k].t)}</span></button>`).join('')}</div>`, { wide: true, closable: false });
   $('#modal-body').querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => {
     const o = st.opts[+b.dataset.k];
-    const exp = o.v === 'ok' ? card.reward.exp : o.v === 'warn' ? Math.round(card.reward.exp / 3) : -CARD_PENALTY.bad;
+    const rep = cardState().seen[card.id] ? 0.5 : 1;   // การ์ดที่เคยมาแล้วได้รางวัลครึ่งหนึ่ง
+    const exp = o.v === 'ok' ? Math.round(card.reward.exp * rep) : o.v === 'warn' ? Math.round(card.reward.exp * rep / 3) : -CARD_PENALTY.bad;
     const money = o.v === 'ok' ? (card.reward.money || 0) : 0;
     if (o.v === 'ok' && card.reward.morale) for (const ch of Object.values(St.S.chars)) ch.morale = Math.min(100, ch.morale + card.reward.morale);
     const dmg = card.kind === 'crisis' ? cardDamage(card, o.v === 'ok' ? 0 : o.v === 'warn' ? 0.5 : 1) : 0;
