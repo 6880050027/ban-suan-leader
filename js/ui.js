@@ -16,11 +16,10 @@ import { CARDS, CARD } from './data/cards.js';
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const strip = h => String(h).replace(/<[^>]+>/g, '');
-// ลำดับตัวเลือกคงที่ต่อคำถาม (ไม่สลับทุกครั้งที่เปิด) แต่ไม่ให้ทางที่ถูกอยู่ข้อแรกเสมอ
-function fixedOrder(key, n) {
-  let h = 2166136261; for (const ch of key) { h ^= ch.codePointAt(0); h = Math.imul(h, 16777619) >>> 0; }
+// สลับลำดับตัวเลือก (Fisher–Yates)
+function shuffled(n) {
   const a = [...Array(n).keys()];
-  for (let i = n - 1; i > 0; i--) { h = (Math.imul(h, 1103515245) + 12345) >>> 0; const j = h % (i + 1); [a[i], a[j]] = [a[j], a[i]]; }
+  for (let i = n - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
   return a;
 }
 const THAI_LETTERS = ['ก', 'ข', 'ค', 'ง', 'จ', 'ฉ', 'ช', 'ซ', 'ฌ', 'ญ'];
@@ -450,7 +449,7 @@ function renderTracker() {
 
 function renderStep(L, att) {
   const i = att.step; const st = L.steps[i];
-  const order = L.steps[i].options.map((_, k) => k);   // แสดงตามลำดับ ก–จ เดิมของคลังสถานการณ์ ไม่สลับ
+  const order = att.order?.[i] || L.steps[i].options.map((_, k) => k);
   const a = att.answers[i];
   const revealed = !!a;
   const canRetry = a && !a.retried && st.options[a.first].legal === 'illegal';
@@ -1103,7 +1102,7 @@ function questModal(id, step = 0, answers = []) {
   }
   const st = q.steps[step];
   openModal(`<h2>${esc(q.th)}</h2><div class="step-prog">${q.steps.map((_, k) => `<i class="${k < step ? 'done' : k === step ? 'cur' : ''}"></i>`).join('')}</div>
-    <p>${esc(st.q)}</p><div class="opts">${fixedOrder('h' + q.id + ':' + step, st.opts.length).map((k, n) => `<button class="opt" data-k="${k}"><span class="opt-l">${THAI_LETTERS[n]}</span><span class="opt-t">${esc(st.opts[k].t)}</span></button>`).join('')}</div>
+    <p>${esc(st.q)}</p><div class="opts">${shuffled(st.opts.length).map((k, n) => `<button class="opt" data-k="${k}"><span class="opt-l">${THAI_LETTERS[n]}</span><span class="opt-t">${esc(st.opts[k].t)}</span></button>`).join('')}</div>
     <div class="btn-row"><button class="btn ghost" data-act="finance" data-arg="quests">ยกเลิก</button></div>`, { wide: true });
   showReader(q.by, step === 0 ? 'ขอเสนอแนวทางหาทรัพยากรให้โรงเรียนครับ/ค่ะ ขอให้ท่านพิจารณา' : 'ขั้นต่อไปครับ/ค่ะ', step === 0);
   $('#modal-body').querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => {
@@ -1278,7 +1277,7 @@ function resolveCard(card, ans) {
     return finishCard(card, -pen, 0, dmg, `<div class="fb illegal"><div class="fb-head"><span class="chip bad">${card.trap ? 'ไม่ควรตอบรับ' : 'ไม่ควรปฏิเสธ'}</span></div><p>${esc(card.wrongWhy)}</p>${card.wrongSrc ? `<p class="small">แหล่งอ้างอิง: <a href="${card.wrongSrc}" target="_blank" rel="noopener">เปิดแหล่งอ้างอิง</a> (แหล่งรอง)</p>` : ''}</div>`);
   }
   const st = card.step;
-  const order = fixedOrder('h' + card.id, st.opts.length);   // ลำดับคงที่ต่อการ์ด ไม่สลับทุกครั้ง
+  const order = shuffled(st.opts.length);   // สลับลำดับตัวเลือกทุกครั้ง
   openModal(`<div class="lv-head"><span class="chip">${card.trap ? 'ท่านเลือกปฏิเสธ ถูกทางแล้ว' : 'ท่านตอบรับ'}</span><h2>${esc(card.headline)}</h2></div>
     <p>${esc(st.q)}</p><div class="opts">${order.map((k, n) => `<button class="opt" data-k="${k}"><span class="opt-l">${THAI_LETTERS[n]}</span><span class="opt-t">${esc(st.opts[k].t)}</span></button>`).join('')}</div>`, { wide: true, closable: false });
   $('#modal-body').querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => {

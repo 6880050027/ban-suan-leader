@@ -136,7 +136,9 @@ export function startAttempt(id) {
 }
 function shuffleOrders(id) {
   return LEVEL_BY_ID[id].steps.map(() => {
-    return [0, 1, 2, 3, 4];   // ไม่สลับตัวเลือก ให้ตรงกับคำเฉลยที่อ้างถึงข้อ ก–จ
+    const a = [0, 1, 2, 3, 4];   // สลับใหม่ทุกครั้งที่เริ่มด่าน (ตัวเลือกไม่มีข้อที่อ้างถึงข้ออื่นแล้ว)
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    return a;
   });
 }
 
