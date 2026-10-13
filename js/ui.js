@@ -16,6 +16,13 @@ import { CARDS, CARD } from './data/cards.js';
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const strip = h => String(h).replace(/<[^>]+>/g, '');
+// ลำดับตัวเลือกคงที่ต่อคำถาม (ไม่สลับทุกครั้งที่เปิด) แต่ไม่ให้ทางที่ถูกอยู่ข้อแรกเสมอ
+function fixedOrder(key, n) {
+  let h = 2166136261; for (const ch of key) { h ^= ch.codePointAt(0); h = Math.imul(h, 16777619) >>> 0; }
+  const a = [...Array(n).keys()];
+  for (let i = n - 1; i > 0; i--) { h = (Math.imul(h, 1103515245) + 12345) >>> 0; const j = h % (i + 1); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
 const THAI_LETTERS = ['ก', 'ข', 'ค', 'ง', 'จ', 'ฉ', 'ช', 'ซ', 'ฌ', 'ญ'];
 const DIFF_DOTS = d => '●'.repeat(d) + '○'.repeat(4 - d);
 
@@ -443,7 +450,7 @@ function renderTracker() {
 
 function renderStep(L, att) {
   const i = att.step; const st = L.steps[i];
-  const order = att.order[i];
+  const order = L.steps[i].options.map((_, k) => k);   // แสดงตามลำดับ ก–จ เดิมของคลังสถานการณ์ ไม่สลับ
   const a = att.answers[i];
   const revealed = !!a;
   const canRetry = a && !a.retried && st.options[a.first].legal === 'illegal';
@@ -979,7 +986,7 @@ function walletRows() {
 }
 // อัตรากำลังตามจำนวนนักเรียน
 function staffPanel() {
-  const st = Ec.staff(), ent = Ec.entitled(), gap = Ec.staffGap();
+  const st = Ec.staff(), ent = Ec.entitled(), gap = Ec.staffGap(), cr = Ec.classrooms();
   const pend = k => st.pending.some(p => p.kind === k);
   const row = (k, th, have, can) => {
     const short = can - have;
@@ -988,9 +995,10 @@ function staffPanel() {
   };
   const deps = ['รองฯ ประเสริฐ (บริหารทั่วไป)', 'รองฯ มาลี (วิชาการ)', ...Ec.NEW_DEPUTIES.slice(0, Math.max(0, st.deputies - 2)).map(d => `${d.name} (${d.role.replace('รองผู้อำนวยการ', '')})`)];
   return `<h3>อัตรากำลัง (มีอยู่ / ตามเกณฑ์ในเกม)</h3>
-    <div class="staff-box">${row('deputy', 'รองผู้อำนวยการ', st.deputies, ent.deputies)}${row('teacher', `ครู (นักเรียน ${Ec.STUDENTS_PER_TEACHER} คนต่อครู 1 คน)`, st.teachers, ent.teachers)}
+    <div class="staff-box">${row('deputy', 'รองผู้อำนวยการ', st.deputies, ent.deputies)}${row('teacher', `ครู (${cr.lower + cr.upper} ห้องเรียน · ม.ต้น ${cr.lower} ม.ปลาย ${cr.upper})`, st.teachers, ent.teachers)}
     <p class="tiny">รองผู้อำนวยการที่มี: ${deps.map(esc).join(', ')}</p>
-    <p class="tiny">เกณฑ์รองผู้อำนวยการตามหนังสือ ก.ค.ศ. ว 23/2563: นักเรียน 120–719 คน 1 คน · 720–1,079 คน 2 คน · 1,080–1,679 คน 3 คน · 1,680 คนขึ้นไป 4 คน (สูงสุด 4 คน) <a href="${Ec.DEPUTY_SRC}" target="_blank" rel="noopener">แหล่งอ้างอิง</a> (แหล่งรอง) ในเกม โรงเรียนเริ่มด้วยรองฯ 2 คนตามเนื้อเรื่อง แม้เกณฑ์จริงที่ 640 คนจะให้ 1 คน ส่วนอัตราครู ${Ec.STUDENTS_PER_TEACHER} คนต่อครู 1 คนตั้งเพื่อการเล่น ยังไม่ได้เทียบกับเกณฑ์ครูในหนังสือฉบับเดียวกัน${gap.teachers > 0 ? ` ตอนนี้ครูขาด ${gap.teachers} คน ภาระสอนต่อคนสูงขึ้น` : ''}</p></div>`;
+    <p class="tiny">เกณฑ์รองผู้อำนวยการตามหนังสือ ก.ค.ศ. ว 23/2563: นักเรียน 120–719 คน 1 คน · 720–1,079 คน 2 คน · 1,080–1,679 คน 3 คน · 1,680 คนขึ้นไป 4 คน (สูงสุด 4 คน) <a href="${Ec.DEPUTY_SRC}" target="_blank" rel="noopener">แหล่งอ้างอิง</a> (แหล่งรอง) ในเกม โรงเรียนเริ่มด้วยรองฯ 2 คนตามเนื้อเรื่อง แม้เกณฑ์จริงที่ 640 คนจะให้ 1 คน </p>
+    <p class="tiny">เกณฑ์ครูตามหนังสือฉบับเดียวกัน: ห้องเรียนละ 35 คน (เศษตั้งแต่ 10 คนเปิดเพิ่ม 1 ห้อง) ชั่วโมงเรียน ม.ต้น 30 ม.ปลาย 35 ชั่วโมงต่อสัปดาห์ หารด้วยชั่วโมงปฏิบัติงานครู 20 ชั่วโมงต่อสัปดาห์ แล้วรวมสองระดับ เศษตั้งแต่ 0.5 ปัดขึ้น <a href="${Ec.TEACHER_SRC}" target="_blank" rel="noopener">แหล่งอ้างอิง</a> (แหล่งรอง) เกมสมมติว่านักเรียนกระจายเท่ากันทั้ง 6 ชั้น${gap.teachers > 0 ? ` ตอนนี้ครูขาด ${gap.teachers} คน ภาระสอนต่อคนสูงขึ้น` : ''}</p></div>`;
 }
 function financeTabs(active) {
   const tabs = [['overview', 'ภาพรวม'], ['shop', 'ร้านค้า'], ['quests', 'ระดมทรัพยากร']];
@@ -1095,7 +1103,7 @@ function questModal(id, step = 0, answers = []) {
   }
   const st = q.steps[step];
   openModal(`<h2>${esc(q.th)}</h2><div class="step-prog">${q.steps.map((_, k) => `<i class="${k < step ? 'done' : k === step ? 'cur' : ''}"></i>`).join('')}</div>
-    <p>${esc(st.q)}</p><div class="opts">${st.opts.map((_, i) => i).sort(() => Math.random() - 0.5).map((k, n) => `<button class="opt" data-k="${k}"><span class="opt-l">${THAI_LETTERS[n]}</span><span class="opt-t">${esc(st.opts[k].t)}</span></button>`).join('')}</div>
+    <p>${esc(st.q)}</p><div class="opts">${fixedOrder('h' + q.id + ':' + step, st.opts.length).map((k, n) => `<button class="opt" data-k="${k}"><span class="opt-l">${THAI_LETTERS[n]}</span><span class="opt-t">${esc(st.opts[k].t)}</span></button>`).join('')}</div>
     <div class="btn-row"><button class="btn ghost" data-act="finance" data-arg="quests">ยกเลิก</button></div>`, { wide: true });
   showReader(q.by, step === 0 ? 'ขอเสนอแนวทางหาทรัพยากรให้โรงเรียนครับ/ค่ะ ขอให้ท่านพิจารณา' : 'ขั้นต่อไปครับ/ค่ะ', step === 0);
   $('#modal-body').querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => {
@@ -1270,7 +1278,7 @@ function resolveCard(card, ans) {
     return finishCard(card, -pen, 0, dmg, `<div class="fb illegal"><div class="fb-head"><span class="chip bad">${card.trap ? 'ไม่ควรตอบรับ' : 'ไม่ควรปฏิเสธ'}</span></div><p>${esc(card.wrongWhy)}</p>${card.wrongSrc ? `<p class="small">แหล่งอ้างอิง: <a href="${card.wrongSrc}" target="_blank" rel="noopener">เปิดแหล่งอ้างอิง</a> (แหล่งรอง)</p>` : ''}</div>`);
   }
   const st = card.step;
-  const order = st.opts.map((_, i) => i).sort(() => Math.random() - 0.5);   // สลับลำดับตัวเลือก ไม่ให้คำตอบที่ดีอยู่ข้อแรกเสมอ
+  const order = fixedOrder('h' + card.id, st.opts.length);   // ลำดับคงที่ต่อการ์ด ไม่สลับทุกครั้ง
   openModal(`<div class="lv-head"><span class="chip">${card.trap ? 'ท่านเลือกปฏิเสธ ถูกทางแล้ว' : 'ท่านตอบรับ'}</span><h2>${esc(card.headline)}</h2></div>
     <p>${esc(st.q)}</p><div class="opts">${order.map((k, n) => `<button class="opt" data-k="${k}"><span class="opt-l">${THAI_LETTERS[n]}</span><span class="opt-t">${esc(st.opts[k].t)}</span></button>`).join('')}</div>`, { wide: true, closable: false });
   $('#modal-body').querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => {

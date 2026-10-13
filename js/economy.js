@@ -496,17 +496,34 @@ export const NEW_DEPUTIES = [
   { id: 'deputy3', name: 'รองฯ วิทยา', role: 'รองผู้อำนวยการกลุ่มบริหารงบประมาณ', look: { shirt: '#5B8DD6', skin: '#E5B48C', hair: '#2A2A2A', acc: 'tie' } },
   { id: 'deputy4', name: 'รองฯ สุดา', role: 'รองผู้อำนวยการกลุ่มบริหารงานบุคคล', look: { shirt: '#B59AD6', skin: '#F2C9A5', hair: '#3B2A22', acc: 'bun' } },
 ];
-export const STUDENTS_PER_TEACHER = 20;
+// เกณฑ์ครูระดับมัธยมศึกษาตาม ว 23/2563 (อ่านจากสรุปของเว็บไซต์ข่าวการศึกษาและแผนอัตรากำลังของเขตพื้นที่ ตัวหนังสือฉบับจริงเป็นไฟล์สแกนที่ยังเปิดอ่านไม่ได้)
+// ห้องละ 35 คน เศษตั้งแต่ 10 คนนับเพิ่ม 1 ห้อง · ม.ต้น 30 ชม./สัปดาห์ ม.ปลาย 35 ชม./สัปดาห์ · หารด้วยชั่วโมงปฏิบัติงานครู 20 ชม./สัปดาห์
+// คิดแยกระดับแล้วรวมกัน เศษตั้งแต่ 0.5 ปัดขึ้น · สมมติฐานของเกม: นักเรียนกระจายเท่ากันทั้ง 6 ชั้น
+export const TEACHER_RULE = { perRoom: 35, minRemainder: 10, hoursLower: 30, hoursUpper: 35, workHours: 20 };
+export const TEACHER_SRC = 'https://www.eduzones.com/2020/12/26/v23-2564-teacher/';
+function roomsFor(n) { const r = TEACHER_RULE; return Math.floor(n / r.perRoom) + (n % r.perRoom >= r.minRemainder ? 1 : 0); }
+export function classrooms(n = econ().students) {
+  const per = Math.floor(n / 6), extra = n % 6;
+  const grade = g => per + (g < extra ? 1 : 0);
+  let lower = 0, upper = 0;
+  for (let g = 0; g < 6; g++) (g < 3 ? (lower += roomsFor(grade(g))) : (upper += roomsFor(grade(g))));
+  return { lower, upper };
+}
+export function teacherQuota(n = econ().students) {
+  const r = TEACHER_RULE, c = classrooms(n);
+  const raw = (c.lower * r.hoursLower + c.upper * r.hoursUpper) / r.workHours;
+  return Math.floor(raw) + (raw % 1 >= 0.5 ? 1 : 0);
+}
 export function staff() {
   const e = econ();
-  e.staff ??= { deputies: 2, teachers: Math.ceil(e.students / STUDENTS_PER_TEACHER), pending: [] };
+  e.staff ??= { deputies: 2, teachers: teacherQuota(e.students), pending: [] };
   e.staff.base ??= e.staff.teachers;
   e.staff.deputies = Math.min(DEPUTY_MAX, e.staff.deputies);
   return e.staff;
 }
 export function entitled(n = econ().students) {
   let d = 2; for (const st of DEPUTY_STEPS) if (n >= st.min) d = st.n;
-  return { deputies: Math.min(DEPUTY_MAX, d), teachers: Math.ceil(n / STUDENTS_PER_TEACHER) };
+  return { deputies: Math.min(DEPUTY_MAX, d), teachers: teacherQuota(n) };
 }
 // ยื่นขออัตรา: ได้รับเมื่อผ่านด่านถัดไป (รอบภาคเรียน)
 export function requestStaff(kind) {

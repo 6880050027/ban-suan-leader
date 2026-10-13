@@ -34,6 +34,16 @@ export const LEVELS = [
      },
      {
       "key": "ข",
+      "text": "ไม่ตอบในกลุ่มไลน์ รอให้เขตพื้นที่ส่งแนวทางมาเอง",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "ไม่ผิดระเบียบ แต่เป็นการรอให้ปัญหาลุกลาม (MBE-passive) (<a href=\"https://openeclass.uom.gr/modules/document/file.php/UNI390/ADDITIONAL%20BIBLIOGRAPHY/Two%20Decades%20of%20Research%20and%20Development%20in%20Transformational%20Leadership%20%281%29.pdf\" target=\"_blank\" rel=\"noopener\">Bass, 1999</a>)"
+     },
+     {
+      "key": "ค",
       "text": "ชี้แจงผู้ปกครองว่ามติ ครม. ยกเลิกเวรครูแล้ว พร้อมบอกแผนประสานตำรวจและท้องถิ่นแทน",
       "legal": "ok",
       "tags": [
@@ -44,7 +54,7 @@ export const LEVELS = [
       "explain": "ตรงกับแนวทางที่ให้เขตพื้นที่ จังหวัด และตำรวจรับผิดชอบการรักษาความปลอดภัย (<a href=\"https://www.thaipbs.or.th/news/content/336400\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
      },
      {
-      "key": "ค",
+      "key": "ง",
       "text": "มอบหมายรองฯ ประเสริฐร่างแผนความปลอดภัยร่วมกับสถานีตำรวจและท้องถิ่น แล้วรายงานภายในหนึ่งสัปดาห์",
       "legal": "ok",
       "tags": [
@@ -54,7 +64,7 @@ export const LEVELS = [
       "explain": "คำสั่งเข้ากับความพร้อม R4 ส่วนการประสานตำรวจเป็นไปตามหนังสือ สพฐ. (<a href=\"https://www.thaipbs.or.th/news/content/336400\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
      },
      {
-      "key": "ง",
+      "key": "จ",
       "text": "นำเรื่องเข้าที่ประชุมคณะกรรมการสถานศึกษาเพื่อหาทางเลือกอื่นร่วมกัน",
       "legal": "ok",
       "tags": [
@@ -62,16 +72,6 @@ export const LEVELS = [
       ],
       "exp": 20,
       "explain": "ไม่ขัดระเบียบ แต่ช้ากว่าการชี้แจงข้อเท็จจริงก่อน คณะกรรมการมีหน้าที่ประสานชุมชน (<a href=\"https://cuir.car.chula.ac.th/dspace/bitstream/123456789/64505/2/Krittiya_si_ch1_p.pdf\" target=\"_blank\" rel=\"noopener\">CUIR</a>)"
-     },
-     {
-      "key": "จ",
-      "text": "ไม่ตอบในกลุ่มไลน์ รอให้เขตพื้นที่ส่งแนวทางมาเอง",
-      "legal": "ok",
-      "tags": [
-       "⚠"
-      ],
-      "exp": 5,
-      "explain": "ไม่ผิดระเบียบ แต่เป็นการรอให้ปัญหาลุกลาม (MBE-passive) (<a href=\"https://openeclass.uom.gr/modules/document/file.php/UNI390/ADDITIONAL%20BIBLIOGRAPHY/Two%20Decades%20of%20Research%20and%20Development%20in%20Transformational%20Leadership%20%281%29.pdf\" target=\"_blank\" rel=\"noopener\">Bass, 1999</a>)"
      }
     ]
    },
@@ -84,37 +84,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ขอให้สถานีตำรวจเพิ่มโรงเรียนในเส้นทางตรวจตราและติดตั้งตู้รับแจ้ง",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 25,
-      "explain": "ตรงกับการโอนงานรักษาความปลอดภัยไปยังตำรวจ (<a href=\"https://www.thaipbs.or.th/news/content/336400\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "บรรจุกล้องวงจรปิดไว้ในแผนปฏิบัติการ แล้วจัดซื้อตามระเบียบพัสดุ",
-      "legal": "ok",
-      "tags": [
-       "ทศ",
-       "รบ"
-      ],
-      "exp": 30,
-      "explain": "งบลงทุนจากค่าจัดการเรียนการสอนใช้กับครุภัณฑ์ได้ หากอยู่ในแผนที่คณะกรรมการสถานศึกษาเห็นชอบ (<a href=\"https://www.korat3.go.th/wp-content/uploads/2024/11/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99-2568.pdf\" target=\"_blank\" rel=\"noopener\">แนวทาง 2568</a>)"
-     },
-     {
-      "key": "ค",
-      "text": "ตั้งเครือข่ายผู้ปกครองและชุมชนเฝ้าระวังโดยสมัครใจ ให้สมาคมผู้ปกครองช่วยประสาน",
-      "legal": "ok",
-      "tags": [
-       "กจ"
-      ],
-      "exp": 25,
-      "explain": "การประสานชุมชนเป็นงานบริหารทั่วไปตามกฎกระทรวง ข้อ 1 (4) (<a href=\"https://ops.moe.go.th/wp-content/uploads/2023/03/7.pdf\" target=\"_blank\" rel=\"noopener\">กฎกระทรวงฯ 2550</a>)"
-     },
-     {
-      "key": "ง",
       "text": "ให้สภานักเรียนออกแบบช่องทางแจ้งเหตุผิดปกติ และเชื่อมกับ MOE Safety Center",
       "legal": "ok",
       "tags": [
@@ -125,7 +94,7 @@ export const LEVELS = [
       "explain": "MOE Safety Center มีช่องทางแจ้งเหตุทั้งแอป เว็บ ไลน์ และโทรศัพท์ (<a href=\"https://www.thaipost.net/all-news/82638/\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>)"
      },
      {
-      "key": "จ",
+      "key": "ข",
       "text": "ปล่อยไว้ก่อน ถ้าถูกงัดอีกครั้งค่อยคิดมาตรการ",
       "legal": "ok",
       "tags": [
@@ -133,6 +102,37 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "ลงมือหลังปัญหารุนแรงแล้ว (<a href=\"https://openeclass.uom.gr/modules/document/file.php/UNI390/ADDITIONAL%20BIBLIOGRAPHY/Two%20Decades%20of%20Research%20and%20Development%20in%20Transformational%20Leadership%20%281%29.pdf\" target=\"_blank\" rel=\"noopener\">Bass</a>)"
+     },
+     {
+      "key": "ค",
+      "text": "บรรจุกล้องวงจรปิดไว้ในแผนปฏิบัติการ แล้วจัดซื้อตามระเบียบพัสดุ",
+      "legal": "ok",
+      "tags": [
+       "ทศ",
+       "รบ"
+      ],
+      "exp": 30,
+      "explain": "งบลงทุนจากค่าจัดการเรียนการสอนใช้กับครุภัณฑ์ได้ หากอยู่ในแผนที่คณะกรรมการสถานศึกษาเห็นชอบ (<a href=\"https://www.korat3.go.th/wp-content/uploads/2024/11/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99-2568.pdf\" target=\"_blank\" rel=\"noopener\">แนวทาง 2568</a>)"
+     },
+     {
+      "key": "ง",
+      "text": "ขอให้สถานีตำรวจเพิ่มโรงเรียนในเส้นทางตรวจตราและติดตั้งตู้รับแจ้ง",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 25,
+      "explain": "ตรงกับการโอนงานรักษาความปลอดภัยไปยังตำรวจ (<a href=\"https://www.thaipbs.or.th/news/content/336400\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "ตั้งเครือข่ายผู้ปกครองและชุมชนเฝ้าระวังโดยสมัครใจ ให้สมาคมผู้ปกครองช่วยประสาน",
+      "legal": "ok",
+      "tags": [
+       "กจ"
+      ],
+      "exp": 25,
+      "explain": "การประสานชุมชนเป็นงานบริหารทั่วไปตามกฎกระทรวง ข้อ 1 (4) (<a href=\"https://ops.moe.go.th/wp-content/uploads/2023/03/7.pdf\" target=\"_blank\" rel=\"noopener\">กฎกระทรวงฯ 2550</a>)"
      }
     ]
    },
@@ -155,27 +155,16 @@ export const LEVELS = [
      },
      {
       "key": "ข",
-      "text": "เชื่อมเรื่องนี้กับนโยบายลดภาระครูเพื่อให้ครูมีเวลาสอนมากขึ้น และบอกว่าโรงเรียนจะปกป้องเวลาสอนอย่างไร",
+      "text": "ไม่ต้องแจ้งเพราะครูน่าจะทราบจากข่าวแล้ว",
       "legal": "ok",
       "tags": [
-       "ทศ",
-       "วก"
+       "⚠"
       ],
-      "exp": 30,
-      "explain": "การยกเลิกเวรครูเป็นมาตรการหนึ่งของ \"เรียนดี มีความสุข\" (<a href=\"https://www.dailynews.co.th/news/3319870/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>) และตรงกับหน้าที่ปกป้องเวลาการสอนใน PIMRS"
+      "exp": 5,
+      "explain": "ปล่อยให้ข้อมูลคลาดเคลื่อนกระจายในโรงเรียน"
      },
      {
       "key": "ค",
-      "text": "คุยรายคนกับครูหญิงที่กังวล ถามว่าต้องการให้โรงเรียนช่วยอะไร",
-      "legal": "ok",
-      "tags": [
-       "ปบ"
-      ],
-      "exp": 25,
-      "explain": "การใส่ใจรายบุคคล (<a href=\"https://openeclass.uom.gr/modules/document/file.php/UNI390/ADDITIONAL%20BIBLIOGRAPHY/Two%20Decades%20of%20Research%20and%20Development%20in%20Transformational%20Leadership%20%281%29.pdf\" target=\"_blank\" rel=\"noopener\">Bass</a>)"
-     },
-     {
-      "key": "ง",
       "text": "ตั้งวงให้ครูเสนอวิธีดูแลความปลอดภัยช่วงกลางวันที่ไม่เพิ่มภาระ",
       "legal": "ok",
       "tags": [
@@ -185,14 +174,25 @@ export const LEVELS = [
       "explain": "ร่วมตัดสินใจกับผู้ปฏิบัติ (<a href=\"https://www.emeraldinsight.com/doi/abs/10.1108/09578231111116699\" target=\"_blank\" rel=\"noopener\">Hallinger, 2011</a>)"
      },
      {
-      "key": "จ",
-      "text": "ไม่ต้องแจ้งเพราะครูน่าจะทราบจากข่าวแล้ว",
+      "key": "ง",
+      "text": "คุยรายคนกับครูหญิงที่กังวล ถามว่าต้องการให้โรงเรียนช่วยอะไร",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "ปบ"
       ],
-      "exp": 5,
-      "explain": "ปล่อยให้ข้อมูลคลาดเคลื่อนกระจายในโรงเรียน"
+      "exp": 25,
+      "explain": "การใส่ใจรายบุคคล (<a href=\"https://openeclass.uom.gr/modules/document/file.php/UNI390/ADDITIONAL%20BIBLIOGRAPHY/Two%20Decades%20of%20Research%20and%20Development%20in%20Transformational%20Leadership%20%281%29.pdf\" target=\"_blank\" rel=\"noopener\">Bass</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "เชื่อมเรื่องนี้กับนโยบายลดภาระครูเพื่อให้ครูมีเวลาสอนมากขึ้น และบอกว่าโรงเรียนจะปกป้องเวลาสอนอย่างไร",
+      "legal": "ok",
+      "tags": [
+       "ทศ",
+       "วก"
+      ],
+      "exp": 30,
+      "explain": "การยกเลิกเวรครูเป็นมาตรการหนึ่งของ \"เรียนดี มีความสุข\" (<a href=\"https://www.dailynews.co.th/news/3319870/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>) และตรงกับหน้าที่ปกป้องเวลาการสอนใน PIMRS"
      }
     ]
    }
@@ -232,16 +232,6 @@ export const LEVELS = [
      },
      {
       "key": "ข",
-      "text": "ใช้เงินค่ากิจกรรมพัฒนาคุณภาพผู้เรียนที่ยังเหลือ เพราะห้องน้ำก็เพื่อผู้เรียน",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "ค่ากิจกรรมพัฒนาคุณภาพผู้เรียนเป็นเงินผูกวัตถุประสงค์ ต้องผ่านภาคี 4 ฝ่ายและมีเกณฑ์ค่าใช้จ่ายเฉพาะ ไม่ใช่แหล่งเงินซ่อมอาคาร (<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>; <a href=\"https://www.korat3.go.th/wp-content/uploads/2024/11/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99-2568.pdf\" target=\"_blank\" rel=\"noopener\">แนวทาง 2568</a>)"
-     },
-     {
-      "key": "ค",
       "text": "ใช้ค่าจัดการเรียนการสอน แต่เรียกประชุมคณะกรรมการสถานศึกษาเพื่อปรับแผนก่อน เพราะรายการซ่อมท่อแนวนี้ไม่อยู่ในแผน",
       "legal": "ok",
       "tags": [
@@ -252,17 +242,7 @@ export const LEVELS = [
       "explain": "การใช้จ่ายต้องตรงกับแผนที่คณะกรรมการเห็นชอบ ถ้าไม่มีต้องปรับแผน (<a href=\"https://www.korat3.go.th/wp-content/uploads/2024/11/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99-2568.pdf\" target=\"_blank\" rel=\"noopener\">แนวทาง 2568</a>)"
      },
      {
-      "key": "ง",
-      "text": "ใช้เงินรายได้สถานศึกษาส่วนที่เป็นเงินบริจาคทั่วไป ซึ่งมีรายการซ่อมบำรุงอยู่ในแผน",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 20,
-      "explain": "เงินรายได้ใช้ได้เฉพาะที่เกี่ยวเนื่องกับการจัดการศึกษาตามแผนปฏิบัติการ (<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
-     },
-     {
-      "key": "จ",
+      "key": "ค",
       "text": "ปิดห้องน้ำไว้ แล้วทำหนังสือขอเงินฉุกเฉินจากเขตพื้นที่",
       "legal": "ok",
       "tags": [
@@ -270,6 +250,26 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "ไม่ผิดระเบียบ แต่ปล่อยให้นักเรียนไม่มีห้องน้ำใช้ ทั้งที่โรงเรียนมีเงินที่ใช้ได้"
+     },
+     {
+      "key": "ง",
+      "text": "ใช้เงินค่ากิจกรรมพัฒนาคุณภาพผู้เรียนที่ยังเหลือ เพราะห้องน้ำก็เพื่อผู้เรียน",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "ค่ากิจกรรมพัฒนาคุณภาพผู้เรียนเป็นเงินผูกวัตถุประสงค์ ต้องผ่านภาคี 4 ฝ่ายและมีเกณฑ์ค่าใช้จ่ายเฉพาะ ไม่ใช่แหล่งเงินซ่อมอาคาร (<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>; <a href=\"https://www.korat3.go.th/wp-content/uploads/2024/11/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99-2568.pdf\" target=\"_blank\" rel=\"noopener\">แนวทาง 2568</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "ใช้เงินรายได้สถานศึกษาส่วนที่เป็นเงินบริจาคทั่วไป ซึ่งมีรายการซ่อมบำรุงอยู่ในแผน",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 20,
+      "explain": "เงินรายได้ใช้ได้เฉพาะที่เกี่ยวเนื่องกับการจัดการศึกษาตามแผนปฏิบัติการ (<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
      }
     ]
    },
@@ -282,26 +282,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "น้ำกำลังซึมเข้าห้องไฟฟ้า ถือเป็นเหตุเร่งด่วนที่คาดหมายไม่ได้ ให้ช่างเปลี่ยนท่อช่วงที่แตกไปก่อน แล้วรีบรายงานขอความเห็นชอบตามระเบียบฯ ข้อ 79 วรรคสอง",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 30,
-      "explain": "ข้อ 79 วรรคสองให้ดำเนินการไปก่อนแล้วรีบรายงานหัวหน้าหน่วยงาน (<a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "จ้างผู้รับจ้างด้วยวิธีเฉพาะเจาะจงตาม ม.56(2)(ข) เพราะวงเงินไม่เกิน 500,000 บาท โดยทำรายงานขอจ้างตามข้อ 22 และรออนุมัติตามข้อ 24",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 25,
-      "explain": "วิธีที่ถูกสำหรับงานไม่เร่งด่วน (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>; <a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>) ในสถานการณ์นี้ช้ากว่าความเสี่ยงไฟฟ้า"
-     },
-     {
-      "key": "ค",
       "text": "ให้ลุงบุญมีอุดรอยแตกและปิดวาล์วแยกโซนเป็นการชั่วคราว ซื้อวัสดุเล็กน้อย แล้วจ้างผู้รับจ้างเปลี่ยนท่อทั้งแนวตามวิธีเฉพาะเจาะจง",
       "legal": "ok",
       "tags": [
@@ -312,7 +292,7 @@ export const LEVELS = [
       "explain": "ใช้ฝีมือคนในโรงเรียนให้เหมาะกับงาน แต่การให้ภารโรงทำงานซ่อมทั้งแนวเองตามข้อ 18 (การจัดทำพัสดุเอง) ยังยืนยันรายละเอียดไม่ได้ จึงให้ทำเพียงงานชั่วคราว (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>)"
      },
      {
-      "key": "ง",
+      "key": "ข",
       "text": "แบ่งงานเป็นใบสั่งจ้าง 2 ใบ ใบละ 60,000 บาท จะได้ตั้งผู้ตรวจรับคนเดียวและไม่ต้องทำข้อตกลงเป็นหนังสือ",
       "legal": "illegal",
       "tags": [
@@ -322,7 +302,7 @@ export const LEVELS = [
       "explain": "ระเบียบฯ ข้อ 20 ห้ามแบ่งวงเงินเพื่อให้วิธีหรืออำนาจเปลี่ยนไป (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>)"
      },
      {
-      "key": "จ",
+      "key": "ค",
       "text": "ปิดห้องน้ำไว้ทั้งภาคเรียน รอรวมกับงานซ่อมอื่นในปีงบประมาณหน้า",
       "legal": "ok",
       "tags": [
@@ -330,6 +310,26 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "เลื่อนปัญหาโดยไม่จำเป็น"
+     },
+     {
+      "key": "ง",
+      "text": "จ้างผู้รับจ้างด้วยวิธีเฉพาะเจาะจงตาม ม.56(2)(ข) เพราะวงเงินไม่เกิน 500,000 บาท โดยทำรายงานขอจ้างตามข้อ 22 และรออนุมัติตามข้อ 24",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 25,
+      "explain": "วิธีที่ถูกสำหรับงานไม่เร่งด่วน (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>; <a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>) ในสถานการณ์นี้ช้ากว่าความเสี่ยงไฟฟ้า"
+     },
+     {
+      "key": "จ",
+      "text": "น้ำกำลังซึมเข้าห้องไฟฟ้า ถือเป็นเหตุเร่งด่วนที่คาดหมายไม่ได้ ให้ช่างเปลี่ยนท่อช่วงที่แตกไปก่อน แล้วรีบรายงานขอความเห็นชอบตามระเบียบฯ ข้อ 79 วรรคสอง",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 30,
+      "explain": "ข้อ 79 วรรคสองให้ดำเนินการไปก่อนแล้วรีบรายงานหัวหน้าหน่วยงาน (<a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>)"
      }
     ]
    },
@@ -342,17 +342,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "แต่งตั้งคณะกรรมการตรวจรับ 3 คน มีรองฯ ประเสริฐเป็นประธาน เขียนขอบเขตงานสั้น ๆ และสืบราคาตลาดอย่างน้อย 3 ราย",
-      "legal": "ok",
-      "tags": [
-       "รบ",
-       "กจ"
-      ],
-      "exp": 30,
-      "explain": "วงเงินเกิน 100,000 บาทตั้งผู้ตรวจรับคนเดียวไม่ได้ คณะกรรมการมีประธาน 1 คนและกรรมการอย่างน้อย 2 คน (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>; <a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>) การสืบราคาไม่น้อยกว่า 3 รายตาม ว 206 (<a href=\"https://www.onep.go.th/wp-content/uploads/2023/05/procure65.pdf\" target=\"_blank\" rel=\"noopener\">สผ.</a>)"
-     },
-     {
-      "key": "ข",
       "text": "แต่งตั้งลุงบุญมีเป็นผู้ตรวจรับคนเดียว เพราะรู้เรื่องท่อดีที่สุด",
       "legal": "illegal",
       "tags": [
@@ -362,17 +351,17 @@ export const LEVELS = [
       "explain": "ผู้ตรวจรับคนเดียวใช้ได้เฉพาะวงเงินไม่เกิน 100,000 บาท (<a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>; <a href=\"https://qsds.go.th/newaudit/wp-content/uploads/sites/70/2021/06/337.pdf\" target=\"_blank\" rel=\"noopener\">FAQ 337</a>)"
      },
      {
-      "key": "ค",
-      "text": "สั่งครูต้นกล้าทำรายงานขอจ้างให้ครบ 8 รายการตามข้อ 22 โดยให้แบบฟอร์มตัวอย่างและกำหนดส่งพรุ่งนี้",
+      "key": "ข",
+      "text": "ให้ครูต้นกล้าจัดการทุกอย่างเอง ไม่ต้องรายงานจนกว่าจะเสร็จ",
       "legal": "ok",
       "tags": [
-       "รบ"
+       "⚠"
       ],
-      "exp": 25,
-      "explain": "คำสั่งเข้ากับความพร้อม R1 และรายการตามข้อ 22 ถูกต้อง (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>)"
+      "exp": 5,
+      "explain": "มอบงานให้ผู้มีความพร้อม R1 โดยไม่กำกับ คือการปล่อยปละ ไม่ใช่การกระจายภาวะผู้นำ"
      },
      {
-      "key": "ง",
+      "key": "ค",
       "text": "ให้ลุงบุญมีร่วมเป็นกรรมการตรวจรับ 1 ใน 3 คน เพื่อให้ความเห็นด้านเทคนิค",
       "legal": "ok",
       "tags": [
@@ -383,14 +372,25 @@ export const LEVELS = [
       "explain": "องค์ประกอบคณะกรรมการไม่ขัดระเบียบ และใช้ความรู้ของผู้ปฏิบัติ"
      },
      {
-      "key": "จ",
-      "text": "ให้ครูต้นกล้าจัดการทุกอย่างเอง ไม่ต้องรายงานจนกว่าจะเสร็จ",
+      "key": "ง",
+      "text": "แต่งตั้งคณะกรรมการตรวจรับ 3 คน มีรองฯ ประเสริฐเป็นประธาน เขียนขอบเขตงานสั้น ๆ และสืบราคาตลาดอย่างน้อย 3 ราย",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "รบ",
+       "กจ"
       ],
-      "exp": 5,
-      "explain": "มอบงานให้ผู้มีความพร้อม R1 โดยไม่กำกับ คือการปล่อยปละ ไม่ใช่การกระจายภาวะผู้นำ"
+      "exp": 30,
+      "explain": "วงเงินเกิน 100,000 บาทตั้งผู้ตรวจรับคนเดียวไม่ได้ คณะกรรมการมีประธาน 1 คนและกรรมการอย่างน้อย 2 คน (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>; <a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>) การสืบราคาไม่น้อยกว่า 3 รายตาม ว 206 (<a href=\"https://www.onep.go.th/wp-content/uploads/2023/05/procure65.pdf\" target=\"_blank\" rel=\"noopener\">สผ.</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "สั่งครูต้นกล้าทำรายงานขอจ้างให้ครบ 8 รายการตามข้อ 22 โดยให้แบบฟอร์มตัวอย่างและกำหนดส่งพรุ่งนี้",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 25,
+      "explain": "คำสั่งเข้ากับความพร้อม R1 และรายการตามข้อ 22 ถูกต้อง (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>)"
      }
     ]
    },
@@ -403,13 +403,14 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "คณะกรรมการตรวจหน้างาน เปิดน้ำทดสอบแรงดันทุกจุด แล้วทำรายงานต่อผู้อำนวยการตามข้อ 175",
+      "text": "กรรมการคนหนึ่งพบรอยรั่วที่ข้อต่อ จึงทำความเห็นแย้ง และให้ผู้รับจ้างแก้ก่อนตรวจรับ",
       "legal": "ok",
       "tags": [
-       "รบ"
+       "รบ",
+       "วก"
       ],
-      "exp": 30,
-      "explain": "ข้อ 175 ให้รายงานต่อหัวหน้าหน่วยงาน มติต้องเป็นเอกฉันท์ (<a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>)"
+      "exp": 25,
+      "explain": "ถ้ากรรมการไม่เห็นด้วยให้ทำความเห็นแย้ง (<a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>)"
      },
      {
       "key": "ข",
@@ -423,27 +424,6 @@ export const LEVELS = [
      },
      {
       "key": "ค",
-      "text": "กรรมการคนหนึ่งพบรอยรั่วที่ข้อต่อ จึงทำความเห็นแย้ง และให้ผู้รับจ้างแก้ก่อนตรวจรับ",
-      "legal": "ok",
-      "tags": [
-       "รบ",
-       "วก"
-      ],
-      "exp": 25,
-      "explain": "ถ้ากรรมการไม่เห็นด้วยให้ทำความเห็นแย้ง (<a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>)"
-     },
-     {
-      "key": "ง",
-      "text": "ให้ผู้รับจ้างส่งรูปถ่าย แล้วกรรมการลงนามตรวจรับจากรูปโดยไม่ไปหน้างาน",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "การลงนามตรวจรับโดยไม่ได้ตรวจจริงเป็นความผิดตาม ป.อ. ม.157 แม้ไม่ได้ประโยชน์ (<a href=\"https://isranews.org/article/isranews-scoop/131425-invesqwe.html\" target=\"_blank\" rel=\"noopener\">อิศรา</a>)"
-     },
-     {
-      "key": "จ",
       "text": "หลังตรวจรับ บรรจุการสำรวจท่อทั้งโรงเรียนไว้ในแผนปฏิบัติการปีหน้า",
       "legal": "ok",
       "tags": [
@@ -451,6 +431,26 @@ export const LEVELS = [
       ],
       "exp": 25,
       "explain": "ป้องกันปัญหาซ้ำด้วยการวางแผน (<a href=\"https://www.korat3.go.th/wp-content/uploads/2024/11/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99-2568.pdf\" target=\"_blank\" rel=\"noopener\">แนวทาง 2568</a>)"
+     },
+     {
+      "key": "ง",
+      "text": "คณะกรรมการตรวจหน้างาน เปิดน้ำทดสอบแรงดันทุกจุด แล้วทำรายงานต่อผู้อำนวยการตามข้อ 175",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 30,
+      "explain": "ข้อ 175 ให้รายงานต่อหัวหน้าหน่วยงาน มติต้องเป็นเอกฉันท์ (<a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "ให้ผู้รับจ้างส่งรูปถ่าย แล้วกรรมการลงนามตรวจรับจากรูปโดยไม่ไปหน้างาน",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "การลงนามตรวจรับโดยไม่ได้ตรวจจริงเป็นความผิดตาม ป.อ. ม.157 แม้ไม่ได้ประโยชน์ (<a href=\"https://isranews.org/article/isranews-scoop/131425-invesqwe.html\" target=\"_blank\" rel=\"noopener\">อิศรา</a>)"
      }
     ]
    }
@@ -480,16 +480,26 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "แจ้งว่ายังไม่ครบเงื่อนไข 24 เดือนสำหรับการย้ายปกติ แล้วช่วยวางแผนยื่นในรอบถัดไป",
+      "text": "บอกให้ไปสอบถามกลุ่มบริหารงานบุคคลของเขตพื้นที่เอง",
       "legal": "ok",
       "tags": [
-       "รบ"
+       "⚠"
       ],
-      "exp": 25,
-      "explain": "ตรงตามเงื่อนไข TRS (<a href=\"https://sesaopc.go.th/wp-content/uploads/2024/12/ไฟล์นำเสนอ-TRS.pdf\" target=\"_blank\" rel=\"noopener\">สไลด์ TRS</a>)"
+      "exp": 5,
+      "explain": "โยนเรื่องออกไปโดยไม่ช่วยตรวจสิทธิ"
      },
      {
       "key": "ข",
+      "text": "ให้ยื่นในระบบเป็นการย้ายปกติไปเลย ผู้อำนวยการจะลงความเห็น \"เห็นควร\" ให้",
+      "legal": "illegal",
+      "tags": [
+       "ปบ"
+      ],
+      "exp": 0,
+      "explain": "ผู้ยื่นยังขาดคุณสมบัติขั้นต่ำ 24 เดือน (<a href=\"https://sesaopc.go.th/wp-content/uploads/2024/12/ไฟล์นำเสนอ-TRS.pdf\" target=\"_blank\" rel=\"noopener\">สไลด์ TRS</a>)"
+     },
+     {
+      "key": "ค",
       "text": "แนะนำให้ตรวจว่าเข้าเงื่อนไขการย้ายกรณีพิเศษ (ดูแลบุพการี) หรือไม่ และช่วยเตรียมเอกสาร",
       "legal": "ok",
       "tags": [
@@ -500,17 +510,17 @@ export const LEVELS = [
       "explain": "การย้ายกรณีพิเศษ เช่น ดูแลครอบครัว เป็นช่องทางแยกจากการย้ายปกติ (<a href=\"https://sesaopc.go.th/wp-content/uploads/2024/12/ไฟล์นำเสนอ-TRS.pdf\" target=\"_blank\" rel=\"noopener\">สไลด์ TRS</a>)"
      },
      {
-      "key": "ค",
-      "text": "ให้ยื่นในระบบเป็นการย้ายปกติไปเลย ผู้อำนวยการจะลงความเห็น \"เห็นควร\" ให้",
-      "legal": "illegal",
+      "key": "ง",
+      "text": "แจ้งว่ายังไม่ครบเงื่อนไข 24 เดือนสำหรับการย้ายปกติ แล้วช่วยวางแผนยื่นในรอบถัดไป",
+      "legal": "ok",
       "tags": [
-       "ปบ"
+       "รบ"
       ],
-      "exp": 0,
-      "explain": "ผู้ยื่นยังขาดคุณสมบัติขั้นต่ำ 24 เดือน (<a href=\"https://sesaopc.go.th/wp-content/uploads/2024/12/ไฟล์นำเสนอ-TRS.pdf\" target=\"_blank\" rel=\"noopener\">สไลด์ TRS</a>)"
+      "exp": 25,
+      "explain": "ตรงตามเงื่อนไข TRS (<a href=\"https://sesaopc.go.th/wp-content/uploads/2024/12/ไฟล์นำเสนอ-TRS.pdf\" target=\"_blank\" rel=\"noopener\">สไลด์ TRS</a>)"
      },
      {
-      "key": "ง",
+      "key": "จ",
       "text": "ระหว่างรอ ลดคาบสอนเสริมและจัดตารางให้กลับบ้านได้ทุกปลายสัปดาห์",
       "legal": "ok",
       "tags": [
@@ -518,16 +528,6 @@ export const LEVELS = [
       ],
       "exp": 20,
       "explain": "ใส่ใจรายบุคคล (<a href=\"https://openeclass.uom.gr/modules/document/file.php/UNI390/ADDITIONAL%20BIBLIOGRAPHY/Two%20Decades%20of%20Research%20and%20Development%20in%20Transformational%20Leadership%20%281%29.pdf\" target=\"_blank\" rel=\"noopener\">Bass</a>) แต่ยังไม่ได้ตอบเรื่องสิทธิการย้าย"
-     },
-     {
-      "key": "จ",
-      "text": "บอกให้ไปสอบถามกลุ่มบริหารงานบุคคลของเขตพื้นที่เอง",
-      "legal": "ok",
-      "tags": [
-       "⚠"
-      ],
-      "exp": 5,
-      "explain": "โยนเรื่องออกไปโดยไม่ช่วยตรวจสิทธิ"
      }
     ]
    },
@@ -540,27 +540,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ผู้อำนวยการลงความเห็นในระบบเองทันทีเพื่อไม่ให้เสียเวลา",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "ผู้อำนวยการต้นทางต้องให้ความเห็นร่วมกับคณะกรรมการสถานศึกษา (<a href=\"https://sesaopc.go.th/wp-content/uploads/2024/12/ไฟล์นำเสนอ-TRS.pdf\" target=\"_blank\" rel=\"noopener\">สไลด์ TRS</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "นำเรื่องเข้าคณะกรรมการสถานศึกษา เสนอข้อมูลภาระสอนและอัตรากำลัง แล้วให้ความเห็นภายในกำหนด",
-      "legal": "ok",
-      "tags": [
-       "กจ",
-       "รบ"
-      ],
-      "exp": 30,
-      "explain": "ตรงตามขั้นตอนและกำหนดเวลา ซึ่งรอบ 2568 ให้โรงเรียนต้นทางพิจารณาภายใน 5 กุมภาพันธ์ (<a href=\"https://sesaopc.go.th/wp-content/uploads/2024/12/ไฟล์นำเสนอ-TRS.pdf\" target=\"_blank\" rel=\"noopener\">สไลด์ TRS</a>)"
-     },
-     {
-      "key": "ค",
       "text": "ร่วมกับคณะกรรมการให้ความเห็น และแนบแผนหาครูทดแทนเพื่อลดความกังวลของประธานกรรมการ",
       "legal": "ok",
       "tags": [
@@ -571,17 +550,17 @@ export const LEVELS = [
       "explain": "ตอบทั้งสิทธิของครูและความต่อเนื่องของการสอน"
      },
      {
-      "key": "ง",
-      "text": "ร่วมกับคณะกรรมการลงความเห็น \"ไม่เห็นควร\" เพราะหาครูแทนไม่ได้",
-      "legal": "ok",
+      "key": "ข",
+      "text": "ผู้อำนวยการลงความเห็นในระบบเองทันทีเพื่อไม่ให้เสียเวลา",
+      "legal": "illegal",
       "tags": [
        "รบ"
       ],
-      "exp": 10,
-      "explain": "เป็นอำนาจให้ความเห็นที่ทำได้ แต่ขัดกับเป้าหมาย TRS ที่ช่วยครูซึ่งอยู่ไกลบ้าน (<a href=\"https://www.dailynews.co.th/news/4638552/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
+      "exp": 0,
+      "explain": "ผู้อำนวยการต้นทางต้องให้ความเห็นร่วมกับคณะกรรมการสถานศึกษา (<a href=\"https://sesaopc.go.th/wp-content/uploads/2024/12/ไฟล์นำเสนอ-TRS.pdf\" target=\"_blank\" rel=\"noopener\">สไลด์ TRS</a>)"
      },
      {
-      "key": "จ",
+      "key": "ค",
       "text": "มอบให้รองฯ มาลีจัดการทั้งหมดโดยไม่ติดตาม",
       "legal": "ok",
       "tags": [
@@ -589,6 +568,27 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "รองฯ มาลีอยู่ระดับ R2 การมอบหมายโดยไม่ติดตามจึงไม่เข้ากับความพร้อม"
+     },
+     {
+      "key": "ง",
+      "text": "นำเรื่องเข้าคณะกรรมการสถานศึกษา เสนอข้อมูลภาระสอนและอัตรากำลัง แล้วให้ความเห็นภายในกำหนด",
+      "legal": "ok",
+      "tags": [
+       "กจ",
+       "รบ"
+      ],
+      "exp": 30,
+      "explain": "ตรงตามขั้นตอนและกำหนดเวลา ซึ่งรอบ 2568 ให้โรงเรียนต้นทางพิจารณาภายใน 5 กุมภาพันธ์ (<a href=\"https://sesaopc.go.th/wp-content/uploads/2024/12/ไฟล์นำเสนอ-TRS.pdf\" target=\"_blank\" rel=\"noopener\">สไลด์ TRS</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "ร่วมกับคณะกรรมการลงความเห็น \"ไม่เห็นควร\" เพราะหาครูแทนไม่ได้",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 10,
+      "explain": "เป็นอำนาจให้ความเห็นที่ทำได้ แต่ขัดกับเป้าหมาย TRS ที่ช่วยครูซึ่งอยู่ไกลบ้าน (<a href=\"https://www.dailynews.co.th/news/4638552/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
      }
     ]
    },
@@ -601,27 +601,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "วิเคราะห์อัตรากำลังแล้วขออัตราจากเขตพื้นที่",
-      "legal": "ok",
-      "tags": [
-       "รบ",
-       "ทศ"
-      ],
-      "exp": 25,
-      "explain": "การวางแผนและจัดสรรอัตรากำลังเป็นงานบุคคลของเขตพื้นที่ (<a href=\"https://www.kkzone1.go.th/administrator-control/data/leftmenu/03-08-2026-14-53-26_136965086.pdf\" target=\"_blank\" rel=\"noopener\">รายงาน สพป.</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "ให้ครูวิไลเป็นพี่เลี้ยงครูรุ่นน้องที่จะรับช่วงสอนก่อนย้าย 1 ภาคเรียน",
-      "legal": "ok",
-      "tags": [
-       "พค"
-      ],
-      "exp": 30,
-      "explain": "การพัฒนาครูมีผลสูงสุดในงานของ Robinson (<a href=\"https://cdn.auckland.ac.nz/assets/education/about/research/LRG/Robinson,%20Lloyd%20&amp;%20Rowe%20(2008)%20The%20impact%20of%20leadership%20on%20student%20outcomes%20-%20An%20analysis%20of%20the%20differential%20effects%20of%20leadership%20types.pdf\" target=\"_blank\" rel=\"noopener\">Robinson et al., 2008</a>)"
-     },
-     {
-      "key": "ค",
       "text": "ประชุมกลุ่มสาระคณิตศาสตร์ให้ช่วยกันกระจายคาบสอน",
       "legal": "ok",
       "tags": [
@@ -631,7 +610,7 @@ export const LEVELS = [
       "explain": "ร่วมตัดสินใจ แต่อาจเพิ่มภาระครูที่เหลือ"
      },
      {
-      "key": "ง",
+      "key": "ข",
       "text": "ให้ครูวิไลบันทึกคลิปการสอนเรื่องยากไว้ให้นักเรียนทบทวน",
       "legal": "ok",
       "tags": [
@@ -641,7 +620,7 @@ export const LEVELS = [
       "explain": "สร้างสรรค์ แต่ไม่ได้แก้ปัญหาอัตรากำลัง"
      },
      {
-      "key": "จ",
+      "key": "ค",
       "text": "รอดูว่าเปิดภาคเรียนแล้วขาดครูกี่คาบค่อยแก้",
       "legal": "ok",
       "tags": [
@@ -649,6 +628,27 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "ลงมือหลังปัญหาเกิด"
+     },
+     {
+      "key": "ง",
+      "text": "ให้ครูวิไลเป็นพี่เลี้ยงครูรุ่นน้องที่จะรับช่วงสอนก่อนย้าย 1 ภาคเรียน",
+      "legal": "ok",
+      "tags": [
+       "พค"
+      ],
+      "exp": 30,
+      "explain": "การพัฒนาครูมีผลสูงสุดในงานของ Robinson (<a href=\"https://cdn.auckland.ac.nz/assets/education/about/research/LRG/Robinson,%20Lloyd%20&amp;%20Rowe%20(2008)%20The%20impact%20of%20leadership%20on%20student%20outcomes%20-%20An%20analysis%20of%20the%20differential%20effects%20of%20leadership%20types.pdf\" target=\"_blank\" rel=\"noopener\">Robinson et al., 2008</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "วิเคราะห์อัตรากำลังแล้วขออัตราจากเขตพื้นที่",
+      "legal": "ok",
+      "tags": [
+       "รบ",
+       "ทศ"
+      ],
+      "exp": 25,
+      "explain": "การวางแผนและจัดสรรอัตรากำลังเป็นงานบุคคลของเขตพื้นที่ (<a href=\"https://www.kkzone1.go.th/administrator-control/data/leftmenu/03-08-2026-14-53-26_136965086.pdf\" target=\"_blank\" rel=\"noopener\">รายงาน สพป.</a>)"
      }
     ]
    }
@@ -678,26 +678,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ประกาศว่าตั้งแต่ภาคนี้โรงเรียนจะไม่ให้ 0 และให้นักเรียนทุกคนได้อย่างน้อย 1",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "ศธ. ชี้แจงว่าการบังคับให้ทุกคนได้อย่างน้อย 1 เป็นความเข้าใจผิด และการตัดเกรดโดยไม่ผ่านการประเมินขัดกับระเบียบวัดผลของสถานศึกษา (<a href=\"https://thestandard.co/schools-are-not-prohibited-from-giving-out-0/\" target=\"_blank\" rel=\"noopener\">THE STANDARD</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "ส่งคำชี้แจงของ ศธ. ให้ครูและผู้ปกครอง และย้ำว่าต้องแก้ 0 ร มส ให้เสร็จ ไม่ปล่อยข้ามภาคเรียน",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 25,
-      "explain": "ตรงกับคำชี้แจงของ ศธ. (<a href=\"https://thestandard.co/schools-are-not-prohibited-from-giving-out-0/\" target=\"_blank\" rel=\"noopener\">THE STANDARD</a>)"
-     },
-     {
-      "key": "ค",
       "text": "นั่งทำเอกสารชี้แจงกับรองฯ มาลี อธิบายเหตุผลทีละประเด็น แล้วให้รองฯ มาลีเป็นผู้ชี้แจงในที่ประชุมครู",
       "legal": "ok",
       "tags": [
@@ -708,7 +688,17 @@ export const LEVELS = [
       "explain": "คำสั่งเข้ากับความพร้อม R2 และได้ทั้งความถูกต้องและการพัฒนาคน"
      },
      {
-      "key": "ง",
+      "key": "ข",
+      "text": "รอหนังสือจากเขตพื้นที่ก่อนค่อยชี้แจง",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "ปล่อยให้ครูตัดสินใจผิดในช่วงที่รอ"
+     },
+     {
+      "key": "ค",
       "text": "ขอข้อมูลจำนวนนักเรียนที่ได้ 0 ร มส แยกรายวิชา เพื่อดูว่าปัญหาอยู่ตรงไหน",
       "legal": "ok",
       "tags": [
@@ -718,14 +708,24 @@ export const LEVELS = [
       "explain": "การติดตามความก้าวหน้าผู้เรียนเป็นหน้าที่ใน PIMRS"
      },
      {
-      "key": "จ",
-      "text": "รอหนังสือจากเขตพื้นที่ก่อนค่อยชี้แจง",
+      "key": "ง",
+      "text": "ส่งคำชี้แจงของ ศธ. ให้ครูและผู้ปกครอง และย้ำว่าต้องแก้ 0 ร มส ให้เสร็จ ไม่ปล่อยข้ามภาคเรียน",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "รบ"
       ],
-      "exp": 5,
-      "explain": "ปล่อยให้ครูตัดสินใจผิดในช่วงที่รอ"
+      "exp": 25,
+      "explain": "ตรงกับคำชี้แจงของ ศธ. (<a href=\"https://thestandard.co/schools-are-not-prohibited-from-giving-out-0/\" target=\"_blank\" rel=\"noopener\">THE STANDARD</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "ประกาศว่าตั้งแต่ภาคนี้โรงเรียนจะไม่ให้ 0 และให้นักเรียนทุกคนได้อย่างน้อย 1",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "ศธ. ชี้แจงว่าการบังคับให้ทุกคนได้อย่างน้อย 1 เป็นความเข้าใจผิด และการตัดเกรดโดยไม่ผ่านการประเมินขัดกับระเบียบวัดผลของสถานศึกษา (<a href=\"https://thestandard.co/schools-are-not-prohibited-from-giving-out-0/\" target=\"_blank\" rel=\"noopener\">THE STANDARD</a>)"
      }
     ]
    },
@@ -748,13 +748,13 @@ export const LEVELS = [
      },
      {
       "key": "ข",
-      "text": "ให้ครูวิเคราะห์ว่านักเรียนแต่ละคนพลาดตัวชี้วัดใด แล้วสอนซ่อมเฉพาะจุดก่อนสอบแก้",
+      "text": "ให้ครูแต่ละคนจัดการเองตามสะดวก",
       "legal": "ok",
       "tags": [
-       "วก"
+       "⚠"
       ],
-      "exp": 30,
-      "explain": "ใช้ข้อมูลผู้เรียนวางการสอน (Robinson มิติวางแผนและประเมินการสอน) (<a href=\"https://cdn.auckland.ac.nz/assets/education/about/research/LRG/Robinson,%20Lloyd%20&amp;%20Rowe%20(2008)%20The%20impact%20of%20leadership%20on%20student%20outcomes%20-%20An%20analysis%20of%20the%20differential%20effects%20of%20leadership%20types.pdf\" target=\"_blank\" rel=\"noopener\">Robinson</a>)"
+      "exp": 5,
+      "explain": "ไม่มีระบบ ทำให้ผลการเรียนค้างข้ามภาค"
      },
      {
       "key": "ค",
@@ -768,6 +768,16 @@ export const LEVELS = [
      },
      {
       "key": "ง",
+      "text": "ให้ครูวิเคราะห์ว่านักเรียนแต่ละคนพลาดตัวชี้วัดใด แล้วสอนซ่อมเฉพาะจุดก่อนสอบแก้",
+      "legal": "ok",
+      "tags": [
+       "วก"
+      ],
+      "exp": 30,
+      "explain": "ใช้ข้อมูลผู้เรียนวางการสอน (Robinson มิติวางแผนและประเมินการสอน) (<a href=\"https://cdn.auckland.ac.nz/assets/education/about/research/LRG/Robinson,%20Lloyd%20&amp;%20Rowe%20(2008)%20The%20impact%20of%20leadership%20on%20student%20outcomes%20-%20An%20analysis%20of%20the%20differential%20effects%20of%20leadership%20types.pdf\" target=\"_blank\" rel=\"noopener\">Robinson</a>)"
+     },
+     {
+      "key": "จ",
       "text": "จัดระบบติวโดยรุ่นพี่ที่เรียนดี",
       "legal": "ok",
       "tags": [
@@ -776,16 +786,6 @@ export const LEVELS = [
       ],
       "exp": 20,
       "explain": "เพิ่มแหล่งช่วยเหลือ แต่ต้องมีครูกำกับคุณภาพ"
-     },
-     {
-      "key": "จ",
-      "text": "ให้ครูแต่ละคนจัดการเองตามสะดวก",
-      "legal": "ok",
-      "tags": [
-       "⚠"
-      ],
-      "exp": 5,
-      "explain": "ไม่มีระบบ ทำให้ผลการเรียนค้างข้ามภาค"
      }
     ]
    },
@@ -798,13 +798,13 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "คงสัดส่วนเดิมทั้งโรงเรียนเพื่อความสม่ำเสมอ",
+      "text": "ให้แต่ละกลุ่มสาระเลือกสัดส่วนจากการพูดคุยใน PLC แล้วเสนอคณะกรรมการวิชาการ",
       "legal": "ok",
       "tags": [
-       "รบ"
+       "กจ"
       ],
-      "exp": 15,
-      "explain": "ปลอดภัยแต่ไม่ได้ใช้ข้อมูล"
+      "exp": 25,
+      "explain": "กระจายการตัดสินใจไปยังผู้มีความรู้ในวิชา"
      },
      {
       "key": "ข",
@@ -819,13 +819,13 @@ export const LEVELS = [
      },
      {
       "key": "ค",
-      "text": "ให้แต่ละกลุ่มสาระเลือกสัดส่วนจากการพูดคุยใน PLC แล้วเสนอคณะกรรมการวิชาการ",
+      "text": "ใช้สัดส่วนตามโรงเรียนข้างเคียงโดยไม่วิเคราะห์",
       "legal": "ok",
       "tags": [
-       "กจ"
+       "⚠"
       ],
-      "exp": 25,
-      "explain": "กระจายการตัดสินใจไปยังผู้มีความรู้ในวิชา"
+      "exp": 5,
+      "explain": "ตัดสินใจโดยไม่ดูบริบท"
      },
      {
       "key": "ง",
@@ -840,13 +840,13 @@ export const LEVELS = [
      },
      {
       "key": "จ",
-      "text": "ใช้สัดส่วนตามโรงเรียนข้างเคียงโดยไม่วิเคราะห์",
+      "text": "คงสัดส่วนเดิมทั้งโรงเรียนเพื่อความสม่ำเสมอ",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "รบ"
       ],
-      "exp": 5,
-      "explain": "ตัดสินใจโดยไม่ดูบริบท"
+      "exp": 15,
+      "explain": "ปลอดภัยแต่ไม่ได้ใช้ข้อมูล"
      }
     ]
    }
@@ -887,13 +887,13 @@ export const LEVELS = [
      },
      {
       "key": "ข",
-      "text": "ยืนยันว่าครูทำตามกติกาเดิมของโรงเรียน ให้ตัดผมต่อได้",
-      "legal": "illegal",
+      "text": "ตั้งกรรมการสืบข้อเท็จจริงเรื่องการลงโทษเกินระเบียบ",
+      "legal": "ok",
       "tags": [
        "รบ"
       ],
-      "exp": 0,
-      "explain": "การตัดผมไม่อยู่ในการลงโทษ 4 สถาน (<a href=\"https://www.dailynews.co.th/news/4464215/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
+      "exp": 20,
+      "explain": "ทำได้ แต่ใช้กลไกหนักเกินระดับเหตุ หากยังไม่ได้พูดคุยก่อน"
      },
      {
       "key": "ค",
@@ -907,13 +907,13 @@ export const LEVELS = [
      },
      {
       "key": "ง",
-      "text": "ตั้งกรรมการสืบข้อเท็จจริงเรื่องการลงโทษเกินระเบียบ",
-      "legal": "ok",
+      "text": "ยืนยันว่าครูทำตามกติกาเดิมของโรงเรียน ให้ตัดผมต่อได้",
+      "legal": "illegal",
       "tags": [
        "รบ"
       ],
-      "exp": 20,
-      "explain": "ทำได้ แต่ใช้กลไกหนักเกินระดับเหตุ หากยังไม่ได้พูดคุยก่อน"
+      "exp": 0,
+      "explain": "การตัดผมไม่อยู่ในการลงโทษ 4 สถาน (<a href=\"https://www.dailynews.co.th/news/4464215/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
      },
      {
       "key": "จ",
@@ -946,16 +946,6 @@ export const LEVELS = [
      },
      {
       "key": "ข",
-      "text": "ผู้อำนวยการเขียนกติกาใหม่เอง แล้วประกาศใช้วันนี้",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "ขาดการมีส่วนร่วมของนักเรียนและความเห็นชอบของคณะกรรมการสถานศึกษา (<a href=\"https://www.thaipbs.or.th/news/content/349913\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
-     },
-     {
-      "key": "ค",
       "text": "สำรวจความเห็นนักเรียนทั้งโรงเรียนทางออนไลน์ แล้วใช้ผลเป็นฐานร่าง ก่อนเสนอคณะกรรมการ",
       "legal": "ok",
       "tags": [
@@ -966,7 +956,7 @@ export const LEVELS = [
       "explain": "ฟังเสียงนักเรียนตามที่ ศธ. ย้ำเมื่อมกราคม 2568 (<a href=\"https://www.dailynews.co.th/news/4464215/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
      },
      {
-      "key": "ง",
+      "key": "ค",
       "text": "ตั้งคณะทำงานครู ผู้ปกครอง และนักเรียน และให้ครูสมศักดิ์อยู่ในคณะทำงานเพื่อฟังมุมมองนักเรียน",
       "legal": "ok",
       "tags": [
@@ -977,7 +967,7 @@ export const LEVELS = [
       "explain": "ใช้กระบวนการร่างเป็นโอกาสพัฒนาครู"
      },
      {
-      "key": "จ",
+      "key": "ง",
       "text": "รอให้ ศธ. ออกกติกากลางก่อน",
       "legal": "ok",
       "tags": [
@@ -985,6 +975,16 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "ศธ. ยกเลิกระเบียบกลางแล้วและให้โรงเรียนออกกติกาเอง (<a href=\"https://www.thaipbs.or.th/news/content/349913\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>) การรอจึงเป็นการเลี่ยงหน้าที่"
+     },
+     {
+      "key": "จ",
+      "text": "ผู้อำนวยการเขียนกติกาใหม่เอง แล้วประกาศใช้วันนี้",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "ขาดการมีส่วนร่วมของนักเรียนและความเห็นชอบของคณะกรรมการสถานศึกษา (<a href=\"https://www.thaipbs.or.th/news/content/349913\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
      }
     ]
    },
@@ -997,6 +997,16 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
+      "text": "ให้ครูประจำชั้นแต่ละห้องดูแลกันเอง",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "ไม่มีทิศทางร่วม"
+     },
+     {
+      "key": "ข",
       "text": "ออกแบบกิจกรรมปรับเปลี่ยนพฤติกรรมร่วมกับครูแนะแนวให้เป็นทางเลือกหลักแทนการลงโทษ",
       "legal": "ok",
       "tags": [
@@ -1007,7 +1017,7 @@ export const LEVELS = [
       "explain": "กิจกรรมปรับเปลี่ยนพฤติกรรมอยู่ในงานบริหารทั่วไป ข้อ 1 (4) (น) (<a href=\"https://ops.moe.go.th/wp-content/uploads/2023/03/7.pdf\" target=\"_blank\" rel=\"noopener\">กฎกระทรวงฯ 2550</a>)"
      },
      {
-      "key": "ข",
+      "key": "ค",
       "text": "ทำระบบตัดคะแนนความประพฤติที่โปร่งใส ประกาศเกณฑ์ล่วงหน้า",
       "legal": "ok",
       "tags": [
@@ -1017,7 +1027,7 @@ export const LEVELS = [
       "explain": "contingent reward ที่ชัดเจน (<a href=\"https://openeclass.uom.gr/modules/document/file.php/UNI390/ADDITIONAL%20BIBLIOGRAPHY/Two%20Decades%20of%20Research%20and%20Development%20in%20Transformational%20Leadership%20%281%29.pdf\" target=\"_blank\" rel=\"noopener\">Bass</a>)"
      },
      {
-      "key": "ค",
+      "key": "ง",
       "text": "นำร่องวงสนทนาแบบเชิงสมานฉันท์ (restorative circle) ใน 2 ห้อง แล้วประเมินผล",
       "legal": "ok",
       "tags": [
@@ -1027,7 +1037,7 @@ export const LEVELS = [
       "explain": "ทดลองก่อนขยาย"
      },
      {
-      "key": "ง",
+      "key": "จ",
       "text": "จัด PLC เรื่องวินัยเชิงบวกให้ครูทุกคน โดยผู้อำนวยการร่วมวงด้วย",
       "legal": "ok",
       "tags": [
@@ -1035,16 +1045,6 @@ export const LEVELS = [
       ],
       "exp": 30,
       "explain": "ผู้บริหารร่วมเรียนรู้กับครูคือมิติที่มีผลสูงสุด (ES 0.84) (<a href=\"https://cdn.auckland.ac.nz/assets/education/about/research/LRG/Robinson,%20Lloyd%20&amp;%20Rowe%20(2008)%20The%20impact%20of%20leadership%20on%20student%20outcomes%20-%20An%20analysis%20of%20the%20differential%20effects%20of%20leadership%20types.pdf\" target=\"_blank\" rel=\"noopener\">Robinson</a>)"
-     },
-     {
-      "key": "จ",
-      "text": "ให้ครูประจำชั้นแต่ละห้องดูแลกันเอง",
-      "legal": "ok",
-      "tags": [
-       "⚠"
-      ],
-      "exp": 5,
-      "explain": "ไม่มีทิศทางร่วม"
      }
     ]
    }
@@ -1074,27 +1074,16 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ให้ครูผู้สอนแต่ละกลุ่มสาระคัดเลือก แล้วเสนอภาคี 4 ฝ่ายเห็นชอบ",
+      "text": "ใช้รายการหนังสือชุดเดิมของปีที่แล้ว ผ่านภาคี 4 ฝ่ายตามปกติ",
       "legal": "ok",
       "tags": [
-       "กจ",
        "รบ"
       ],
-      "exp": 30,
-      "explain": "ตรงตามกฎย่อยค่าหนังสือ (<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
+      "exp": 15,
+      "explain": "ไม่ผิด แต่ไม่ได้ทบทวนคุณภาพ"
      },
      {
       "key": "ข",
-      "text": "ผู้อำนวยการตกลงกับสำนักพิมพ์เองทันทีเพราะได้ส่วนลด แล้วแจ้งครูภายหลัง",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "ข้ามขั้นการคัดเลือกโดยครูผู้สอนและความเห็นชอบของภาคี 4 ฝ่าย (<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
-     },
-     {
-      "key": "ค",
       "text": "ให้ครูผู้สอนคัดเลือกโดยใช้ผลวิเคราะห์ว่าหนังสือเล่มใดตรงตัวชี้วัดที่นักเรียนอ่อน แล้วเสนอภาคี 4 ฝ่าย",
       "legal": "ok",
       "tags": [
@@ -1105,14 +1094,25 @@ export const LEVELS = [
       "explain": "ถูกขั้นตอนและผูกกับข้อมูลผู้เรียน"
      },
      {
-      "key": "ง",
-      "text": "ใช้รายการหนังสือชุดเดิมของปีที่แล้ว ผ่านภาคี 4 ฝ่ายตามปกติ",
+      "key": "ค",
+      "text": "ให้ครูผู้สอนแต่ละกลุ่มสาระคัดเลือก แล้วเสนอภาคี 4 ฝ่ายเห็นชอบ",
       "legal": "ok",
+      "tags": [
+       "กจ",
+       "รบ"
+      ],
+      "exp": 30,
+      "explain": "ตรงตามกฎย่อยค่าหนังสือ (<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
+     },
+     {
+      "key": "ง",
+      "text": "ผู้อำนวยการตกลงกับสำนักพิมพ์เองทันทีเพราะได้ส่วนลด แล้วแจ้งครูภายหลัง",
+      "legal": "illegal",
       "tags": [
        "รบ"
       ],
-      "exp": 15,
-      "explain": "ไม่ผิด แต่ไม่ได้ทบทวนคุณภาพ"
+      "exp": 0,
+      "explain": "ข้ามขั้นการคัดเลือกโดยครูผู้สอนและความเห็นชอบของภาคี 4 ฝ่าย (<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
      },
      {
       "key": "จ",
@@ -1135,6 +1135,16 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
+      "text": "รอให้ผู้ปกครองมาทวงก่อนค่อยจ่าย",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "ล่าช้าโดยไม่มีเหตุ"
+     },
+     {
+      "key": "ข",
       "text": "แต่งตั้งผู้จ่ายเงินห้องละ 2 คน โดยมีครูประจำชั้นร่วมด้วย ให้ผู้ปกครองลงนามรับเงิน",
       "legal": "ok",
       "tags": [
@@ -1142,16 +1152,6 @@ export const LEVELS = [
       ],
       "exp": 30,
       "explain": "ตรงตามกฎย่อย (<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "มอบให้ครูการเงินคนเดียวจ่ายทั้งโรงเรียนเพื่อความรวดเร็ว",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "ต้องมีผู้จ่ายเงินอย่างน้อย 2 คนและมีครูประจำชั้นร่วม (<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
      },
      {
       "key": "ค",
@@ -1166,6 +1166,16 @@ export const LEVELS = [
      },
      {
       "key": "ง",
+      "text": "มอบให้ครูการเงินคนเดียวจ่ายทั้งโรงเรียนเพื่อความรวดเร็ว",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "ต้องมีผู้จ่ายเงินอย่างน้อย 2 คนและมีครูประจำชั้นร่วม (<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
+     },
+     {
+      "key": "จ",
       "text": "สั่งครูต้นกล้าทำแบบฟอร์มลงนามรับเงินพร้อมตัวอย่างให้ทุกห้องใช้แบบเดียวกัน",
       "legal": "ok",
       "tags": [
@@ -1173,16 +1183,6 @@ export const LEVELS = [
       ],
       "exp": 25,
       "explain": "คำสั่งเข้ากับ R1 และลดความผิดพลาดของเอกสาร"
-     },
-     {
-      "key": "จ",
-      "text": "รอให้ผู้ปกครองมาทวงก่อนค่อยจ่าย",
-      "legal": "ok",
-      "tags": [
-       "⚠"
-      ],
-      "exp": 5,
-      "explain": "ล่าช้าโดยไม่มีเหตุ"
      }
     ]
    },
@@ -1195,16 +1195,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "จ่ายเฉพาะนักเรียน ม.ต้น ที่ผ่านเกณฑ์ ถ้าจ่ายเงินสดตั้งกรรมการจ่ายเงิน 3 คน",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 25,
-      "explain": "ตรงตามกฎย่อย (<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
-     },
-     {
-      "key": "ข",
       "text": "นำเงินส่วนที่เหลือไปแบ่งให้นักเรียน ม.ปลาย ที่ยากจนด้วยเพราะขาดแคลนเหมือนกัน",
       "legal": "illegal",
       "tags": [
@@ -1212,6 +1202,16 @@ export const LEVELS = [
       ],
       "exp": 0,
       "explain": "เงินปัจจัยพื้นฐานนักเรียนยากจนตามกฎย่อยให้เฉพาะ ม.ต้น (<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
+     },
+     {
+      "key": "ข",
+      "text": "ส่งรายชื่อให้ฝ่ายการเงินจัดการทั้งหมด ไม่ติดตามผล",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "ไม่มีการติดตามว่าเงินถึงนักเรียน"
      },
      {
       "key": "ค",
@@ -1236,13 +1236,13 @@ export const LEVELS = [
      },
      {
       "key": "จ",
-      "text": "ส่งรายชื่อให้ฝ่ายการเงินจัดการทั้งหมด ไม่ติดตามผล",
+      "text": "จ่ายเฉพาะนักเรียน ม.ต้น ที่ผ่านเกณฑ์ ถ้าจ่ายเงินสดตั้งกรรมการจ่ายเงิน 3 คน",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "รบ"
       ],
-      "exp": 5,
-      "explain": "ไม่มีการติดตามว่าเงินถึงนักเรียน"
+      "exp": 25,
+      "explain": "ตรงตามกฎย่อย (<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
      }
     ]
    },
@@ -1255,6 +1255,16 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
+      "text": "ซื้อเฉพาะรายการที่ต้องใช้ภาคเรียนนี้ ส่วนที่เหลือรวมไว้ซื้อภาคหน้าตามแผน",
+      "legal": "undetermined",
+      "tags": [
+       "วก"
+      ],
+      "exp": 15,
+      "explain": "ถ้าความต้องการเกิดต่างช่วงเวลาจริงอาจไม่ถือเป็นการแบ่งซื้อ แต่เกณฑ์ตัดสินขึ้นกับข้อเท็จจริง ระเบียบใช้วัตถุประสงค์และความคุ้มค่าเป็นเกณฑ์ (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>) จึงยังไม่ตัดสิน"
+     },
+     {
+      "key": "ข",
       "text": "รวมความต้องการทั้งกลุ่มสาระเป็นรายการเดียว ซื้อด้วยวิธีเฉพาะเจาะจงตาม ม.56(2)(ข) ตั้งคณะกรรมการตรวจรับ เพราะวงเงินเกิน 100,000 บาท",
       "legal": "ok",
       "tags": [
@@ -1262,16 +1272,6 @@ export const LEVELS = [
       ],
       "exp": 30,
       "explain": "(<a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>; <a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "แยกซื้อทีละห้องปฏิบัติการ ห้องละไม่เกิน 50,000 บาท เพื่อให้ใช้วิธีผ่อนปรนและเจ้าหน้าที่ตรวจรับเองได้",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "ระเบียบฯ ข้อ 20 ห้ามแบ่งซื้อเพื่อให้วิธีหรืออำนาจเปลี่ยนไป โดยพิจารณาจากวัตถุประสงค์ของการซื้อ (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>)"
      },
      {
       "key": "ค",
@@ -1285,16 +1285,6 @@ export const LEVELS = [
      },
      {
       "key": "ง",
-      "text": "ซื้อเฉพาะรายการที่ต้องใช้ภาคเรียนนี้ ส่วนที่เหลือรวมไว้ซื้อภาคหน้าตามแผน",
-      "legal": "undetermined",
-      "tags": [
-       "วก"
-      ],
-      "exp": 15,
-      "explain": "ถ้าความต้องการเกิดต่างช่วงเวลาจริงอาจไม่ถือเป็นการแบ่งซื้อ แต่เกณฑ์ตัดสินขึ้นกับข้อเท็จจริง ระเบียบใช้วัตถุประสงค์และความคุ้มค่าเป็นเกณฑ์ (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>) จึงยังไม่ตัดสิน"
-     },
-     {
-      "key": "จ",
       "text": "เลื่อนการซื้อทั้งหมดไปปีหน้าเพราะกลัวผิดระเบียบ",
       "legal": "ok",
       "tags": [
@@ -1302,6 +1292,16 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "การหลีกเลี่ยงทำให้การเรียนการทดลองหยุดชะงัก"
+     },
+     {
+      "key": "จ",
+      "text": "แยกซื้อทีละห้องปฏิบัติการ ห้องละไม่เกิน 50,000 บาท เพื่อให้ใช้วิธีผ่อนปรนและเจ้าหน้าที่ตรวจรับเองได้",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "ระเบียบฯ ข้อ 20 ห้ามแบ่งซื้อเพื่อให้วิธีหรืออำนาจเปลี่ยนไป โดยพิจารณาจากวัตถุประสงค์ของการซื้อ (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>)"
      }
     ]
    }
@@ -1331,27 +1331,7 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "แบ่งวงเงินเฉลี่ยเท่ากันทุกคนตามที่ครูเสนอ",
-      "legal": "illegal",
-      "tags": [
-       "ปบ"
-      ],
-      "exp": 0,
-      "explain": "ห้ามเฉลี่ยวงเงินให้ทุกคนเท่ากัน (<a href=\"https://pbn3.go.th/news/wp-content/uploads/2021/08/2.-คู่มือเลื่อนเงินเดือน-อัมพร.pdf\" target=\"_blank\" rel=\"noopener\">คู่มือเลื่อนเงินเดือน</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "ใช้ผลประเมินตามแบบที่ ก.ค.ศ. กำหนด ประกาศรายชื่อระดับดีเด่นและดีมากก่อนพิจารณา",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 25,
-      "explain": "(<a href=\"https://pbn3.go.th/news/wp-content/uploads/2021/08/2.-คู่มือเลื่อนเงินเดือน-อัมพร.pdf\" target=\"_blank\" rel=\"noopener\">คู่มือเลื่อนเงินเดือน</a>)"
-     },
-     {
-      "key": "ค",
-      "text": "ทำตามข้อ ข และชี้แจงในที่ประชุมครูว่าเกณฑ์ผูกกับตัวชี้วัด PA ชุดเดียวกับการขอวิทยฐานะ",
+      "text": "ประกาศเกณฑ์และรายชื่อตามผลประเมินแบบ ก.ค.ศ. แล้วอธิบายในที่ประชุมครูว่าเกณฑ์ผูกกับตัวชี้วัด PA ชุดเดียวกับการขอวิทยฐานะ",
       "legal": "ok",
       "tags": [
        "ทศ",
@@ -1359,6 +1339,26 @@ export const LEVELS = [
       ],
       "exp": 30,
       "explain": "ตัวชี้วัดของวิทยฐานะ การประเมิน และการเลื่อนเงินเดือนใช้ร่วมกันตามแนวทางใหม่ (<a href=\"https://www.nptedu.go.th/ita/O13/6/2-2564.pdf\" target=\"_blank\" rel=\"noopener\">คู่มือ สพป. ว 9/2564</a>)"
+     },
+     {
+      "key": "ข",
+      "text": "ให้คณะกรรมการกลั่นกรองตัดสินเองทั้งหมด ผู้อำนวยการลงนามตามมติ",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "ปล่อยการตัดสินใจที่ตนต้องรับผิดชอบ"
+     },
+     {
+      "key": "ค",
+      "text": "ใช้ผลประเมินตามแบบที่ ก.ค.ศ. กำหนด ประกาศรายชื่อระดับดีเด่นและดีมากก่อนพิจารณา",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 25,
+      "explain": "(<a href=\"https://pbn3.go.th/news/wp-content/uploads/2021/08/2.-คู่มือเลื่อนเงินเดือน-อัมพร.pdf\" target=\"_blank\" rel=\"noopener\">คู่มือเลื่อนเงินเดือน</a>)"
      },
      {
       "key": "ง",
@@ -1372,13 +1372,13 @@ export const LEVELS = [
      },
      {
       "key": "จ",
-      "text": "ให้คณะกรรมการกลั่นกรองตัดสินเองทั้งหมด ผู้อำนวยการลงนามตามมติ",
-      "legal": "ok",
+      "text": "แบ่งวงเงินเฉลี่ยเท่ากันทุกคนตามที่ครูเสนอ",
+      "legal": "illegal",
       "tags": [
-       "⚠"
+       "ปบ"
       ],
-      "exp": 5,
-      "explain": "ปล่อยการตัดสินใจที่ตนต้องรับผิดชอบ"
+      "exp": 0,
+      "explain": "ห้ามเฉลี่ยวงเงินให้ทุกคนเท่ากัน (<a href=\"https://pbn3.go.th/news/wp-content/uploads/2021/08/2.-คู่มือเลื่อนเงินเดือน-อัมพร.pdf\" target=\"_blank\" rel=\"noopener\">คู่มือเลื่อนเงินเดือน</a>)"
      }
     ]
    },
@@ -1391,26 +1391,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ให้เลื่อนตามปกติเพราะคะแนนผ่านเกณฑ์พอใช้",
-      "legal": "illegal",
-      "tags": [
-       "ปบ"
-      ],
-      "exp": 0,
-      "explain": "ลาป่วยรวมลากิจเกิน 23 วันทำการจึงไม่มีสิทธิในรอบนี้ (<a href=\"https://www.thansettakij.com/general-news/660606\" target=\"_blank\" rel=\"noopener\">ฐานเศรษฐกิจ</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "ไม่เลื่อน และแจ้งเหตุผลเป็นหนังสือตามหลักเกณฑ์",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 25,
-      "explain": "(<a href=\"https://pbn3.go.th/news/wp-content/uploads/2021/08/2.-คู่มือเลื่อนเงินเดือน-อัมพร.pdf\" target=\"_blank\" rel=\"noopener\">คู่มือเลื่อนเงินเดือน</a>)"
-     },
-     {
-      "key": "ค",
       "text": "ตรวจประเภทการลาก่อน เพราะบางวันอาจเป็นการลาที่ไม่นับรวม แล้วจึงตัดสินและแจ้งเหตุผล",
       "legal": "ok",
       "tags": [
@@ -1421,7 +1401,17 @@ export const LEVELS = [
       "explain": "หลักเกณฑ์ไม่นับการลาบางประเภท (<a href=\"https://www.thansettakij.com/general-news/660606\" target=\"_blank\" rel=\"noopener\">ฐานเศรษฐกิจ</a>)"
      },
      {
-      "key": "ง",
+      "key": "ข",
+      "text": "ส่งเรื่องให้เขตพื้นที่ตัดสินแทน",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "โยนเรื่องขึ้นข้างบนทั้งที่หลักเกณฑ์ชัด"
+     },
+     {
+      "key": "ค",
       "text": "ไม่เลื่อน แล้วนัดคุยเป็นการส่วนตัวว่ามีปัญหาสุขภาพหรือครอบครัวที่โรงเรียนช่วยได้หรือไม่",
       "legal": "ok",
       "tags": [
@@ -1431,14 +1421,24 @@ export const LEVELS = [
       "explain": "ใส่ใจรายบุคคล (<a href=\"https://openeclass.uom.gr/modules/document/file.php/UNI390/ADDITIONAL%20BIBLIOGRAPHY/Two%20Decades%20of%20Research%20and%20Development%20in%20Transformational%20Leadership%20%281%29.pdf\" target=\"_blank\" rel=\"noopener\">Bass</a>)"
      },
      {
+      "key": "ง",
+      "text": "ให้เลื่อนตามปกติเพราะคะแนนผ่านเกณฑ์พอใช้",
+      "legal": "illegal",
+      "tags": [
+       "ปบ"
+      ],
+      "exp": 0,
+      "explain": "ลาป่วยรวมลากิจเกิน 23 วันทำการจึงไม่มีสิทธิในรอบนี้ (<a href=\"https://www.thansettakij.com/general-news/660606\" target=\"_blank\" rel=\"noopener\">ฐานเศรษฐกิจ</a>)"
+     },
+     {
       "key": "จ",
-      "text": "ส่งเรื่องให้เขตพื้นที่ตัดสินแทน",
+      "text": "ไม่เลื่อน และแจ้งเหตุผลเป็นหนังสือตามหลักเกณฑ์",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "รบ"
       ],
-      "exp": 5,
-      "explain": "โยนเรื่องขึ้นข้างบนทั้งที่หลักเกณฑ์ชัด"
+      "exp": 25,
+      "explain": "(<a href=\"https://pbn3.go.th/news/wp-content/uploads/2021/08/2.-คู่มือเลื่อนเงินเดือน-อัมพร.pdf\" target=\"_blank\" rel=\"noopener\">คู่มือเลื่อนเงินเดือน</a>)"
      }
     ]
    },
@@ -1461,17 +1461,7 @@ export const LEVELS = [
      },
      {
       "key": "ข",
-      "text": "เปิดเผยคำสั่งโดยปิดข้อมูลส่วนบุคคลของผู้อื่น",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 25,
-      "explain": "(<a href=\"https://www.royalrain.go.th/UploadFile/01285625671219.pdf\" target=\"_blank\" rel=\"noopener\">คำวินิจฉัย</a>)"
-     },
-     {
-      "key": "ค",
-      "text": "เปิดเผยตามข้อ ข และจัดเวทีอธิบายเกณฑ์ให้ครูทุกคนเข้าใจตรงกัน",
+      "text": "ให้ดูคำสั่งโดยปิดข้อมูลส่วนบุคคลของผู้อื่น แล้วจัดเวทีอธิบายเกณฑ์ให้ครูทุกคนเข้าใจตรงกัน",
       "legal": "ok",
       "tags": [
        "ทศ",
@@ -1481,17 +1471,17 @@ export const LEVELS = [
       "explain": "ความโปร่งใสลดความขัดแย้ง"
      },
      {
-      "key": "ง",
-      "text": "เปิดเผยตามข้อ ข และแจ้งช่องทางร้องทุกข์",
-      "legal": "undetermined",
+      "key": "ค",
+      "text": "เปิดเผยคำสั่งโดยปิดข้อมูลส่วนบุคคลของผู้อื่น",
+      "legal": "ok",
       "tags": [
        "รบ"
       ],
-      "exp": 20,
-      "explain": "ช่องทางและระยะเวลาร้องทุกข์ (ที่มักอ้างว่า 30 วัน) ยังยืนยันไม่ได้"
+      "exp": 25,
+      "explain": "(<a href=\"https://www.royalrain.go.th/UploadFile/01285625671219.pdf\" target=\"_blank\" rel=\"noopener\">คำวินิจฉัย</a>)"
      },
      {
-      "key": "จ",
+      "key": "ง",
       "text": "บอกให้ไปยื่นคำขอที่เขตพื้นที่เอง",
       "legal": "ok",
       "tags": [
@@ -1499,6 +1489,16 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "เลี่ยงหน้าที่ของโรงเรียน"
+     },
+     {
+      "key": "จ",
+      "text": "ให้ดูคำสั่งโดยปิดข้อมูลส่วนบุคคลของผู้อื่น แล้วแจ้งช่องทางร้องทุกข์ให้ครูทราบ",
+      "legal": "undetermined",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 20,
+      "explain": "ช่องทางและระยะเวลาร้องทุกข์ (ที่มักอ้างว่า 30 วัน) ยังยืนยันไม่ได้"
      }
     ]
    }
@@ -1528,13 +1528,14 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "รับโครงการแล้วตั้งครูรับผิดชอบเพิ่มอีก 1 คน",
+      "text": "ทำหนังสือถึงเขตพื้นที่ แสดงข้อมูลภาระงานครู และขอปรับรูปแบบรายงาน",
       "legal": "ok",
       "tags": [
-       "รบ"
+       "ทศ",
+       "ปบ"
       ],
-      "exp": 10,
-      "explain": "ทำได้ แต่เพิ่มภาระ ขัดกับทิศทางลดโครงการซ้ำซ้อน (<a href=\"https://www.dailynews.co.th/news/3319870/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
+      "exp": 25,
+      "explain": "ใช้นโยบายลดภาระเป็นฐาน (<a href=\"https://www.dailynews.co.th/news/3319870/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
      },
      {
       "key": "ข",
@@ -1549,17 +1550,6 @@ export const LEVELS = [
      },
      {
       "key": "ค",
-      "text": "ทำหนังสือถึงเขตพื้นที่ แสดงข้อมูลภาระงานครู และขอปรับรูปแบบรายงาน",
-      "legal": "ok",
-      "tags": [
-       "ทศ",
-       "ปบ"
-      ],
-      "exp": 25,
-      "explain": "ใช้นโยบายลดภาระเป็นฐาน (<a href=\"https://www.dailynews.co.th/news/3319870/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
-     },
-     {
-      "key": "ง",
       "text": "มอบครูอรุณออกแบบวิธีทำโครงการให้ใช้เวลาน้อยที่สุด",
       "legal": "ok",
       "tags": [
@@ -1569,7 +1559,7 @@ export const LEVELS = [
       "explain": "คำสั่งเข้ากับความพร้อม R4"
      },
      {
-      "key": "จ",
+      "key": "ง",
       "text": "ตอบรับในหนังสือแต่ไม่ดำเนินการจริง",
       "legal": "ok",
       "tags": [
@@ -1577,6 +1567,16 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "ไม่ได้ผิดระเบียบโดยตรงในบันทึกวิจัย แต่ทำให้รายงานไม่ตรงกับการปฏิบัติ"
+     },
+     {
+      "key": "จ",
+      "text": "รับโครงการแล้วตั้งครูรับผิดชอบเพิ่มอีก 1 คน",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 10,
+      "explain": "ทำได้ แต่เพิ่มภาระ ขัดกับทิศทางลดโครงการซ้ำซ้อน (<a href=\"https://www.dailynews.co.th/news/3319870/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
      }
     ]
    },
@@ -1589,16 +1589,26 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "งดสอนทั้งภาคเรียนเพราะงานบริหารมาก",
-      "legal": "illegal",
+      "text": "สอนครบ 5 ชั่วโมงในวิชาที่ตนถนัด และเดินเยี่ยมชั้นเรียนสัปดาห์ละ 2 ครั้ง",
+      "legal": "ok",
       "tags": [
-       "รบ"
+       "วก"
       ],
-      "exp": 0,
-      "explain": "ผู้อำนวยการต้องสอนอย่างน้อย 5 ชั่วโมงต่อสัปดาห์ (<a href=\"https://otepc.go.th/th/content_page/download/345/4351/17.html\" target=\"_blank\" rel=\"noopener\">OTEPC</a>)"
+      "exp": 25,
+      "explain": "การมองเห็นได้ในโรงเรียน (high visibility) เป็นหน้าที่ใน PIMRS"
      },
      {
       "key": "ข",
+      "text": "ทำข้อตกลง PA กับผู้อำนวยการเขตพื้นที่ตั้งแต่ต้นรอบ (1 ตุลาคม) โดยตั้งประเด็นท้าทายเรื่องการลดภาระครู",
+      "legal": "ok",
+      "tags": [
+       "ทศ"
+      ],
+      "exp": 25,
+      "explain": "ตรงตามรอบ PA ผู้บริหาร (<a href=\"https://otepc.go.th/th/content_page/download/345/4351/17.html\" target=\"_blank\" rel=\"noopener\">OTEPC</a>)"
+     },
+     {
+      "key": "ค",
       "text": "สอนคาบอ่านจับใจความของ ม.1 สัปดาห์ละ 5 คาบ และใช้ชั้นเรียนนี้เป็นห้องเปิดให้ครูสังเกต",
       "legal": "ok",
       "tags": [
@@ -1609,24 +1619,14 @@ export const LEVELS = [
       "explain": "ผู้บริหารลงมือสอนและร่วมเรียนรู้กับครู (<a href=\"https://cdn.auckland.ac.nz/assets/education/about/research/LRG/Robinson,%20Lloyd%20&amp;%20Rowe%20(2008)%20The%20impact%20of%20leadership%20on%20student%20outcomes%20-%20An%20analysis%20of%20the%20differential%20effects%20of%20leadership%20types.pdf\" target=\"_blank\" rel=\"noopener\">Robinson</a>)"
      },
      {
-      "key": "ค",
-      "text": "ทำข้อตกลง PA กับผู้อำนวยการเขตพื้นที่ตั้งแต่ต้นรอบ (1 ตุลาคม) โดยตั้งประเด็นท้าทายเรื่องการลดภาระครู",
-      "legal": "ok",
-      "tags": [
-       "ทศ"
-      ],
-      "exp": 25,
-      "explain": "ตรงตามรอบ PA ผู้บริหาร (<a href=\"https://otepc.go.th/th/content_page/download/345/4351/17.html\" target=\"_blank\" rel=\"noopener\">OTEPC</a>)"
-     },
-     {
       "key": "ง",
-      "text": "สอนครบ 5 ชั่วโมงในวิชาที่ตนถนัด และเดินเยี่ยมชั้นเรียนสัปดาห์ละ 2 ครั้ง",
-      "legal": "ok",
+      "text": "งดสอนทั้งภาคเรียนเพราะงานบริหารมาก",
+      "legal": "illegal",
       "tags": [
-       "วก"
+       "รบ"
       ],
-      "exp": 25,
-      "explain": "การมองเห็นได้ในโรงเรียน (high visibility) เป็นหน้าที่ใน PIMRS"
+      "exp": 0,
+      "explain": "ผู้อำนวยการต้องสอนอย่างน้อย 5 ชั่วโมงต่อสัปดาห์ (<a href=\"https://otepc.go.th/th/content_page/download/345/4351/17.html\" target=\"_blank\" rel=\"noopener\">OTEPC</a>)"
      },
      {
       "key": "จ",
@@ -1649,13 +1649,13 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ปีนี้ไม่ต้องส่ง SAR เพราะ สมศ. ยังไม่มาประเมิน",
-      "legal": "illegal",
+      "text": "คัดลอก SAR ปีที่แล้วและแก้ตัวเลข",
+      "legal": "ok",
       "tags": [
-       "รบ"
+       "⚠"
       ],
-      "exp": 0,
-      "explain": "กฎกระทรวง 2561 ให้ส่ง SAR ต่อต้นสังกัดทุกปี (<a href=\"https://so02.tci-thaijo.org/index.php/jgsnsbc-journal/article/download/256278/172204/955796\" target=\"_blank\" rel=\"noopener\">วารสาร TCI</a>)"
+      "exp": 5,
+      "explain": "ไม่ผิดในบันทึกวิจัย แต่ทำให้ SAR ไม่ใช้เพื่อพัฒนา"
      },
      {
       "key": "ข",
@@ -1670,16 +1670,6 @@ export const LEVELS = [
      },
      {
       "key": "ค",
-      "text": "ใช้ระบบ e-SAR และให้ ศน.ปกรณ์ ช่วยอ่านร่างในฐานะพี่เลี้ยง",
-      "legal": "ok",
-      "tags": [
-       "กจ"
-      ],
-      "exp": 25,
-      "explain": "ตรงกับแนวทาง สมศ. รอบใหม่ที่ให้ศึกษานิเทศก์เป็นพี่เลี้ยง (<a href=\"https://www.naewna.com/lady/867253\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
-     },
-     {
-      "key": "ง",
       "text": "มอบครูอรุณเป็นบรรณาธิการ SAR และให้หัวหน้ากลุ่มสาระส่งหลักฐานตามโครงที่กำหนด",
       "legal": "ok",
       "tags": [
@@ -1690,14 +1680,24 @@ export const LEVELS = [
       "explain": "มอบหมายได้ แต่ผู้อำนวยการต้องไม่ถอยออกจากการตีความผล"
      },
      {
+      "key": "ง",
+      "text": "ปีนี้ไม่ต้องส่ง SAR เพราะ สมศ. ยังไม่มาประเมิน",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "กฎกระทรวง 2561 ให้ส่ง SAR ต่อต้นสังกัดทุกปี (<a href=\"https://so02.tci-thaijo.org/index.php/jgsnsbc-journal/article/download/256278/172204/955796\" target=\"_blank\" rel=\"noopener\">วารสาร TCI</a>)"
+     },
+     {
       "key": "จ",
-      "text": "คัดลอก SAR ปีที่แล้วและแก้ตัวเลข",
+      "text": "ใช้ระบบ e-SAR และให้ ศน.ปกรณ์ ช่วยอ่านร่างในฐานะพี่เลี้ยง",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "กจ"
       ],
-      "exp": 5,
-      "explain": "ไม่ผิดในบันทึกวิจัย แต่ทำให้ SAR ไม่ใช้เพื่อพัฒนา"
+      "exp": 25,
+      "explain": "ตรงกับแนวทาง สมศ. รอบใหม่ที่ให้ศึกษานิเทศก์เป็นพี่เลี้ยง (<a href=\"https://www.naewna.com/lady/867253\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
      }
     ]
    }
@@ -1727,27 +1727,7 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ผู้อำนวยการโรงเรียนอนุญาตเองเพราะเป็นกิจกรรมของโรงเรียน",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "การไปค้างคืนต้องได้รับอนุญาตจากผู้อำนวยการเขตพื้นที่ (<a href=\"https://www.naewna.com/likesara/832779\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "ยื่นโครงการขออนุญาตผู้อำนวยการเขตพื้นที่ล่วงหน้าอย่างน้อย 15 วัน",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 25,
-      "explain": "(<a href=\"https://www.naewna.com/likesara/832779\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
-     },
-     {
-      "key": "ค",
-      "text": "ยื่นตามข้อ ข โดยแนบแผนการเดินทางและแผนเผชิญเหตุที่มีกำหนดการซ้อม",
+      "text": "ยื่นโครงการต่อผู้อำนวยการเขตพื้นที่ล่วงหน้าอย่างน้อย 15 วัน แนบแผนการเดินทางและแผนเผชิญเหตุที่มีกำหนดการซ้อม",
       "legal": "ok",
       "tags": [
        "รบ",
@@ -1757,7 +1737,37 @@ export const LEVELS = [
       "explain": "แผนสำรองฉุกเฉินเป็นข้อกำหนดของระเบียบ ส่วนการซ้อมเป็นเงื่อนไขของข้อสั่งการปี 2567 (<a href=\"https://www.naewna.com/likesara/832779\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>; <a href=\"https://www.naewna.com/local/832852\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
      },
      {
+      "key": "ข",
+      "text": "ผู้อำนวยการโรงเรียนอนุญาตเองเพราะเป็นกิจกรรมของโรงเรียน",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "การไปค้างคืนต้องได้รับอนุญาตจากผู้อำนวยการเขตพื้นที่ (<a href=\"https://www.naewna.com/likesara/832779\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
+     },
+     {
+      "key": "ค",
+      "text": "เปลี่ยนเป็นค่ายในโรงเรียนแทนเพื่อตัดความเสี่ยงทั้งหมด",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 10,
+      "explain": "ถูกระเบียบ แต่เป็นการหลีกเลี่ยงมากกว่าการบริหารความเสี่ยง ได้ 10 เพราะในบางบริบทอาจเป็นทางเลือกที่สมเหตุผล"
+     },
+     {
       "key": "ง",
+      "text": "ยื่นโครงการขออนุญาตผู้อำนวยการเขตพื้นที่ล่วงหน้าอย่างน้อย 15 วัน",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 25,
+      "explain": "(<a href=\"https://www.naewna.com/likesara/832779\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
+     },
+     {
+      "key": "จ",
       "text": "สอนครูพลศึกษาเตรียมเอกสารขออนุญาตตามระเบียบทีละรายการ แล้วตรวจก่อนยื่น",
       "legal": "ok",
       "tags": [
@@ -1766,16 +1776,6 @@ export const LEVELS = [
       ],
       "exp": 25,
       "explain": "คำสั่งเข้ากับความพร้อม R2"
-     },
-     {
-      "key": "จ",
-      "text": "เปลี่ยนเป็นค่ายในโรงเรียนแทนเพื่อตัดความเสี่ยงทั้งหมด",
-      "legal": "ok",
-      "tags": [
-       "⚠"
-      ],
-      "exp": 10,
-      "explain": "ถูกระเบียบ แต่เป็นการหลีกเลี่ยงมากกว่าการบริหารความเสี่ยง ได้ 10 เพราะในบางบริบทอาจเป็นทางเลือกที่สมเหตุผล"
      }
     ]
    },
@@ -1788,26 +1788,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "บังคับให้ทุกคนไปเพราะเป็นกิจกรรมในรายวิชา ใครไม่ไปถือว่าขาดเรียน",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "นักเรียนต้องสมัครใจและได้รับอนุญาตจากผู้ปกครอง (<a href=\"https://www.naewna.com/likesara/832779\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "ส่งหนังสือขออนุญาตผู้ปกครองพร้อมรายละเอียดรถ ประกัน และแผนเผชิญเหตุ",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 25,
-      "explain": "(<a href=\"https://www.naewna.com/likesara/832779\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
-     },
-     {
-      "key": "ค",
       "text": "จัดประชุมผู้ปกครองออนไลน์ อธิบายมาตรการความปลอดภัยและตอบคำถาม ก่อนส่งหนังสือขออนุญาต",
       "legal": "ok",
       "tags": [
@@ -1818,7 +1798,17 @@ export const LEVELS = [
       "explain": "ตอบความกังวลที่มีที่มาจากเหตุการณ์จริง"
      },
      {
-      "key": "ง",
+      "key": "ข",
+      "text": "ส่งหนังสือขออนุญาตแล้วไม่ติดตามว่าใครยังไม่ส่งคืน",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "เสี่ยงพานักเรียนที่ไม่มีหลักฐานการอนุญาตไปด้วย"
+     },
+     {
+      "key": "ค",
       "text": "ออกแบบกิจกรรมทดแทนในโรงเรียนสำหรับนักเรียนที่ไม่ไป เพื่อให้ได้ผลการเรียนรู้เทียบเท่า",
       "legal": "ok",
       "tags": [
@@ -1828,14 +1818,24 @@ export const LEVELS = [
       "explain": "ปกป้องสิทธิการเรียนรู้ของทุกคน"
      },
      {
-      "key": "จ",
-      "text": "ส่งหนังสือขออนุญาตแล้วไม่ติดตามว่าใครยังไม่ส่งคืน",
+      "key": "ง",
+      "text": "ส่งหนังสือขออนุญาตผู้ปกครองพร้อมรายละเอียดรถ ประกัน และแผนเผชิญเหตุ",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "รบ"
       ],
-      "exp": 5,
-      "explain": "เสี่ยงพานักเรียนที่ไม่มีหลักฐานการอนุญาตไปด้วย"
+      "exp": 25,
+      "explain": "(<a href=\"https://www.naewna.com/likesara/832779\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "บังคับให้ทุกคนไปเพราะเป็นกิจกรรมในรายวิชา ใครไม่ไปถือว่าขาดเรียน",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "นักเรียนต้องสมัครใจและได้รับอนุญาตจากผู้ปกครอง (<a href=\"https://www.naewna.com/likesara/832779\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
      }
     ]
    },
@@ -1858,16 +1858,6 @@ export const LEVELS = [
      },
      {
       "key": "ข",
-      "text": "จัดผู้ควบคุมและผู้ช่วยตามอัตรา มีครูหญิงไปด้วย มีรถนำเพราะใช้รถ 3 คัน มีชุดปฐมพยาบาลและป้ายชื่อโครงการ",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 30,
-      "explain": "(<a href=\"https://www.naewna.com/likesara/832779\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
-     },
-     {
-      "key": "ค",
       "text": "มอบรองฯ ประเสริฐตรวจรถร่วมกับผู้ประกอบการก่อนออกเดินทาง และเลือกรถอายุไม่เกิน 5 ปี",
       "legal": "undetermined",
       "tags": [
@@ -1878,7 +1868,7 @@ export const LEVELS = [
       "explain": "การตรวจรถร่วมกับผู้ประกอบการและเกณฑ์อายุรถมาจากข้อสั่งการปี 2567 ซึ่งยังยืนยันสถานะในปี 2570 ไม่ได้ (<a href=\"https://www.naewna.com/local/832852\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
      },
      {
-      "key": "ง",
+      "key": "ค",
       "text": "ผู้อำนวยการเดินทางไปควบคุมด้วยตนเอง",
       "legal": "undetermined",
       "tags": [
@@ -1888,7 +1878,7 @@ export const LEVELS = [
       "explain": "เป็นเงื่อนไขในข้อสั่งการปี 2567 (<a href=\"https://www.naewna.com/local/832852\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>) สถานะปัจจุบันยังยืนยันไม่ได้"
      },
      {
-      "key": "จ",
+      "key": "ง",
       "text": "เลือกบริษัทรถที่ราคาต่ำที่สุดโดยไม่ตรวจสภาพ",
       "legal": "ok",
       "tags": [
@@ -1896,6 +1886,16 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "ไม่ตรวจความมั่นคงแข็งแรงของรถตามเจตนาของระเบียบ"
+     },
+     {
+      "key": "จ",
+      "text": "จัดผู้ควบคุมและผู้ช่วยตามอัตรา มีครูหญิงไปด้วย มีรถนำเพราะใช้รถ 3 คัน มีชุดปฐมพยาบาลและป้ายชื่อโครงการ",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 30,
+      "explain": "(<a href=\"https://www.naewna.com/likesara/832779\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
      }
     ]
    },
@@ -1918,6 +1918,16 @@ export const LEVELS = [
      },
      {
       "key": "ข",
+      "text": "ไม่ต้องรายงาน เพราะไม่มีเหตุร้าย",
+      "legal": "illegal",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 0,
+      "explain": "ระเบียบกำหนดให้รายงานผลหลังกลับทุกครั้ง (<a href=\"https://www.naewna.com/likesara/832779\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
+     },
+     {
+      "key": "ค",
       "text": "รายงานผล และให้นักเรียนนำเสนอผลการเรียนรู้ทางทะเลต่อผู้ปกครอง",
       "legal": "ok",
       "tags": [
@@ -1928,7 +1938,7 @@ export const LEVELS = [
       "explain": "ผูกกิจกรรมกับผลการเรียนรู้"
      },
      {
-      "key": "ค",
+      "key": "ง",
       "text": "ทบทวนหลังกิจกรรม (after-action review) กับครูที่ไปค่าย เพื่อปรับแผนเผชิญเหตุครั้งหน้า",
       "legal": "ok",
       "tags": [
@@ -1939,7 +1949,7 @@ export const LEVELS = [
       "explain": "ใช้ประสบการณ์เป็นวงจรเรียนรู้"
      },
      {
-      "key": "ง",
+      "key": "จ",
       "text": "ให้ครูพลศึกษาเขียนคู่มือทัศนศึกษาของโรงเรียนจากประสบการณ์ครั้งนี้",
       "legal": "ok",
       "tags": [
@@ -1947,16 +1957,6 @@ export const LEVELS = [
       ],
       "exp": 20,
       "explain": "สร้างระบบงานให้ทีม"
-     },
-     {
-      "key": "จ",
-      "text": "ไม่ต้องรายงาน เพราะไม่มีเหตุร้าย",
-      "legal": "illegal",
-      "tags": [
-       "⚠"
-      ],
-      "exp": 0,
-      "explain": "ระเบียบกำหนดให้รายงานผลหลังกลับทุกครั้ง (<a href=\"https://www.naewna.com/likesara/832779\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
      }
     ]
    }
@@ -1986,27 +1986,7 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "เก็บทั้ง 3 รายการตามที่สมาคมเสนอ รวมค่ากิจกรรมวันสำคัญ",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "ค่ากิจกรรมพัฒนาผู้เรียนเป็น 1 ใน 5 รายการเรียนฟรี การเก็บซ้ำจึงต้องห้าม (<a href=\"https://www.matichon.co.th/politics/news_5737676\" target=\"_blank\" rel=\"noopener\">มติชน</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "ตัดรายการที่ซ้ำกับเรียนฟรีออก เหลือรายการที่ไม่ซ้ำ แล้วเสนอคณะกรรมการสถานศึกษา",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 30,
-      "explain": "(<a href=\"https://www.matichon.co.th/politics/news_5737676\" target=\"_blank\" rel=\"noopener\">มติชน</a>; <a href=\"https://www.dailynews.co.th/news/3155386/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
-     },
-     {
-      "key": "ค",
-      "text": "ทำตามข้อ ข และสำรวจความต้องการกับความสามารถจ่ายของผู้ปกครองก่อนกำหนดอัตรา",
+      "text": "สำรวจความต้องการและความสามารถจ่ายของผู้ปกครอง แล้วกำหนดอัตราเฉพาะรายการที่ไม่ซ้ำกับเรียนฟรี",
       "legal": "ok",
       "tags": [
        "กจ",
@@ -2016,7 +1996,7 @@ export const LEVELS = [
       "explain": "ฟังผู้มีส่วนได้เสียหลายกลุ่ม"
      },
      {
-      "key": "ง",
+      "key": "ข",
       "text": "ทบทวนว่าห้องคอมพิวเตอร์ควรใช้ค่าจัดการเรียนการสอนหมวดครุภัณฑ์แทนการเก็บเงินหรือไม่",
       "legal": "ok",
       "tags": [
@@ -2027,7 +2007,17 @@ export const LEVELS = [
       "explain": "งบลงทุนจากค่าจัดการเรียนการสอนใช้กับครุภัณฑ์ได้ (<a href=\"https://www.korat3.go.th/wp-content/uploads/2024/11/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99-2568.pdf\" target=\"_blank\" rel=\"noopener\">แนวทาง 2568</a>)"
      },
      {
-      "key": "จ",
+      "key": "ค",
+      "text": "เก็บทั้ง 3 รายการตามที่สมาคมเสนอ รวมค่ากิจกรรมวันสำคัญ",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "ค่ากิจกรรมพัฒนาผู้เรียนเป็น 1 ใน 5 รายการเรียนฟรี การเก็บซ้ำจึงต้องห้าม (<a href=\"https://www.matichon.co.th/politics/news_5737676\" target=\"_blank\" rel=\"noopener\">มติชน</a>)"
+     },
+     {
+      "key": "ง",
       "text": "ปล่อยให้สมาคมจัดการเองเพราะไม่ใช่เงินของโรงเรียน",
       "legal": "ok",
       "tags": [
@@ -2035,6 +2025,16 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "หลีกเลี่ยงปัญหาที่ ป.ป.ช. เคยพบ (<a href=\"https://www.dailynews.co.th/news/3155386/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "ตัดรายการที่ซ้ำกับเรียนฟรีออก เหลือรายการที่ไม่ซ้ำ แล้วเสนอคณะกรรมการสถานศึกษา",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 30,
+      "explain": "(<a href=\"https://www.matichon.co.th/politics/news_5737676\" target=\"_blank\" rel=\"noopener\">มติชน</a>; <a href=\"https://www.dailynews.co.th/news/3155386/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
      }
     ]
    },
@@ -2057,17 +2057,7 @@ export const LEVELS = [
      },
      {
       "key": "ข",
-      "text": "โรงเรียนเป็นผู้รับเงินและออกใบเสร็จในนามโรงเรียน ระบุชัดว่าสมัครใจ",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 25,
-      "explain": "(<a href=\"https://www.dailynews.co.th/news/3155386/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
-     },
-     {
-      "key": "ค",
-      "text": "ทำตามข้อ ข พร้อมประกาศรายการ อัตรา และรายงานการใช้เงินบนเว็บไซต์ทุกภาคเรียน",
+      "text": "รับเงินและออกใบเสร็จในนามโรงเรียน ประกาศรายการ อัตรา และรายงานการใช้เงินบนเว็บไซต์ทุกภาคเรียน",
       "legal": "ok",
       "tags": [
        "ทศ",
@@ -2077,8 +2067,18 @@ export const LEVELS = [
       "explain": "ความโปร่งใสช่วยตอบข้อร้องเรียน"
      },
      {
+      "key": "ค",
+      "text": "ไม่ตอบสื่อท้องถิ่น ปล่อยให้สมาคมชี้แจงเอง",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "หลีกเลี่ยงความรับผิดชอบของโรงเรียน"
+     },
+     {
       "key": "ง",
-      "text": "ทำตามข้อ ข และตั้งช่องทางยกเว้นค่าบำรุงสำหรับครอบครัวที่ขาดแคลน",
+      "text": "รับเงินในนามโรงเรียนโดยระบุว่าสมัครใจ และตั้งช่องทางยกเว้นค่าบำรุงสำหรับครอบครัวที่ขาดแคลน",
       "legal": "ok",
       "tags": [
        "ปบ"
@@ -2088,13 +2088,13 @@ export const LEVELS = [
      },
      {
       "key": "จ",
-      "text": "ไม่ตอบสื่อท้องถิ่น ปล่อยให้สมาคมชี้แจงเอง",
+      "text": "โรงเรียนเป็นผู้รับเงินและออกใบเสร็จในนามโรงเรียน ระบุชัดว่าสมัครใจ",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "รบ"
       ],
-      "exp": 5,
-      "explain": "หลีกเลี่ยงความรับผิดชอบของโรงเรียน"
+      "exp": 25,
+      "explain": "(<a href=\"https://www.dailynews.co.th/news/3155386/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
      }
     ]
    },
@@ -2107,6 +2107,16 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
+      "text": "แนะนำให้โรงเรียนนั้นทำเรื่องขอเงินซ่อมจากเขตพื้นที่ และช่วยดูร่างคำขอ",
+      "legal": "ok",
+      "tags": [
+       "พค"
+      ],
+      "exp": 25,
+      "explain": "ใช้ประสบการณ์ช่วยเครือข่าย"
+     },
+     {
+      "key": "ข",
       "text": "โอนเงินรายได้ไปให้ยืมก่อน เพราะเป็นโรงเรียนในเครือข่ายเดียวกัน",
       "legal": "illegal",
       "tags": [
@@ -2116,17 +2126,17 @@ export const LEVELS = [
       "explain": "ห้ามใช้เงินรายได้เป็นค่าใช้จ่ายของสถานศึกษาอื่น เว้นแต่เลขาธิการ กพฐ. อนุญาต (<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
      },
      {
-      "key": "ข",
-      "text": "ปฏิเสธพร้อมอธิบายข้อห้ามตามระเบียบ",
+      "key": "ค",
+      "text": "รับปากว่าจะดูให้ แล้วไม่ดำเนินการ",
       "legal": "ok",
       "tags": [
-       "รบ"
+       "⚠"
       ],
-      "exp": 20,
-      "explain": "(<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
+      "exp": 5,
+      "explain": "เลื่อนเรื่องโดยไม่ตัดสินใจ"
      },
      {
-      "key": "ค",
+      "key": "ง",
       "text": "ปฏิเสธการให้ยืม แต่ช่วยประสานเครือข่ายศิษย์เก่าและท้องถิ่นให้บริจาคตรงแก่โรงเรียนนั้น",
       "legal": "ok",
       "tags": [
@@ -2137,24 +2147,14 @@ export const LEVELS = [
       "explain": "ช่วยได้โดยไม่ขัดระเบียบ"
      },
      {
-      "key": "ง",
-      "text": "แนะนำให้โรงเรียนนั้นทำเรื่องขอเงินซ่อมจากเขตพื้นที่ และช่วยดูร่างคำขอ",
-      "legal": "ok",
-      "tags": [
-       "พค"
-      ],
-      "exp": 25,
-      "explain": "ใช้ประสบการณ์ช่วยเครือข่าย"
-     },
-     {
       "key": "จ",
-      "text": "รับปากว่าจะดูให้ แล้วไม่ดำเนินการ",
+      "text": "ปฏิเสธพร้อมอธิบายข้อห้ามตามระเบียบ",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "รบ"
       ],
-      "exp": 5,
-      "explain": "เลื่อนเรื่องโดยไม่ตัดสินใจ"
+      "exp": 20,
+      "explain": "(<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
      }
     ]
    },
@@ -2167,16 +2167,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "เก็บเงินสดที่รับมาราว 80,000 บาทไว้ในตู้นิรภัยข้ามคืน แล้วค่อยนำฝากสิ้นสัปดาห์",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "โรงเรียนที่มีนักเรียนเกิน 120 คน เก็บเงินสดได้ไม่เกิน 30,000 บาทต่อวัน (<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
-     },
-     {
-      "key": "ข",
       "text": "นำฝากธนาคารภายในวันส่วนที่เกินวงเงินเก็บรักษา และลงทะเบียนคุมแยกประเภทเงิน",
       "legal": "ok",
       "tags": [
@@ -2186,18 +2176,17 @@ export const LEVELS = [
       "explain": "(<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>; <a href=\"https://www.korat3.go.th/wp-content/uploads/2024/11/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99-2568.pdf\" target=\"_blank\" rel=\"noopener\">แนวทาง 2568</a>)"
      },
      {
-      "key": "ค",
-      "text": "เปลี่ยนเป็นรับโอนผ่านบัญชีโรงเรียน ลดการถือเงินสด",
-      "legal": "ok",
+      "key": "ข",
+      "text": "เก็บเงินสดที่รับมาราว 80,000 บาทไว้ในตู้นิรภัยข้ามคืน แล้วค่อยนำฝากสิ้นสัปดาห์",
+      "legal": "illegal",
       "tags": [
-       "นว",
        "รบ"
       ],
-      "exp": 25,
-      "explain": "ลดความเสี่ยงเชิงระบบ"
+      "exp": 0,
+      "explain": "โรงเรียนที่มีนักเรียนเกิน 120 คน เก็บเงินสดได้ไม่เกิน 30,000 บาทต่อวัน (<a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
      },
      {
-      "key": "ง",
+      "key": "ค",
       "text": "ตั้งกรรมการตรวจนับเงินประจำวันและหมุนเวียนครูทำหน้าที่",
       "legal": "ok",
       "tags": [
@@ -2208,7 +2197,7 @@ export const LEVELS = [
       "explain": "การควบคุมภายในเป็นงานบริหารทั่วไป ข้อ 1 (4) (ธ) (<a href=\"https://ops.moe.go.th/wp-content/uploads/2023/03/7.pdf\" target=\"_blank\" rel=\"noopener\">กฎกระทรวงฯ 2550</a>)"
      },
      {
-      "key": "จ",
+      "key": "ง",
       "text": "มอบครูการเงินจัดการตามที่เห็นสมควร",
       "legal": "ok",
       "tags": [
@@ -2216,6 +2205,17 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "ไม่มีการกำกับ"
+     },
+     {
+      "key": "จ",
+      "text": "เปลี่ยนเป็นรับโอนผ่านบัญชีโรงเรียน ลดการถือเงินสด",
+      "legal": "ok",
+      "tags": [
+       "นว",
+       "รบ"
+      ],
+      "exp": 25,
+      "explain": "ลดความเสี่ยงเชิงระบบ"
      }
     ]
    }
@@ -2256,6 +2256,16 @@ export const LEVELS = [
      },
      {
       "key": "ข",
+      "text": "ให้นักเรียนเรียนออนไลน์ด้วยตนเองไปก่อนจนจบปี",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "ไม่ดูแลคุณภาพการเรียนรู้ของ ม.6"
+     },
+     {
+      "key": "ค",
       "text": "จ้างจากค่าจัดการเรียนการสอน โดยบรรจุไว้ในแผนปฏิบัติการผ่านคณะกรรมการสถานศึกษา",
       "legal": "ok",
       "tags": [
@@ -2263,16 +2273,6 @@ export const LEVELS = [
       ],
       "exp": 25,
       "explain": "(<a href=\"https://www.korat3.go.th/wp-content/uploads/2024/11/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99-2568.pdf\" target=\"_blank\" rel=\"noopener\">แนวทาง 2568</a>)"
-     },
-     {
-      "key": "ค",
-      "text": "จ้างโดยใช้เงินค่ากิจกรรมพัฒนาคุณภาพผู้เรียน",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "เป็นเงินผูกวัตถุประสงค์ ไม่ใช่หมวดค่าจ้าง (<a href=\"https://www.korat3.go.th/wp-content/uploads/2024/11/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99-2568.pdf\" target=\"_blank\" rel=\"noopener\">แนวทาง 2568</a>; <a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
      },
      {
       "key": "ง",
@@ -2286,13 +2286,13 @@ export const LEVELS = [
      },
      {
       "key": "จ",
-      "text": "ให้นักเรียนเรียนออนไลน์ด้วยตนเองไปก่อนจนจบปี",
-      "legal": "ok",
+      "text": "จ้างโดยใช้เงินค่ากิจกรรมพัฒนาคุณภาพผู้เรียน",
+      "legal": "illegal",
       "tags": [
-       "⚠"
+       "รบ"
       ],
-      "exp": 5,
-      "explain": "ไม่ดูแลคุณภาพการเรียนรู้ของ ม.6"
+      "exp": 0,
+      "explain": "เป็นเงินผูกวัตถุประสงค์ ไม่ใช่หมวดค่าจ้าง (<a href=\"https://www.korat3.go.th/wp-content/uploads/2024/11/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99-2568.pdf\" target=\"_blank\" rel=\"noopener\">แนวทาง 2568</a>; <a href=\"https://www.sea12.go.th/asset/images/stories/form/2.5.67/2.1.pdf\" target=\"_blank\" rel=\"noopener\">สพม.อบรม 2567</a>)"
      }
     ]
    },
@@ -2305,27 +2305,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "จ้างหลานประธานกรรมการทันทีโดยไม่ประกาศรับสมัคร",
-      "legal": "undetermined",
-      "tags": [
-       "⚠"
-      ],
-      "exp": 0,
-      "explain": "ระเบียบการคัดเลือกยังยืนยันไม่ได้ จึงไม่ตัดสินว่าผิดระเบียบ แต่การจ้างญาติของผู้มีอำนาจโดยไม่เปิดรับสมัครเป็นการปล่อยให้ผลประโยชน์ทับซ้อนกำหนดการตัดสินใจ จึงได้ 0 EXP"
-     },
-     {
-      "key": "ข",
-      "text": "ประกาศรับสมัครทั่วไป ตั้งคณะกรรมการคัดเลือกโดยมีครูอรุณเป็นประธาน และสอบสอนจริง",
-      "legal": "undetermined",
-      "tags": [
-       "กจ",
-       "วก"
-      ],
-      "exp": 30,
-      "explain": "สอดคล้องกับการคัดเลือกลูกจ้างที่เป็นงานบุคคลของเขตพื้นที่ (<a href=\"https://www.kkzone1.go.th/administrator-control/data/leftmenu/03-08-2026-14-53-26_136965086.pdf\" target=\"_blank\" rel=\"noopener\">รายงาน สพป.</a>) แต่ระเบียบระดับโรงเรียนยังยืนยันไม่ได้"
-     },
-     {
-      "key": "ค",
       "text": "ประกาศรับสมัคร และแจ้งคุณสุนทรว่าหลานสมัครได้ตามปกติ แต่คุณสุนทรต้องไม่ร่วมคัดเลือก",
       "legal": "undetermined",
       "tags": [
@@ -2336,7 +2315,7 @@ export const LEVELS = [
       "explain": "จัดการผลประโยชน์ทับซ้อนโดยไม่ตัดสิทธิ"
      },
      {
-      "key": "ง",
+      "key": "ข",
       "text": "ขอให้เขตพื้นที่จัดสอบให้",
       "legal": "undetermined",
       "tags": [
@@ -2346,7 +2325,18 @@ export const LEVELS = [
       "explain": "ช้ากว่าความต้องการของ ม.6"
      },
      {
-      "key": "จ",
+      "key": "ค",
+      "text": "ประกาศรับสมัครทั่วไป ตั้งคณะกรรมการคัดเลือกโดยมีครูอรุณเป็นประธาน และสอบสอนจริง",
+      "legal": "undetermined",
+      "tags": [
+       "กจ",
+       "วก"
+      ],
+      "exp": 30,
+      "explain": "สอดคล้องกับการคัดเลือกลูกจ้างที่เป็นงานบุคคลของเขตพื้นที่ (<a href=\"https://www.kkzone1.go.th/administrator-control/data/leftmenu/03-08-2026-14-53-26_136965086.pdf\" target=\"_blank\" rel=\"noopener\">รายงาน สพป.</a>) แต่ระเบียบระดับโรงเรียนยังยืนยันไม่ได้"
+     },
+     {
+      "key": "ง",
       "text": "ให้คุณสุนทรเลือกผู้สมัครเองเพราะเป็นประธานกรรมการ",
       "legal": "undetermined",
       "tags": [
@@ -2354,6 +2344,16 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "ถอยออกจากความรับผิดชอบของผู้บริหาร"
+     },
+     {
+      "key": "จ",
+      "text": "จ้างหลานประธานกรรมการทันทีโดยไม่ประกาศรับสมัคร",
+      "legal": "undetermined",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 0,
+      "explain": "ระเบียบการคัดเลือกยังยืนยันไม่ได้ จึงไม่ตัดสินว่าผิดระเบียบ แต่การจ้างญาติของผู้มีอำนาจโดยไม่เปิดรับสมัครเป็นการปล่อยให้ผลประโยชน์ทับซ้อนกำหนดการตัดสินใจ จึงได้ 0 EXP"
      }
     ]
    },
@@ -2366,27 +2366,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ตั้งกรรมการสืบข้อเท็จจริง ปกปิดตัวตนผู้แจ้ง และแจ้งครูอัตราจ้างทุกคนเป็นลายลักษณ์อักษรว่าการต่อสัญญาไม่ผูกกับการบริจาค",
-      "legal": "ok",
-      "tags": [
-       "รบ",
-       "ปบ"
-      ],
-      "exp": 30,
-      "explain": "ตรงกับลำดับ \"ปกป้องผู้เสียหาย สืบข้อเท็จจริง ส่งต่อถ้าร้ายแรง\" ที่ใช้ในกรณีจริงด้านวินัย (<a href=\"https://www.thaipbs.or.th/news/content/318726\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "คุยกับครูอัตราจ้างรายคนเพื่อฟังข้อมูลและให้กำลังใจ",
-      "legal": "ok",
-      "tags": [
-       "ปบ"
-      ],
-      "exp": 20,
-      "explain": "ใส่ใจรายคน แต่ยังไม่มีกลไกตรวจสอบ"
-     },
-     {
-      "key": "ค",
       "text": "รายงานเขตพื้นที่ทันทีและรอคำแนะนำ",
       "legal": "ok",
       "tags": [
@@ -2396,7 +2375,7 @@ export const LEVELS = [
       "explain": "ไม่ผิด แต่โรงเรียนยังต้องสืบข้อเท็จจริงเบื้องต้นเอง"
      },
      {
-      "key": "ง",
+      "key": "ข",
       "text": "ประกาศในที่ประชุมว่าใครเรียกเงินจะถูกดำเนินการ แต่ไม่สอบสวน",
       "legal": "ok",
       "tags": [
@@ -2406,7 +2385,7 @@ export const LEVELS = [
       "explain": "ส่งสัญญาณแต่ไม่แก้ปัญหา"
      },
      {
-      "key": "จ",
+      "key": "ค",
       "text": "เตือนผู้แจ้งว่าอย่าพูดเรื่องนี้ต่อจนกว่าจะมีหลักฐาน",
       "legal": "ok",
       "tags": [
@@ -2414,6 +2393,27 @@ export const LEVELS = [
       ],
       "exp": 0,
       "explain": "การปิดเรื่องคือรูปแบบเดียวกับที่ ศธ. สั่งดำเนินการกับผู้รู้แล้วนิ่งเฉยในปี 2569 (<a href=\"https://www.bangkokbiznews.com/news/news-update/1242416\" target=\"_blank\" rel=\"noopener\">กรุงเทพธุรกิจ</a>) ได้ 0 EXP แม้ไม่ตัดสินผิดระเบียบ"
+     },
+     {
+      "key": "ง",
+      "text": "คุยกับครูอัตราจ้างรายคนเพื่อฟังข้อมูลและให้กำลังใจ",
+      "legal": "ok",
+      "tags": [
+       "ปบ"
+      ],
+      "exp": 20,
+      "explain": "ใส่ใจรายคน แต่ยังไม่มีกลไกตรวจสอบ"
+     },
+     {
+      "key": "จ",
+      "text": "ตั้งกรรมการสืบข้อเท็จจริง ปกปิดตัวตนผู้แจ้ง และแจ้งครูอัตราจ้างทุกคนเป็นลายลักษณ์อักษรว่าการต่อสัญญาไม่ผูกกับการบริจาค",
+      "legal": "ok",
+      "tags": [
+       "รบ",
+       "ปบ"
+      ],
+      "exp": 30,
+      "explain": "ตรงกับลำดับ \"ปกป้องผู้เสียหาย สืบข้อเท็จจริง ส่งต่อถ้าร้ายแรง\" ที่ใช้ในกรณีจริงด้านวินัย (<a href=\"https://www.thaipbs.or.th/news/content/318726\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
      }
     ]
    },
@@ -2426,6 +2426,16 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
+      "text": "วางแผนอัตรากำลังระยะยาวเพื่อขออัตราประจำจากเขตพื้นที่",
+      "legal": "ok",
+      "tags": [
+       "ทศ"
+      ],
+      "exp": 25,
+      "explain": "มองระยะยาว"
+     },
+     {
+      "key": "ข",
       "text": "ทำสัญญาต่อเนื่องข้ามปีงบประมาณ 2 ปีในคราวเดียวเพื่อความมั่นคงของครู",
       "legal": "undetermined",
       "tags": [
@@ -2435,7 +2445,7 @@ export const LEVELS = [
       "explain": "บันทึกวิจัยระบุว่าสัญญาผูกกับปีงบประมาณ (<a href=\"https://www.thaipost.net/main/detail/46612\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>) แต่ข้อห้ามเฉพาะยังยืนยันไม่ได้"
      },
      {
-      "key": "ข",
+      "key": "ค",
       "text": "ประเมินผลงานตามเกณฑ์ที่แจ้งไว้ล่วงหน้า แล้วต่อสัญญาตามปีงบประมาณใหม่",
       "legal": "ok",
       "tags": [
@@ -2445,7 +2455,7 @@ export const LEVELS = [
       "explain": "contingent reward (<a href=\"https://openeclass.uom.gr/modules/document/file.php/UNI390/ADDITIONAL%20BIBLIOGRAPHY/Two%20Decades%20of%20Research%20and%20Development%20in%20Transformational%20Leadership%20%281%29.pdf\" target=\"_blank\" rel=\"noopener\">Bass</a>)"
      },
      {
-      "key": "ค",
+      "key": "ง",
       "text": "ประเมินผลงาน และวางแผนพัฒนาให้ครูอัตราจ้างพร้อมสอบบรรจุ",
       "legal": "ok",
       "tags": [
@@ -2453,16 +2463,6 @@ export const LEVELS = [
       ],
       "exp": 30,
       "explain": "พัฒนาคน"
-     },
-     {
-      "key": "ง",
-      "text": "วางแผนอัตรากำลังระยะยาวเพื่อขออัตราประจำจากเขตพื้นที่",
-      "legal": "ok",
-      "tags": [
-       "ทศ"
-      ],
-      "exp": 25,
-      "explain": "มองระยะยาว"
      },
      {
       "key": "จ",
@@ -2502,27 +2502,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "รับข้อเสนอทันทีเพราะเพิ่มรายได้และชื่อเสียง",
-      "legal": "undetermined",
-      "tags": [
-       "นว"
-      ],
-      "exp": 5,
-      "explain": "ระเบียบห้องพิเศษยังยืนยันไม่ได้ แต่การตัดสินใจโดยไม่ดูผลต่อที่นั่งของเด็กในเขตได้ EXP ต่ำ (<a href=\"https://www.thaipbs.or.th/news/content/340166\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "วิเคราะห์ข้อมูลที่นั่ง จำนวนเด็กในเขตบริการ และผลต่อห้องปกติก่อน แล้วนำเข้าคณะกรรมการสถานศึกษา",
-      "legal": "undetermined",
-      "tags": [
-       "วก",
-       "ทศ"
-      ],
-      "exp": 30,
-      "explain": "การตัดสินบนข้อมูลและผ่านคณะกรรมการ (<a href=\"https://cuir.car.chula.ac.th/dspace/bitstream/123456789/64505/2/Krittiya_si_ch1_p.pdf\" target=\"_blank\" rel=\"noopener\">CUIR</a>)"
-     },
-     {
-      "key": "ค",
       "text": "เปิดเวทีรับฟังทั้งสองกลุ่มผู้ปกครองและตัวแทนนักเรียน",
       "legal": "undetermined",
       "tags": [
@@ -2532,7 +2511,17 @@ export const LEVELS = [
       "explain": "ฟังผู้มีส่วนได้เสียที่ผลประโยชน์ขัดกันก่อนตัดสิน แต่ยังไม่มีข้อมูลที่นั่งประกอบ"
      },
      {
-      "key": "ง",
+      "key": "ข",
+      "text": "รอดูว่าโรงเรียนอื่นในเขตทำอย่างไร",
+      "legal": "undetermined",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "เลื่อนการตัดสินใจทั้งที่ผู้ปกครองทั้งสองกลุ่มรออยู่"
+     },
+     {
+      "key": "ค",
       "text": "ไม่เปิดเพิ่ม แต่ใช้ทรัพยากรยกระดับห้องปกติให้มีกิจกรรมวิทย์–คณิตเข้มข้นแบบเลือกเรียน",
       "legal": "undetermined",
       "tags": [
@@ -2543,14 +2532,25 @@ export const LEVELS = [
       "explain": "ให้น้ำหนักกับความเสมอภาค แต่ไม่ได้ตอบความต้องการของผู้ปกครองกลุ่มแรก"
      },
      {
-      "key": "จ",
-      "text": "รอดูว่าโรงเรียนอื่นในเขตทำอย่างไร",
+      "key": "ง",
+      "text": "วิเคราะห์ข้อมูลที่นั่ง จำนวนเด็กในเขตบริการ และผลต่อห้องปกติก่อน แล้วนำเข้าคณะกรรมการสถานศึกษา",
       "legal": "undetermined",
       "tags": [
-       "⚠"
+       "วก",
+       "ทศ"
+      ],
+      "exp": 30,
+      "explain": "การตัดสินบนข้อมูลและผ่านคณะกรรมการ (<a href=\"https://cuir.car.chula.ac.th/dspace/bitstream/123456789/64505/2/Krittiya_si_ch1_p.pdf\" target=\"_blank\" rel=\"noopener\">CUIR</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "รับข้อเสนอทันทีเพราะเพิ่มรายได้และชื่อเสียง",
+      "legal": "undetermined",
+      "tags": [
+       "นว"
       ],
       "exp": 5,
-      "explain": "เลื่อนการตัดสินใจทั้งที่ผู้ปกครองทั้งสองกลุ่มรออยู่"
+      "explain": "ระเบียบห้องพิเศษยังยืนยันไม่ได้ แต่การตัดสินใจโดยไม่ดูผลต่อที่นั่งของเด็กในเขตได้ EXP ต่ำ (<a href=\"https://www.thaipbs.or.th/news/content/340166\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
      }
     ]
    },
@@ -2563,13 +2563,14 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ให้สมาคมผู้ปกครองเก็บค่าเรียนห้องพิเศษแทนโรงเรียน",
-      "legal": "illegal",
+      "text": "กำหนดอัตราผ่านคณะกรรมการสถานศึกษา ออกใบเสร็จในนามโรงเรียน และตั้งทุนยกเว้นค่าเรียนให้นักเรียนในเขตที่สอบได้แต่ขาดแคลน",
+      "legal": "ok",
       "tags": [
+       "ปบ",
        "รบ"
       ],
-      "exp": 0,
-      "explain": "หลักการเดียวกับด่าน 10 การเก็บผ่านสมาคมเป็นข้อพบของ ป.ป.ช. และต้องออกใบเสร็จในนามโรงเรียน (<a href=\"https://www.dailynews.co.th/news/3155386/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
+      "exp": 30,
+      "explain": "ลดผลต่อความเสมอภาค"
      },
      {
       "key": "ข",
@@ -2583,28 +2584,6 @@ export const LEVELS = [
      },
      {
       "key": "ค",
-      "text": "ทำตามข้อ ข และตั้งทุนยกเว้นค่าเรียนให้นักเรียนในเขตที่สอบได้แต่ขาดแคลน",
-      "legal": "ok",
-      "tags": [
-       "ปบ",
-       "รบ"
-      ],
-      "exp": 30,
-      "explain": "ลดผลต่อความเสมอภาค"
-     },
-     {
-      "key": "ง",
-      "text": "ทำตามข้อ ข และรายงานรายรับรายจ่ายของห้องพิเศษแยกให้ผู้ปกครองดูทุกภาคเรียน",
-      "legal": "ok",
-      "tags": [
-       "รบ",
-       "ทศ"
-      ],
-      "exp": 25,
-      "explain": "ความโปร่งใสต่อผู้จ่ายเงิน"
-     },
-     {
-      "key": "จ",
       "text": "ไม่กำหนดอัตรา ให้ผู้ปกครองตกลงกันเอง",
       "legal": "ok",
       "tags": [
@@ -2612,6 +2591,27 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "ไม่มีการกำกับ"
+     },
+     {
+      "key": "ง",
+      "text": "ให้สมาคมผู้ปกครองเก็บค่าเรียนห้องพิเศษแทนโรงเรียน",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "หลักการเดียวกับด่าน 10 การเก็บผ่านสมาคมเป็นข้อพบของ ป.ป.ช. และต้องออกใบเสร็จในนามโรงเรียน (<a href=\"https://www.dailynews.co.th/news/3155386/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "ประกาศอัตราที่ผ่านคณะกรรมการสถานศึกษา และรายงานรายรับรายจ่ายของห้องพิเศษแยกให้ผู้ปกครองดูทุกภาคเรียน",
+      "legal": "ok",
+      "tags": [
+       "รบ",
+       "ทศ"
+      ],
+      "exp": 25,
+      "explain": "ความโปร่งใสต่อผู้จ่ายเงิน"
      }
     ]
    },
@@ -2624,36 +2624,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "หมุนเวียนครูให้ทุกคนสอนทั้งห้องพิเศษและห้องปกติ",
-      "legal": "ok",
-      "tags": [
-       "ทศ"
-      ],
-      "exp": 25,
-      "explain": "ป้องกันการแบ่งชั้นของครู"
-     },
-     {
-      "key": "ข",
-      "text": "ให้ครูที่เก่งที่สุดสอนห้องพิเศษเพราะผู้ปกครองจ่ายเงิน",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 5,
-      "explain": "ไม่ขัดระเบียบที่ยืนยันได้ แต่ทำให้ห้องปกติเสียเปรียบ (<a href=\"https://www.thaipbs.or.th/news/content/340166\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
-     },
-     {
-      "key": "ค",
-      "text": "ตั้ง PLC ข้ามห้องให้ครูห้องพิเศษแบ่งปันสื่อและวิธีสอนกับครูห้องปกติ",
-      "legal": "ok",
-      "tags": [
-       "พค"
-      ],
-      "exp": 30,
-      "explain": "(<a href=\"https://cdn.auckland.ac.nz/assets/education/about/research/LRG/Robinson,%20Lloyd%20&amp;%20Rowe%20(2008)%20The%20impact%20of%20leadership%20on%20student%20outcomes%20-%20An%20analysis%20of%20the%20differential%20effects%20of%20leadership%20types.pdf\" target=\"_blank\" rel=\"noopener\">Robinson</a>)"
-     },
-     {
-      "key": "ง",
       "text": "มอบรองฯ มาลีออกแบบการจัดครูพร้อมเกณฑ์ที่โปร่งใส โดยผู้อำนวยการให้คำปรึกษา",
       "legal": "ok",
       "tags": [
@@ -2663,7 +2633,27 @@ export const LEVELS = [
       "explain": "คำสั่งสนับสนุนเข้ากับ R3"
      },
      {
-      "key": "จ",
+      "key": "ข",
+      "text": "ตั้ง PLC ข้ามห้องให้ครูห้องพิเศษแบ่งปันสื่อและวิธีสอนกับครูห้องปกติ",
+      "legal": "ok",
+      "tags": [
+       "พค"
+      ],
+      "exp": 30,
+      "explain": "(<a href=\"https://cdn.auckland.ac.nz/assets/education/about/research/LRG/Robinson,%20Lloyd%20&amp;%20Rowe%20(2008)%20The%20impact%20of%20leadership%20on%20student%20outcomes%20-%20An%20analysis%20of%20the%20differential%20effects%20of%20leadership%20types.pdf\" target=\"_blank\" rel=\"noopener\">Robinson</a>)"
+     },
+     {
+      "key": "ค",
+      "text": "หมุนเวียนครูให้ทุกคนสอนทั้งห้องพิเศษและห้องปกติ",
+      "legal": "ok",
+      "tags": [
+       "ทศ"
+      ],
+      "exp": 25,
+      "explain": "ป้องกันการแบ่งชั้นของครู"
+     },
+     {
+      "key": "ง",
       "text": "ให้ครูเลือกห้องที่อยากสอนเอง",
       "legal": "ok",
       "tags": [
@@ -2671,6 +2661,16 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "ปล่อยให้ความชอบส่วนตัวกำหนดการจัดครู ห้องปกติเสี่ยงได้ครูที่ไม่มีใครเลือก"
+     },
+     {
+      "key": "จ",
+      "text": "ให้ครูที่เก่งที่สุดสอนห้องพิเศษเพราะผู้ปกครองจ่ายเงิน",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 5,
+      "explain": "ไม่ขัดระเบียบที่ยืนยันได้ แต่ทำให้ห้องปกติเสียเปรียบ (<a href=\"https://www.thaipbs.or.th/news/content/340166\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
      }
     ]
    },
@@ -2683,27 +2683,16 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "เปรียบเทียบผลสัมฤทธิ์และความพึงพอใจของห้องพิเศษกับห้องปกติ และรายงานในที่ประชุมคณะกรรมการ",
+      "text": "ไม่ประเมิน ดูเพียงว่าผู้ปกครองยังสมัครอยู่หรือไม่",
       "legal": "ok",
       "tags": [
-       "วก",
-       "รบ"
+       "⚠"
       ],
-      "exp": 30,
-      "explain": "ใช้ข้อมูลประกอบการตัดสินใจรอบถัดไป"
+      "exp": 5,
+      "explain": "ใช้ตัวชี้วัดที่ไม่บอกผลต่อการเรียนรู้"
      },
      {
       "key": "ข",
-      "text": "สำรวจเสียงนักเรียนห้องปกติว่ารู้สึกถูกลดคุณค่าหรือไม่",
-      "legal": "ok",
-      "tags": [
-       "ปบ"
-      ],
-      "exp": 25,
-      "explain": "ฟังผู้ได้รับผลกระทบที่มักไม่มีเสียงในการตัดสินใจ"
-     },
-     {
-      "key": "ค",
       "text": "ใส่ผลการประเมินไว้ใน SAR มาตรฐานที่ 2 ด้านการบริหารจัดการ",
       "legal": "ok",
       "tags": [
@@ -2713,7 +2702,7 @@ export const LEVELS = [
       "explain": "(<a href=\"https://so02.tci-thaijo.org/index.php/jgsnsbc-journal/article/download/256278/172204/955796\" target=\"_blank\" rel=\"noopener\">วารสาร TCI</a>)"
      },
      {
-      "key": "ง",
+      "key": "ค",
       "text": "ทดลองรูปแบบใหม่ เช่น ห้องเรียนเปิดที่ไม่เก็บค่าเรียน",
       "legal": "ok",
       "tags": [
@@ -2723,14 +2712,25 @@ export const LEVELS = [
       "explain": "ทดลองทางเลือกที่ลดการแบ่งชั้น แต่ต้องมีแผนประเมิน"
      },
      {
-      "key": "จ",
-      "text": "ไม่ประเมิน ดูเพียงว่าผู้ปกครองยังสมัครอยู่หรือไม่",
+      "key": "ง",
+      "text": "สำรวจเสียงนักเรียนห้องปกติว่ารู้สึกถูกลดคุณค่าหรือไม่",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "ปบ"
       ],
-      "exp": 5,
-      "explain": "ใช้ตัวชี้วัดที่ไม่บอกผลต่อการเรียนรู้"
+      "exp": 25,
+      "explain": "ฟังผู้ได้รับผลกระทบที่มักไม่มีเสียงในการตัดสินใจ"
+     },
+     {
+      "key": "จ",
+      "text": "เปรียบเทียบผลสัมฤทธิ์และความพึงพอใจของห้องพิเศษกับห้องปกติ และรายงานในที่ประชุมคณะกรรมการ",
+      "legal": "ok",
+      "tags": [
+       "วก",
+       "รบ"
+      ],
+      "exp": 30,
+      "explain": "ใช้ข้อมูลประกอบการตัดสินใจรอบถัดไป"
      }
     ]
    }
@@ -2770,17 +2770,6 @@ export const LEVELS = [
      },
      {
       "key": "ข",
-      "text": "ประสานโรงพยาบาลส่งเสริมสุขภาพตำบลและสาธารณสุขอำเภอให้เข้าสอบสวนโรค",
-      "legal": "ok",
-      "tags": [
-       "กจ",
-       "รบ"
-      ],
-      "exp": 25,
-      "explain": "การสอบสวนโรคในกรณีจริงดำเนินการโดยหน่วยงานสาธารณสุข (<a href=\"https://he01.tci-thaijo.org/index.php/iudcJ/article/view/276726\" target=\"_blank\" rel=\"noopener\">วารสารสอบสวนโรค</a>)"
-     },
-     {
-      "key": "ค",
       "text": "ไล่แม่ครัวออกทันทีตามที่ผู้ปกครองเรียกร้อง",
       "legal": "undetermined",
       "tags": [
@@ -2790,7 +2779,7 @@ export const LEVELS = [
       "explain": "สถานะการจ้างของแม่ครัวและขั้นตอนเลิกจ้างยังยืนยันไม่ได้ แต่การลงโทษก่อนรู้สาเหตุขัดกับผลสอบสวนจริงที่ชี้ไปที่แหล่งน้ำ (<a href=\"https://he01.tci-thaijo.org/index.php/iudcJ/article/view/276726\" target=\"_blank\" rel=\"noopener\">วารสารสอบสวนโรค</a>)"
      },
      {
-      "key": "ง",
+      "key": "ค",
       "text": "ให้ครูประจำชั้นโทรแจ้งผู้ปกครองนักเรียนที่ป่วยทุกคนและบันทึกอาการ",
       "legal": "ok",
       "tags": [
@@ -2799,6 +2788,17 @@ export const LEVELS = [
       ],
       "exp": 25,
       "explain": "ได้ข้อมูลผู้ป่วยครบ และผู้ปกครองรู้ข่าวจากโรงเรียนก่อนโซเชียลมีเดีย"
+     },
+     {
+      "key": "ง",
+      "text": "ประสานโรงพยาบาลส่งเสริมสุขภาพตำบลและสาธารณสุขอำเภอให้เข้าสอบสวนโรค",
+      "legal": "ok",
+      "tags": [
+       "กจ",
+       "รบ"
+      ],
+      "exp": 25,
+      "explain": "การสอบสวนโรคในกรณีจริงดำเนินการโดยหน่วยงานสาธารณสุข (<a href=\"https://he01.tci-thaijo.org/index.php/iudcJ/article/view/276726\" target=\"_blank\" rel=\"noopener\">วารสารสอบสวนโรค</a>)"
      },
      {
       "key": "จ",
@@ -2831,6 +2831,16 @@ export const LEVELS = [
      },
      {
       "key": "ข",
+      "text": "ขอให้ผู้ปกครองงดแชร์ภาพนักเรียนที่ป่วยเพื่อคุ้มครองข้อมูลส่วนบุคคล",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 20,
+      "explain": "สถานศึกษาต้องปฏิบัติตาม PDPA (<a href=\"https://he01.tci-thaijo.org/index.php/nmdjournal/article/view/251136\" target=\"_blank\" rel=\"noopener\">วารสารแพทย์นาวี</a>)"
+     },
+     {
+      "key": "ค",
       "text": "แถลงข้อเท็จจริงที่ทราบในกลุ่มผู้ปกครอง บอกสิ่งที่ยังไม่ทราบ และนัดเวลาแจ้งผลครั้งถัดไป",
       "legal": "ok",
       "tags": [
@@ -2841,27 +2851,7 @@ export const LEVELS = [
       "explain": "ลดข่าวลือโดยไม่กล่าวโทษใคร"
      },
      {
-      "key": "ค",
-      "text": "ขอให้ผู้ปกครองงดแชร์ภาพนักเรียนที่ป่วยเพื่อคุ้มครองข้อมูลส่วนบุคคล",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 20,
-      "explain": "สถานศึกษาต้องปฏิบัติตาม PDPA (<a href=\"https://he01.tci-thaijo.org/index.php/nmdjournal/article/view/251136\" target=\"_blank\" rel=\"noopener\">วารสารแพทย์นาวี</a>)"
-     },
-     {
       "key": "ง",
-      "text": "ให้สภานักเรียนช่วยกระจายข้อมูลวิธีดูแลตนเองให้เพื่อน",
-      "legal": "ok",
-      "tags": [
-       "กจ"
-      ],
-      "exp": 20,
-      "explain": "ให้นักเรียนมีบทบาท แต่ข้อมูลสุขภาพควรผ่านการตรวจของครูก่อน"
-     },
-     {
-      "key": "จ",
       "text": "ไม่สื่อสารจนกว่าจะได้ผลแล็บ",
       "legal": "ok",
       "tags": [
@@ -2869,6 +2859,16 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "ช่องว่างข้อมูลจะถูกเติมด้วยข่าวลือ"
+     },
+     {
+      "key": "จ",
+      "text": "ให้สภานักเรียนช่วยกระจายข้อมูลวิธีดูแลตนเองให้เพื่อน",
+      "legal": "ok",
+      "tags": [
+       "กจ"
+      ],
+      "exp": 20,
+      "explain": "ให้นักเรียนมีบทบาท แต่ข้อมูลสุขภาพควรผ่านการตรวจของครูก่อน"
      }
     ]
    },
@@ -2881,27 +2881,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ติดตั้งระบบเติมคลอรีนอัตโนมัติ หรือขอเชื่อมประปาภูมิภาค ตามข้อเสนอของทีมสอบสวนโรค โดยจัดจ้างตามระเบียบพัสดุ",
-      "legal": "ok",
-      "tags": [
-       "รบ",
-       "ทศ"
-      ],
-      "exp": 30,
-      "explain": "(<a href=\"https://he01.tci-thaijo.org/index.php/iudcJ/article/view/276726\" target=\"_blank\" rel=\"noopener\">วารสารสอบสวนโรค</a>; <a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "จ้างผู้รับเหมาที่รู้จักโดยไม่ทำรายงานขอจ้าง เพราะเป็นเหตุฉุกเฉิน",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "แม้เป็นกรณีเร่งด่วนตามข้อ 79 วรรคสอง ก็ต้องรีบรายงานขอความเห็นชอบ ไม่ได้ยกเว้นการรายงาน (<a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>)"
-     },
-     {
-      "key": "ค",
       "text": "ใช้น้ำดื่มบรรจุขวดและน้ำประปาชั่วคราวระหว่างแก้ระบบ",
       "legal": "ok",
       "tags": [
@@ -2909,6 +2888,26 @@ export const LEVELS = [
       ],
       "exp": 20,
       "explain": "มาตรการชั่วคราวที่จำเป็น แต่ยังไม่แก้ต้นเหตุ"
+     },
+     {
+      "key": "ข",
+      "text": "ฆ่าเชื้อบ่อครั้งเดียวแล้วใช้ต่อ",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 10,
+      "explain": "ทำตามข้อเสนอบางส่วน แต่ไม่แก้ที่ตำแหน่งบ่อ"
+     },
+     {
+      "key": "ค",
+      "text": "จ้างผู้รับเหมาที่รู้จักโดยไม่ทำรายงานขอจ้าง เพราะเป็นเหตุฉุกเฉิน",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "แม้เป็นกรณีเร่งด่วนตามข้อ 79 วรรคสอง ก็ต้องรีบรายงานขอความเห็นชอบ ไม่ได้ยกเว้นการรายงาน (<a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>)"
      },
      {
       "key": "ง",
@@ -2922,13 +2921,14 @@ export const LEVELS = [
      },
      {
       "key": "จ",
-      "text": "ฆ่าเชื้อบ่อครั้งเดียวแล้วใช้ต่อ",
+      "text": "ติดตั้งระบบเติมคลอรีนอัตโนมัติ หรือขอเชื่อมประปาภูมิภาค ตามข้อเสนอของทีมสอบสวนโรค โดยจัดจ้างตามระเบียบพัสดุ",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "รบ",
+       "ทศ"
       ],
-      "exp": 10,
-      "explain": "ทำตามข้อเสนอบางส่วน แต่ไม่แก้ที่ตำแหน่งบ่อ"
+      "exp": 30,
+      "explain": "(<a href=\"https://he01.tci-thaijo.org/index.php/iudcJ/article/view/276726\" target=\"_blank\" rel=\"noopener\">วารสารสอบสวนโรค</a>; <a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>)"
      }
     ]
    },
@@ -2941,14 +2941,13 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ให้ครูวิทยาศาสตร์ทำโครงงานตรวจคุณภาพน้ำกับนักเรียน",
+      "text": "ปิดเรื่องเมื่อไม่มีผู้ป่วยเพิ่ม",
       "legal": "ok",
       "tags": [
-       "วก",
-       "นว"
+       "⚠"
       ],
-      "exp": 30,
-      "explain": "เปลี่ยนวิกฤตเป็นบทเรียนในหลักสูตร"
+      "exp": 5,
+      "explain": "ไม่นำเหตุการณ์ไปปรับระบบ"
      },
      {
       "key": "ข",
@@ -2962,6 +2961,17 @@ export const LEVELS = [
      },
      {
       "key": "ค",
+      "text": "ให้ครูวิทยาศาสตร์ทำโครงงานตรวจคุณภาพน้ำกับนักเรียน",
+      "legal": "ok",
+      "tags": [
+       "วก",
+       "นว"
+      ],
+      "exp": 30,
+      "explain": "เปลี่ยนวิกฤตเป็นบทเรียนในหลักสูตร"
+     },
+     {
+      "key": "ง",
       "text": "ขอโทษแม่ครัวที่ถูกกล่าวหา และชี้แจงผลสอบสวนต่อผู้ปกครอง",
       "legal": "ok",
       "tags": [
@@ -2971,7 +2981,7 @@ export const LEVELS = [
       "explain": "คืนความเป็นธรรมให้ผู้ที่ถูกกล่าวโทษก่อนรู้สาเหตุ"
      },
      {
-      "key": "ง",
+      "key": "จ",
       "text": "ส่งรายงานบทเรียนให้เครือข่ายโรงเรียนที่ใช้น้ำบาดาล",
       "legal": "ok",
       "tags": [
@@ -2979,16 +2989,6 @@ export const LEVELS = [
       ],
       "exp": 20,
       "explain": "แบ่งปันบทเรียนให้โรงเรียนที่มีความเสี่ยงแบบเดียวกัน"
-     },
-     {
-      "key": "จ",
-      "text": "ปิดเรื่องเมื่อไม่มีผู้ป่วยเพิ่ม",
-      "legal": "ok",
-      "tags": [
-       "⚠"
-      ],
-      "exp": 5,
-      "explain": "ไม่นำเหตุการณ์ไปปรับระบบ"
      }
     ]
    }
@@ -3018,37 +3018,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ใช้สเปกและราคาจากที่ปรึกษาเป็น TOR ได้เลยเพราะประหยัดเวลา",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "ระเบียบฯ ข้อ 21 ให้หัวหน้าหน่วยงานตั้งคณะกรรมการหรือบุคคลจัดทำร่าง TOR และการนำสเปกของผู้ขายมาใช้คือรูปแบบในคดีฟุตซอล (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>; <a href=\"https://matichon.co.th/politics/news_5863453\" target=\"_blank\" rel=\"noopener\">มติชน</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "แต่งตั้งคณะกรรมการจัดทำร่าง TOR โดยมีครูพลศึกษาและผู้มีความรู้ด้านวัสดุ กำหนดคุณสมบัติตามการใช้งาน ไม่ระบุยี่ห้อ",
-      "legal": "ok",
-      "tags": [
-       "กจ",
-       "รบ"
-      ],
-      "exp": 30,
-      "explain": "(<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>)"
-     },
-     {
-      "key": "ค",
-      "text": "ตรวจว่างานนี้เป็นงานก่อสร้างหรือไม่ ถ้าใช่ต้องใช้แบบรูปรายการที่มีผู้ประกอบวิชาชีพรับรองแทน TOR",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 25,
-      "explain": "งานก่อสร้างใช้แบบรูปรายการ และ ว 112 (2561) กำหนดให้แบบต้องมีผู้ประกอบวิชาชีพรับรอง (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>; <a href=\"https://qsds.go.th/newaudit/wp-content/uploads/sites/70/2021/06/337.pdf\" target=\"_blank\" rel=\"noopener\">FAQ 337</a>)"
-     },
-     {
-      "key": "ง",
       "text": "นั่งสอนครูต้นกล้าว่าทำไมสเปกต้องเขียนจากความต้องการใช้งาน แล้วให้ร่วมเป็นเลขานุการคณะกรรมการ",
       "legal": "ok",
       "tags": [
@@ -3058,7 +3027,17 @@ export const LEVELS = [
       "explain": "คำสั่งเข้ากับความพร้อม R2"
      },
      {
-      "key": "จ",
+      "key": "ข",
+      "text": "ตรวจว่างานนี้เป็นงานก่อสร้างหรือไม่ ถ้าใช่ต้องใช้แบบรูปรายการที่มีผู้ประกอบวิชาชีพรับรองแทน TOR",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 25,
+      "explain": "งานก่อสร้างใช้แบบรูปรายการ และ ว 112 (2561) กำหนดให้แบบต้องมีผู้ประกอบวิชาชีพรับรอง (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>; <a href=\"https://qsds.go.th/newaudit/wp-content/uploads/sites/70/2021/06/337.pdf\" target=\"_blank\" rel=\"noopener\">FAQ 337</a>)"
+     },
+     {
+      "key": "ค",
       "text": "ส่งเรื่องให้เขตพื้นที่จัดซื้อแทนทั้งหมด",
       "legal": "undetermined",
       "tags": [
@@ -3066,6 +3045,27 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "อำนาจจัดซื้อแทนของเขตพื้นที่ยังยืนยันไม่ได้"
+     },
+     {
+      "key": "ง",
+      "text": "ใช้สเปกและราคาจากที่ปรึกษาเป็น TOR ได้เลยเพราะประหยัดเวลา",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "ระเบียบฯ ข้อ 21 ให้หัวหน้าหน่วยงานตั้งคณะกรรมการหรือบุคคลจัดทำร่าง TOR และการนำสเปกของผู้ขายมาใช้คือรูปแบบในคดีฟุตซอล (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>; <a href=\"https://matichon.co.th/politics/news_5863453\" target=\"_blank\" rel=\"noopener\">มติชน</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "แต่งตั้งคณะกรรมการจัดทำร่าง TOR โดยมีครูพลศึกษาและผู้มีความรู้ด้านวัสดุ กำหนดคุณสมบัติตามการใช้งาน ไม่ระบุยี่ห้อ",
+      "legal": "ok",
+      "tags": [
+       "กจ",
+       "รบ"
+      ],
+      "exp": 30,
+      "explain": "(<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>)"
      }
     ]
    },
@@ -3078,13 +3078,13 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ใช้ราคาที่ที่ปรึกษาคำนวณให้",
-      "legal": "illegal",
+      "text": "ประกาศราคากลางตามแบบ บก.01–06 เพราะวงเงินเกิน 500,000 บาท",
+      "legal": "ok",
       "tags": [
        "รบ"
       ],
-      "exp": 0,
-      "explain": "ราคากลางต้องได้มาตามลำดับแหล่งที่ระเบียบกำหนด เช่น ฐานข้อมูลกรมบัญชีกลาง ราคามาตรฐาน หรือสืบราคาตลาดไม่น้อยกว่า 3 ราย (<a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>)"
+      "exp": 25,
+      "explain": "(<a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>)"
      },
      {
       "key": "ข",
@@ -3108,16 +3108,6 @@ export const LEVELS = [
      },
      {
       "key": "ง",
-      "text": "ประกาศราคากลางตามแบบ บก.01–06 เพราะวงเงินเกิน 500,000 บาท",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 25,
-      "explain": "(<a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>)"
-     },
-     {
-      "key": "จ",
       "text": "รอให้ที่ปรึกษาส่งราคาฉบับปรับปรุงมาก่อนค่อยตัดสินใจ",
       "legal": "ok",
       "tags": [
@@ -3125,6 +3115,16 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "ยังไม่ผิดระเบียบตราบที่ยังไม่นำราคานั้นไปใช้ แต่ปล่อยให้คนนอกกำหนดจังหวะของกระบวนการ"
+     },
+     {
+      "key": "จ",
+      "text": "ใช้ราคาที่ที่ปรึกษาคำนวณให้",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "ราคากลางต้องได้มาตามลำดับแหล่งที่ระเบียบกำหนด เช่น ฐานข้อมูลกรมบัญชีกลาง ราคามาตรฐาน หรือสืบราคาตลาดไม่น้อยกว่า 3 ราย (<a href=\"https://loppao.go.th/images/%E0%B9%80%E0%B8%AD%E0%B8%81/pdf%E0%B8%A1%E0%B8%81%E0%B8%A3%E0%B8%B264/PTT.pdf\" target=\"_blank\" rel=\"noopener\">สรุประเบียบพัสดุ</a>)"
      }
     ]
    },
@@ -3137,36 +3137,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "แบ่งเป็น 4 สัญญาย่อยตามโซนสนาม สัญญาละไม่เกิน 500,000 บาท เพื่อใช้วิธีเฉพาะเจาะจง",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "ระเบียบฯ ข้อ 20 ห้ามแบ่งซื้อแบ่งจ้าง (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "ใช้วิธีที่เหมาะกับวงเงินเกิน 500,000 บาท และประกาศแผนจัดซื้อจัดจ้างกับผลผู้ชนะในระบบ e-GP",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 30,
-      "explain": "โครงการที่ไม่ได้ประกาศแผนใน e-GP ดำเนินการไม่ได้ และต้องประกาศผู้ชนะ (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>)"
-     },
-     {
-      "key": "ค",
-      "text": "ตั้งกรรมการพิจารณาผลและกรรมการตรวจรับเป็นคนละชุด",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 25,
-      "explain": "กรรมการพิจารณาผลห้ามเป็นกรรมการตรวจรับในงานเดียวกัน (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>)"
-     },
-     {
-      "key": "ง",
       "text": "เชิญตัวแทนชุมชนร่วมสังเกตการณ์การเปิดซอง",
       "legal": "undetermined",
       "tags": [
@@ -3176,7 +3146,7 @@ export const LEVELS = [
       "explain": "รูปแบบการสังเกตการณ์ของภาคประชาชนยังยืนยันไม่ได้ในบันทึกวิจัย"
      },
      {
-      "key": "จ",
+      "key": "ข",
       "text": "ให้ที่ปรึกษาแนะนำรายชื่อผู้เสนอราคาที่ \"ไว้ใจได้\"",
       "legal": "ok",
       "tags": [
@@ -3184,6 +3154,36 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "ไม่ได้ผิดข้อใดโดยตรงในบันทึกวิจัย แต่เปิดช่องฮั้วตามรูปแบบคดีจริง (<a href=\"https://matichon.co.th/politics/news_5863453\" target=\"_blank\" rel=\"noopener\">มติชน</a>)"
+     },
+     {
+      "key": "ค",
+      "text": "แบ่งเป็น 4 สัญญาย่อยตามโซนสนาม สัญญาละไม่เกิน 500,000 บาท เพื่อใช้วิธีเฉพาะเจาะจง",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "ระเบียบฯ ข้อ 20 ห้ามแบ่งซื้อแบ่งจ้าง (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>)"
+     },
+     {
+      "key": "ง",
+      "text": "ตั้งกรรมการพิจารณาผลและกรรมการตรวจรับเป็นคนละชุด",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 25,
+      "explain": "กรรมการพิจารณาผลห้ามเป็นกรรมการตรวจรับในงานเดียวกัน (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "ใช้วิธีที่เหมาะกับวงเงินเกิน 500,000 บาท และประกาศแผนจัดซื้อจัดจ้างกับผลผู้ชนะในระบบ e-GP",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 30,
+      "explain": "โครงการที่ไม่ได้ประกาศแผนใน e-GP ดำเนินการไม่ได้ และต้องประกาศผู้ชนะ (<a href=\"https://finance.rmuti.ac.th/pr/cgd-2560.PDF\" target=\"_blank\" rel=\"noopener\">ระเบียบ กค. 2560</a>)"
      }
     ]
    },
@@ -3196,16 +3196,36 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ปฏิเสธ บันทึกการพบเป็นลายลักษณ์อักษร และรายงานเขตพื้นที่",
+      "text": "รับฟังข้อเสนอต่อเพื่อดูว่าเขาต้องการอะไร",
       "legal": "ok",
       "tags": [
-       "รบ"
+       "⚠"
       ],
-      "exp": 30,
-      "explain": "บทเรียนจากคดีที่ศาลลงโทษทั้งผู้ให้และผู้รับในกระบวนการจัดซื้อ (<a href=\"https://matichon.co.th/politics/news_5863453\" target=\"_blank\" rel=\"noopener\">มติชน</a>)"
+      "exp": 0,
+      "explain": "ไม่ได้ผิดระเบียบในตัวเอง แต่เพิ่มความเสี่ยงสูงสุด"
      },
      {
       "key": "ข",
+      "text": "ปฏิเสธ แล้วจัดอบรมเรื่องผลประโยชน์ทับซ้อนให้ครูที่ทำงานพัสดุ",
+      "legal": "ok",
+      "tags": [
+       "พค"
+      ],
+      "exp": 25,
+      "explain": "ใช้เหตุการณ์จริงเป็นบทเรียนให้ครู (<a href=\"https://cdn.auckland.ac.nz/assets/education/about/research/LRG/Robinson,%20Lloyd%20&amp;%20Rowe%20(2008)%20The%20impact%20of%20leadership%20on%20student%20outcomes%20-%20An%20analysis%20of%20the%20differential%20effects%20of%20leadership%20types.pdf\" target=\"_blank\" rel=\"noopener\">Robinson</a>)"
+     },
+     {
+      "key": "ค",
+      "text": "ปฏิเสธเงียบ ๆ โดยไม่บันทึก",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 10,
+      "explain": "ไม่มีหลักฐานคุ้มครองตนเองและคณะกรรมการ"
+     },
+     {
+      "key": "ง",
       "text": "ปฏิเสธ และแจ้งคณะกรรมการทุกชุดให้ระวังการติดต่อจากบุคคลนี้",
       "legal": "ok",
       "tags": [
@@ -3216,34 +3236,14 @@ export const LEVELS = [
       "explain": "ปกป้องทั้งระบบ ไม่ใช่เฉพาะผู้อำนวยการ"
      },
      {
-      "key": "ค",
-      "text": "ปฏิเสธ แล้วจัดอบรมเรื่องผลประโยชน์ทับซ้อนให้ครูที่ทำงานพัสดุ",
-      "legal": "ok",
-      "tags": [
-       "พค"
-      ],
-      "exp": 25,
-      "explain": "ใช้เหตุการณ์จริงเป็นบทเรียนให้ครู (<a href=\"https://cdn.auckland.ac.nz/assets/education/about/research/LRG/Robinson,%20Lloyd%20&amp;%20Rowe%20(2008)%20The%20impact%20of%20leadership%20on%20student%20outcomes%20-%20An%20analysis%20of%20the%20differential%20effects%20of%20leadership%20types.pdf\" target=\"_blank\" rel=\"noopener\">Robinson</a>)"
-     },
-     {
-      "key": "ง",
-      "text": "ปฏิเสธเงียบ ๆ โดยไม่บันทึก",
-      "legal": "ok",
-      "tags": [
-       "⚠"
-      ],
-      "exp": 10,
-      "explain": "ไม่มีหลักฐานคุ้มครองตนเองและคณะกรรมการ"
-     },
-     {
       "key": "จ",
-      "text": "รับฟังข้อเสนอต่อเพื่อดูว่าเขาต้องการอะไร",
+      "text": "ปฏิเสธ บันทึกการพบเป็นลายลักษณ์อักษร และรายงานเขตพื้นที่",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "รบ"
       ],
-      "exp": 0,
-      "explain": "ไม่ได้ผิดระเบียบในตัวเอง แต่เพิ่มความเสี่ยงสูงสุด"
+      "exp": 30,
+      "explain": "บทเรียนจากคดีที่ศาลลงโทษทั้งผู้ให้และผู้รับในกระบวนการจัดซื้อ (<a href=\"https://matichon.co.th/politics/news_5863453\" target=\"_blank\" rel=\"noopener\">มติชน</a>)"
      }
     ]
    }
@@ -3273,6 +3273,36 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
+      "text": "ผู้อำนวยการสั่งไล่ครูออกวันนี้ตามที่ผู้ปกครองเรียกร้อง",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "ผู้อำนวยการสถานศึกษาไม่มีอำนาจลงโทษถึงขั้นไล่ออก (<a href=\"https://www.thaipost.net/main/detail/15832\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>)"
+     },
+     {
+      "key": "ข",
+      "text": "พบผู้ปกครองด้วยตนเอง ขอโทษในนามโรงเรียน และบอกขั้นตอนที่จะเกิดขึ้น",
+      "legal": "ok",
+      "tags": [
+       "ปบ"
+      ],
+      "exp": 25,
+      "explain": "แสดงความรับผิดชอบต่อผู้เสียหายโดยตรง"
+     },
+     {
+      "key": "ค",
+      "text": "บอกผู้ปกครองให้รอ 3 วันระหว่างที่โรงเรียนพิจารณา",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "เป็นรูปแบบการตอบที่ถูกวิจารณ์ในกรณีจริง (<a href=\"https://www.thaipbs.or.th/news/content/336370\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
+     },
+     {
+      "key": "ง",
       "text": "แยกครูออกจากการสอนนักเรียนทันที พานักเรียนตรวจร่างกาย และให้ครูแนะแนวดูแลจิตใจ",
       "legal": "ok",
       "tags": [
@@ -3283,17 +3313,7 @@ export const LEVELS = [
       "explain": "ตรงกับสิ่งที่โรงเรียนและเขตพื้นที่ทำในกรณีจริง (<a href=\"https://www.thaipbs.or.th/news/content/318726\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
      },
      {
-      "key": "ข",
-      "text": "ผู้อำนวยการสั่งไล่ครูออกวันนี้ตามที่ผู้ปกครองเรียกร้อง",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "ผู้อำนวยการสถานศึกษาไม่มีอำนาจลงโทษถึงขั้นไล่ออก (<a href=\"https://www.thaipost.net/main/detail/15832\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>)"
-     },
-     {
-      "key": "ค",
+      "key": "จ",
       "text": "รายงานเขตพื้นที่ทันทีและขอให้ย้ายครูไปช่วยราชการที่เขตระหว่างสอบสวน",
       "legal": "ok",
       "tags": [
@@ -3301,26 +3321,6 @@ export const LEVELS = [
       ],
       "exp": 25,
       "explain": "(<a href=\"https://www.thaipbs.or.th/news/content/318726\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
-     },
-     {
-      "key": "ง",
-      "text": "พบผู้ปกครองด้วยตนเอง ขอโทษในนามโรงเรียน และบอกขั้นตอนที่จะเกิดขึ้น",
-      "legal": "ok",
-      "tags": [
-       "ปบ"
-      ],
-      "exp": 25,
-      "explain": "แสดงความรับผิดชอบต่อผู้เสียหายโดยตรง"
-     },
-     {
-      "key": "จ",
-      "text": "บอกผู้ปกครองให้รอ 3 วันระหว่างที่โรงเรียนพิจารณา",
-      "legal": "ok",
-      "tags": [
-       "⚠"
-      ],
-      "exp": 5,
-      "explain": "เป็นรูปแบบการตอบที่ถูกวิจารณ์ในกรณีจริง (<a href=\"https://www.thaipbs.or.th/news/content/336370\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
      }
     ]
    },
@@ -3353,13 +3353,13 @@ export const LEVELS = [
      },
      {
       "key": "ค",
-      "text": "ถ้าผลสืบสวนชี้ว่าเป็นความผิดไม่ร้ายแรง ผู้อำนวยการลงโทษได้ไม่เกินตัดเงินเดือนร้อยละ 4 เป็นเวลา 3 เดือน ถ้าอาจร้ายแรงให้รายงานผู้มีอำนาจระดับสูงกว่า",
-      "legal": "ok",
+      "text": "รอผลคดีอาญาก่อนเริ่มเรื่องวินัย",
+      "legal": "undetermined",
       "tags": [
-       "รบ"
+       "⚠"
       ],
-      "exp": 25,
-      "explain": "(<a href=\"https://www.thaipost.net/main/detail/15832\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>)"
+      "exp": 5,
+      "explain": "การรอผลคดีอาญาเป็นตัวลวงในบันทึกวิจัย แต่ข้อกฎหมายยังยืนยันไม่ได้"
      },
      {
       "key": "ง",
@@ -3373,13 +3373,13 @@ export const LEVELS = [
      },
      {
       "key": "จ",
-      "text": "รอผลคดีอาญาก่อนเริ่มเรื่องวินัย",
-      "legal": "undetermined",
+      "text": "ถ้าผลสืบสวนชี้ว่าเป็นความผิดไม่ร้ายแรง ผู้อำนวยการลงโทษได้ไม่เกินตัดเงินเดือนร้อยละ 4 เป็นเวลา 3 เดือน ถ้าอาจร้ายแรงให้รายงานผู้มีอำนาจระดับสูงกว่า",
+      "legal": "ok",
       "tags": [
-       "⚠"
+       "รบ"
       ],
-      "exp": 5,
-      "explain": "การรอผลคดีอาญาเป็นตัวลวงในบันทึกวิจัย แต่ข้อกฎหมายยังยืนยันไม่ได้"
+      "exp": 25,
+      "explain": "(<a href=\"https://www.thaipost.net/main/detail/15832\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>)"
      }
     ]
    },
@@ -3392,18 +3392,7 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ชี้แจงว่าการลงโทษรุนแรงขัดระเบียบ และกระบวนการสอบสวนเป็นธรรมกับครูด้วย",
-      "legal": "ok",
-      "tags": [
-       "รบ",
-       "ทศ"
-      ],
-      "exp": 25,
-      "explain": "(<a href=\"https://www.thaipbs.or.th/news/content/318726\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "ชี้แจงตามข้อ ก และเปิดวงคุยเรื่องความเครียดของครูกับนักเรียนที่มีพฤติกรรมท้าทาย",
+      "text": "เปิดวงคุยเรื่องความเครียดของครูกับนักเรียนที่มีพฤติกรรมท้าทาย ควบคู่กับชี้แจงว่าการลงโทษรุนแรงขัดระเบียบ",
       "legal": "ok",
       "tags": [
        "ปบ",
@@ -3411,6 +3400,16 @@ export const LEVELS = [
       ],
       "exp": 30,
       "explain": "ยอมรับปัญหาจริงที่ครูเผชิญโดยไม่ยอมรับความรุนแรง"
+     },
+     {
+      "key": "ข",
+      "text": "ร่วมลงชื่อกับครูเพื่อรักษาความสัมพันธ์ในโรงเรียน",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 0,
+      "explain": "ไม่ผิดระเบียบโดยตรงในบันทึกวิจัย แต่เป็นการละทิ้งหน้าที่คุ้มครองนักเรียน"
      },
      {
       "key": "ค",
@@ -3424,16 +3423,6 @@ export const LEVELS = [
      },
      {
       "key": "ง",
-      "text": "ร่วมลงชื่อกับครูเพื่อรักษาความสัมพันธ์ในโรงเรียน",
-      "legal": "ok",
-      "tags": [
-       "⚠"
-      ],
-      "exp": 0,
-      "explain": "ไม่ผิดระเบียบโดยตรงในบันทึกวิจัย แต่เป็นการละทิ้งหน้าที่คุ้มครองนักเรียน"
-     },
-     {
-      "key": "จ",
       "text": "ไม่ตอบ ปล่อยให้เรื่องเงียบไปเอง",
       "legal": "ok",
       "tags": [
@@ -3441,6 +3430,17 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "ความเงียบของผู้บริหารถูกตีความว่ายอมรับข้อเรียกร้อง"
+     },
+     {
+      "key": "จ",
+      "text": "ชี้แจงว่าการลงโทษรุนแรงขัดระเบียบ และกระบวนการสอบสวนเป็นธรรมกับครูด้วย",
+      "legal": "ok",
+      "tags": [
+       "รบ",
+       "ทศ"
+      ],
+      "exp": 25,
+      "explain": "(<a href=\"https://www.thaipbs.or.th/news/content/318726\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
      }
     ]
    },
@@ -3483,16 +3483,6 @@ export const LEVELS = [
      },
      {
       "key": "ง",
-      "text": "ติดกล้องในห้องเรียนทุกห้อง",
-      "legal": "undetermined",
-      "tags": [
-       "นว"
-      ],
-      "exp": 10,
-      "explain": "แนวทาง PDPA เรื่อง CCTV ในโรงเรียนยังยืนยันไม่ได้"
-     },
-     {
-      "key": "จ",
       "text": "ไม่ต้องมีอะไรเพิ่ม เพราะเป็นกรณีเดียว",
       "legal": "ok",
       "tags": [
@@ -3500,6 +3490,16 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "มองเหตุเป็นเรื่องเฉพาะตัว ไม่แก้ที่ระบบ"
+     },
+     {
+      "key": "จ",
+      "text": "ติดกล้องในห้องเรียนทุกห้อง",
+      "legal": "undetermined",
+      "tags": [
+       "นว"
+      ],
+      "exp": 10,
+      "explain": "แนวทาง PDPA เรื่อง CCTV ในโรงเรียนยังยืนยันไม่ได้"
      }
     ]
    }
@@ -3529,26 +3529,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ประสาน สทศ. และเขตพื้นที่ทันที แจ้งว่าโรงเรียนพร้อมให้ข้อมูลแก่คณะกรรมการหาข้อเท็จจริงของ สทศ.",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 30,
-      "explain": "สทศ. เป็นผู้ตั้งคณะกรรมการหาข้อเท็จจริงในกรณีจริง (<a href=\"https://www.khaosod.co.th/around-thailand/news_2272556\" target=\"_blank\" rel=\"noopener\">ข่าวสด</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "เรียกนักเรียนที่ถูกกล่าวถึงมาสอบถามคืนนี้",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 10,
-      "explain": "เร็วแต่เสี่ยงกดดันเยาวชนก่อนข้อเท็จจริงชัด"
-     },
-     {
-      "key": "ค",
       "text": "ขอให้แอดมินกลุ่มลบโพสต์และหยุดการแชร์",
       "legal": "ok",
       "tags": [
@@ -3558,7 +3538,17 @@ export const LEVELS = [
       "explain": "ลดการแพร่กระจาย แต่อาจทำลายหลักฐาน"
      },
      {
-      "key": "ง",
+      "key": "ข",
+      "text": "ประสาน สทศ. และเขตพื้นที่ทันที แจ้งว่าโรงเรียนพร้อมให้ข้อมูลแก่คณะกรรมการหาข้อเท็จจริงของ สทศ.",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 30,
+      "explain": "สทศ. เป็นผู้ตั้งคณะกรรมการหาข้อเท็จจริงในกรณีจริง (<a href=\"https://www.khaosod.co.th/around-thailand/news_2272556\" target=\"_blank\" rel=\"noopener\">ข่าวสด</a>)"
+     },
+     {
+      "key": "ค",
       "text": "ประชุมทีมผู้บริหารคืนนี้ แบ่งบทบาทระหว่างผู้ประสาน สทศ. ผู้ดูแลนักเรียน และผู้สื่อสาร",
       "legal": "ok",
       "tags": [
@@ -3569,7 +3559,7 @@ export const LEVELS = [
       "explain": "แบ่งบทบาทชัดในวิกฤต แต่ยังไม่ได้ติดต่อหน่วยงานที่รับผิดชอบการสอบ"
      },
      {
-      "key": "จ",
+      "key": "ง",
       "text": "ไม่ทำอะไรจนกว่า สทศ. จะติดต่อมา",
       "legal": "ok",
       "tags": [
@@ -3577,6 +3567,16 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "รอให้ปัญหามาหาโดยไม่เตรียมข้อมูล"
+     },
+     {
+      "key": "จ",
+      "text": "เรียกนักเรียนที่ถูกกล่าวถึงมาสอบถามคืนนี้",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 10,
+      "explain": "เร็วแต่เสี่ยงกดดันเยาวชนก่อนข้อเท็จจริงชัด"
      }
     ]
    },
@@ -3589,13 +3589,13 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ให้ครูแนะแนวพบนักเรียนพร้อมผู้ปกครอง ฟังข้อมูลโดยไม่ตัดสินล่วงหน้า",
+      "text": "ปล่อยให้เพื่อนในโซเชียลมีเดียตัดสินกันเอง",
       "legal": "ok",
       "tags": [
-       "ปบ"
+       "⚠"
       ],
-      "exp": 30,
-      "explain": "นักเรียนยังเป็นเยาวชน และข้อเท็จจริงยังไม่ชัด"
+      "exp": 5,
+      "explain": "ปล่อยให้เยาวชนถูกตัดสินก่อนข้อเท็จจริงชัด"
      },
      {
       "key": "ข",
@@ -3620,6 +3620,16 @@ export const LEVELS = [
      },
      {
       "key": "ง",
+      "text": "ให้ครูแนะแนวพบนักเรียนพร้อมผู้ปกครอง ฟังข้อมูลโดยไม่ตัดสินล่วงหน้า",
+      "legal": "ok",
+      "tags": [
+       "ปบ"
+      ],
+      "exp": 30,
+      "explain": "นักเรียนยังเป็นเยาวชน และข้อเท็จจริงยังไม่ชัด"
+     },
+     {
+      "key": "จ",
       "text": "ให้สภานักเรียนช่วยสื่อสารกับเพื่อนให้หยุดแชร์และหยุดล่าแม่มด",
       "legal": "ok",
       "tags": [
@@ -3627,16 +3637,6 @@ export const LEVELS = [
       ],
       "exp": 20,
       "explain": "ให้นักเรียนช่วยลดการกล่าวโทษกันเอง"
-     },
-     {
-      "key": "จ",
-      "text": "ปล่อยให้เพื่อนในโซเชียลมีเดียตัดสินกันเอง",
-      "legal": "ok",
-      "tags": [
-       "⚠"
-      ],
-      "exp": 5,
-      "explain": "ปล่อยให้เยาวชนถูกตัดสินก่อนข้อเท็จจริงชัด"
      }
     ]
    },
@@ -3649,26 +3649,16 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ให้ครูประจำชั้นโทรขอให้นักเรียนที่คะแนนต่ำสละสิทธิ์สอบ",
-      "legal": "illegal",
+      "text": "ไม่ตอบข้อเสนอของครู ปล่อยให้แต่ละห้องตัดสินใจ",
+      "legal": "ok",
       "tags": [
-       "รบ"
+       "⚠"
       ],
-      "exp": 0,
-      "explain": "ขัดกับข้อสั่งการของ ศธ. ปี 2565 ที่ให้ O-NET เป็นแบบสมัครใจ ใช้เพื่อพัฒนาการสอน และไม่ให้จัดอันดับโรงเรียน (<a href=\"https://www.thansettakij.com/general-news/513646\" target=\"_blank\" rel=\"noopener\">ฐานเศรษฐกิจ</a>)"
+      "exp": 5,
+      "explain": "เปิดช่องให้เกิดการชี้นำในบางห้อง"
      },
      {
       "key": "ข",
-      "text": "ยืนยันว่านักเรียนทุกคนมีสิทธิตัดสินใจเองว่าจะสอบหรือไม่ โดยโรงเรียนไม่ชี้นำ",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 25,
-      "explain": "(<a href=\"https://www.thansettakij.com/general-news/513646\" target=\"_blank\" rel=\"noopener\">ฐานเศรษฐกิจ</a>)"
-     },
-     {
-      "key": "ค",
       "text": "ชี้แจงครูว่าโรงเรียนใช้ผล O-NET เพื่อดูจุดที่ต้องพัฒนาการสอน ไม่ใช่เพื่อแข่งอันดับ",
       "legal": "ok",
       "tags": [
@@ -3679,7 +3669,7 @@ export const LEVELS = [
       "explain": "(<a href=\"https://www.thansettakij.com/general-news/513646\" target=\"_blank\" rel=\"noopener\">ฐานเศรษฐกิจ</a>)"
      },
      {
-      "key": "ง",
+      "key": "ค",
       "text": "ตอบเขตพื้นที่ว่าโรงเรียนจะรายงานความก้าวหน้าด้วยข้อมูลหลายแหล่ง ไม่ใช่ O-NET อย่างเดียว",
       "legal": "ok",
       "tags": [
@@ -3689,14 +3679,24 @@ export const LEVELS = [
       "explain": "ตอบแรงกดดันจากเขตด้วยกรอบการใช้ข้อมูลที่ ศธ. วางไว้ (<a href=\"https://www.thansettakij.com/general-news/513646\" target=\"_blank\" rel=\"noopener\">ฐานเศรษฐกิจ</a>)"
      },
      {
-      "key": "จ",
-      "text": "ไม่ตอบข้อเสนอของครู ปล่อยให้แต่ละห้องตัดสินใจ",
+      "key": "ง",
+      "text": "ยืนยันว่านักเรียนทุกคนมีสิทธิตัดสินใจเองว่าจะสอบหรือไม่ โดยโรงเรียนไม่ชี้นำ",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "รบ"
       ],
-      "exp": 5,
-      "explain": "เปิดช่องให้เกิดการชี้นำในบางห้อง"
+      "exp": 25,
+      "explain": "(<a href=\"https://www.thansettakij.com/general-news/513646\" target=\"_blank\" rel=\"noopener\">ฐานเศรษฐกิจ</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "ให้ครูประจำชั้นโทรขอให้นักเรียนที่คะแนนต่ำสละสิทธิ์สอบ",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "ขัดกับข้อสั่งการของ ศธ. ปี 2565 ที่ให้ O-NET เป็นแบบสมัครใจ ใช้เพื่อพัฒนาการสอน และไม่ให้จัดอันดับโรงเรียน (<a href=\"https://www.thansettakij.com/general-news/513646\" target=\"_blank\" rel=\"noopener\">ฐานเศรษฐกิจ</a>)"
      }
     ]
    },
@@ -3709,6 +3709,16 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
+      "text": "ไม่ต้องมีมาตรการเพิ่ม เพราะเป็นความผิดส่วนบุคคล",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "มองเหตุเป็นเรื่องส่วนตัว ไม่ทบทวนระบบ"
+     },
+     {
+      "key": "ข",
       "text": "ทบทวนแนวปฏิบัติของกรรมการคุมสอบร่วมกับ สทศ. เรื่องอุปกรณ์สื่อสาร",
       "legal": "ok",
       "tags": [
@@ -3716,17 +3726,6 @@ export const LEVELS = [
       ],
       "exp": 25,
       "explain": "ปิดช่องโหว่ตรงจุดที่เกิดเหตุ"
-     },
-     {
-      "key": "ข",
-      "text": "จัดกิจกรรมเรื่องความซื่อสัตย์ทางวิชาการที่ให้นักเรียนร่วมออกแบบ",
-      "legal": "ok",
-      "tags": [
-       "ปบ",
-       "กจ"
-      ],
-      "exp": 25,
-      "explain": "สร้างค่านิยมจากตัวนักเรียน ไม่ใช่จากการบังคับอย่างเดียว"
      },
      {
       "key": "ค",
@@ -3751,13 +3750,14 @@ export const LEVELS = [
      },
      {
       "key": "จ",
-      "text": "ไม่ต้องมีมาตรการเพิ่ม เพราะเป็นความผิดส่วนบุคคล",
+      "text": "จัดกิจกรรมเรื่องความซื่อสัตย์ทางวิชาการที่ให้นักเรียนร่วมออกแบบ",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "ปบ",
+       "กจ"
       ],
-      "exp": 5,
-      "explain": "มองเหตุเป็นเรื่องส่วนตัว ไม่ทบทวนระบบ"
+      "exp": 25,
+      "explain": "สร้างค่านิยมจากตัวนักเรียน ไม่ใช่จากการบังคับอย่างเดียว"
      }
     ]
    }
@@ -3787,26 +3787,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "สั่งการตามแผนเผชิญเหตุ ให้ครูทุกห้องล็อกห้อง นับจำนวนนักเรียน และรายงานผ่านช่องทางเดียว",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 30,
-      "explain": "ความปลอดภัยทันทีเป็นขั้นแรกของลำดับที่ทางการใช้ และกรมการปกครองสั่งให้โรงเรียนซ้อมแผนเผชิญเหตุ (<a href=\"https://www.dailynews.co.th/news/6090569/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "ผู้อำนวยการวิ่งไปจุดเกิดเหตุด้วยตนเอง",
-      "legal": "ok",
-      "tags": [
-       "ปบ"
-      ],
-      "exp": 10,
-      "explain": "กล้าหาญแต่ทิ้งการบัญชาการภาพรวม"
-     },
-     {
-      "key": "ค",
       "text": "แจ้งตำรวจและหน่วยกู้ชีพ และให้รองฯ ประเสริฐเป็นผู้ประสานกับเจ้าหน้าที่ที่หน้าโรงเรียน",
       "legal": "ok",
       "tags": [
@@ -3817,7 +3797,17 @@ export const LEVELS = [
       "explain": "คำสั่งมอบหมายเข้ากับความพร้อม R4 ของรองฯ ประเสริฐ เมื่อผู้อำนวยการยังบัญชาการภาพรวม"
      },
      {
-      "key": "ง",
+      "key": "ข",
+      "text": "รอฟังรายงานจากครูเวรก่อนตัดสินใจ",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 0,
+      "explain": "การรอในวิกฤตความรุนแรงทำให้นักเรียนเสี่ยงโดยตรง"
+     },
+     {
+      "key": "ค",
       "text": "ประกาศเสียงตามสายให้นักเรียนทุกคนวิ่งออกนอกโรงเรียน",
       "legal": "ok",
       "tags": [
@@ -3827,14 +3817,24 @@ export const LEVELS = [
       "explain": "ไม่ผิดระเบียบที่ยืนยันได้ แต่เสี่ยงให้นักเรียนวิ่งเข้าหาอันตราย"
      },
      {
-      "key": "จ",
-      "text": "รอฟังรายงานจากครูเวรก่อนตัดสินใจ",
+      "key": "ง",
+      "text": "ผู้อำนวยการวิ่งไปจุดเกิดเหตุด้วยตนเอง",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "ปบ"
       ],
-      "exp": 0,
-      "explain": "การรอในวิกฤตความรุนแรงทำให้นักเรียนเสี่ยงโดยตรง"
+      "exp": 10,
+      "explain": "กล้าหาญแต่ทิ้งการบัญชาการภาพรวม"
+     },
+     {
+      "key": "จ",
+      "text": "สั่งการตามแผนเผชิญเหตุ ให้ครูทุกห้องล็อกห้อง นับจำนวนนักเรียน และรายงานผ่านช่องทางเดียว",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 30,
+      "explain": "ความปลอดภัยทันทีเป็นขั้นแรกของลำดับที่ทางการใช้ และกรมการปกครองสั่งให้โรงเรียนซ้อมแผนเผชิญเหตุ (<a href=\"https://www.dailynews.co.th/news/6090569/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
      }
     ]
    },
@@ -3857,27 +3857,16 @@ export const LEVELS = [
      },
      {
       "key": "ข",
-      "text": "ขอทีม MCATT และนักจิตวิทยามาที่โรงเรียนภายในวันนี้",
+      "text": "ปิดประตูโรงเรียนไม่ให้ผู้ปกครองเข้า และไม่ให้ข้อมูลใดจนกว่าตำรวจอนุญาต",
       "legal": "ok",
       "tags": [
-       "ปบ"
+       "⚠"
       ],
-      "exp": 25,
-      "explain": "(<a href=\"https://policywatch.thaipbs.or.th/article/education-71\" target=\"_blank\" rel=\"noopener\">Policy Watch</a>)"
+      "exp": 5,
+      "explain": "ทำให้ผู้ปกครองตื่นตระหนกและหาข้อมูลจากโซเชียลมีเดียแทน"
      },
      {
       "key": "ค",
-      "text": "ขอให้ครูและนักเรียนงดแชร์ภาพเหตุการณ์ และประสานแพลตฟอร์มให้ลบภาพที่ระบุตัวเด็ก",
-      "legal": "ok",
-      "tags": [
-       "รบ",
-       "ปบ"
-      ],
-      "exp": 25,
-      "explain": "ศธ. และกรมสุขภาพจิตขอให้งดแชร์ภาพความรุนแรง (<a href=\"https://www.hfocus.org/content/2026/08/39041\" target=\"_blank\" rel=\"noopener\">Hfocus</a>)"
-     },
-     {
-      "key": "ง",
       "text": "ให้สัมภาษณ์สื่อทันทีเพื่อยืนยันว่าโรงเรียนควบคุมสถานการณ์ได้",
       "legal": "ok",
       "tags": [
@@ -3887,14 +3876,25 @@ export const LEVELS = [
       "explain": "การสื่อสารสำคัญ แต่การพูดก่อนข้อเท็จจริงชัดเพิ่มความเสี่ยง"
      },
      {
-      "key": "จ",
-      "text": "ปิดประตูโรงเรียนไม่ให้ผู้ปกครองเข้า และไม่ให้ข้อมูลใดจนกว่าตำรวจอนุญาต",
+      "key": "ง",
+      "text": "ขอทีม MCATT และนักจิตวิทยามาที่โรงเรียนภายในวันนี้",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "ปบ"
       ],
-      "exp": 5,
-      "explain": "ทำให้ผู้ปกครองตื่นตระหนกและหาข้อมูลจากโซเชียลมีเดียแทน"
+      "exp": 25,
+      "explain": "(<a href=\"https://policywatch.thaipbs.or.th/article/education-71\" target=\"_blank\" rel=\"noopener\">Policy Watch</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "ขอให้ครูและนักเรียนงดแชร์ภาพเหตุการณ์ และประสานแพลตฟอร์มให้ลบภาพที่ระบุตัวเด็ก",
+      "legal": "ok",
+      "tags": [
+       "รบ",
+       "ปบ"
+      ],
+      "exp": 25,
+      "explain": "ศธ. และกรมสุขภาพจิตขอให้งดแชร์ภาพความรุนแรง (<a href=\"https://www.hfocus.org/content/2026/08/39041\" target=\"_blank\" rel=\"noopener\">Hfocus</a>)"
      }
     ]
    },
@@ -3907,6 +3907,26 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
+      "text": "ตั้งศูนย์คุ้มครองสิทธิและความปลอดภัยของโรงเรียน มีครู นักเรียน และผู้ปกครองร่วม",
+      "legal": "ok",
+      "tags": [
+       "กจ"
+      ],
+      "exp": 25,
+      "explain": "หนึ่งใน 7 มาตรการ (<a href=\"https://policywatch.thaipbs.or.th/article/education-71\" target=\"_blank\" rel=\"noopener\">Policy Watch</a>)"
+     },
+     {
+      "key": "ข",
+      "text": "ปิดโรงเรียนไม่มีกำหนดจนกว่าเขตพื้นที่จะสั่ง",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "เลื่อนการตัดสินใจไปให้ผู้อื่น ทั้งที่นักเรียนต้องการโครงสร้างชีวิตที่มั่นคง"
+     },
+     {
+      "key": "ค",
       "text": "เปิดเรียนตามแผนที่ร่วมทำกับทีม MCATT วันแรกเป็นกิจกรรมดูแลใจ ไม่ใช่การเรียนตามตาราง",
       "legal": "ok",
       "tags": [
@@ -3915,26 +3935,6 @@ export const LEVELS = [
       ],
       "exp": 30,
       "explain": "ตรงกับการเตรียมเปิดเรียนร่วมกับ MCATT ในกรณีจริง (<a href=\"https://policywatch.thaipbs.or.th/article/education-71\" target=\"_blank\" rel=\"noopener\">Policy Watch</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "เปิดเรียนตามปกติวันรุ่งขึ้นเพื่อให้ชีวิตกลับสู่ภาวะปกติเร็วที่สุด",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 10,
-      "explain": "รักษาความต่อเนื่อง แต่ยังไม่ได้เตรียมการดูแลจิตใจตามแนวทางที่ ศธ. ใช้ (<a href=\"https://policywatch.thaipbs.or.th/article/education-71\" target=\"_blank\" rel=\"noopener\">Policy Watch</a>)"
-     },
-     {
-      "key": "ค",
-      "text": "ตั้งศูนย์คุ้มครองสิทธิและความปลอดภัยของโรงเรียน มีครู นักเรียน และผู้ปกครองร่วม",
-      "legal": "ok",
-      "tags": [
-       "กจ"
-      ],
-      "exp": 25,
-      "explain": "หนึ่งใน 7 มาตรการ (<a href=\"https://policywatch.thaipbs.or.th/article/education-71\" target=\"_blank\" rel=\"noopener\">Policy Watch</a>)"
      },
      {
       "key": "ง",
@@ -3948,13 +3948,13 @@ export const LEVELS = [
      },
      {
       "key": "จ",
-      "text": "ปิดโรงเรียนไม่มีกำหนดจนกว่าเขตพื้นที่จะสั่ง",
+      "text": "เปิดเรียนตามปกติวันรุ่งขึ้นเพื่อให้ชีวิตกลับสู่ภาวะปกติเร็วที่สุด",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "รบ"
       ],
-      "exp": 5,
-      "explain": "เลื่อนการตัดสินใจไปให้ผู้อื่น ทั้งที่นักเรียนต้องการโครงสร้างชีวิตที่มั่นคง"
+      "exp": 10,
+      "explain": "รักษาความต่อเนื่อง แต่ยังไม่ได้เตรียมการดูแลจิตใจตามแนวทางที่ ศธ. ใช้ (<a href=\"https://policywatch.thaipbs.or.th/article/education-71\" target=\"_blank\" rel=\"noopener\">Policy Watch</a>)"
      }
     ]
    },
@@ -3967,27 +3967,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ติดตามสุขภาพจิตนักเรียนและครูที่ 1 3 และ 6 เดือน ร่วมกับหน่วยสาธารณสุข",
-      "legal": "ok",
-      "tags": [
-       "ปบ",
-       "รบ"
-      ],
-      "exp": 30,
-      "explain": "(<a href=\"https://policywatch.thaipbs.or.th/article/education-71\" target=\"_blank\" rel=\"noopener\">Policy Watch</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "ทำ PLC ให้ครูเรียนรู้การสังเกตสัญญาณเตือนของนักเรียนที่เสี่ยงใช้ความรุนแรงหรือถูกกลั่นแกล้ง",
-      "legal": "ok",
-      "tags": [
-       "พค"
-      ],
-      "exp": 25,
-      "explain": "ผลสำรวจปี 2568 พบเด็กร้อยละ 65.54 เคยถูกกลั่นแกล้ง (<a href=\"https://www.thaipbs.or.th/now/content/4306\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
-     },
-     {
-      "key": "ค",
       "text": "ให้สภานักเรียนเสนอวิธีทำให้โรงเรียน \"ปลอดภัยในความรู้สึก\"",
       "legal": "ok",
       "tags": [
@@ -3998,7 +3977,17 @@ export const LEVELS = [
       "explain": "ให้ผู้เรียนร่วมออกแบบความปลอดภัยของตนเอง"
      },
      {
-      "key": "ง",
+      "key": "ข",
+      "text": "หยุดติดตามเมื่อผ่านไปหนึ่งเดือนและไม่มีปัญหาใหม่",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "หยุดก่อนช่วงติดตาม 3 และ 6 เดือนที่ทางการกำหนด (<a href=\"https://policywatch.thaipbs.or.th/article/education-71\" target=\"_blank\" rel=\"noopener\">Policy Watch</a>)"
+     },
+     {
+      "key": "ค",
       "text": "บันทึกบทเรียนเป็นแผนเผชิญเหตุฉบับใหม่และซ้อมทุกภาคเรียน",
       "legal": "ok",
       "tags": [
@@ -4009,14 +3998,25 @@ export const LEVELS = [
       "explain": "(<a href=\"https://www.dailynews.co.th/news/6090569/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
      },
      {
-      "key": "จ",
-      "text": "หยุดติดตามเมื่อผ่านไปหนึ่งเดือนและไม่มีปัญหาใหม่",
+      "key": "ง",
+      "text": "ทำ PLC ให้ครูเรียนรู้การสังเกตสัญญาณเตือนของนักเรียนที่เสี่ยงใช้ความรุนแรงหรือถูกกลั่นแกล้ง",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "พค"
       ],
-      "exp": 5,
-      "explain": "หยุดก่อนช่วงติดตาม 3 และ 6 เดือนที่ทางการกำหนด (<a href=\"https://policywatch.thaipbs.or.th/article/education-71\" target=\"_blank\" rel=\"noopener\">Policy Watch</a>)"
+      "exp": 25,
+      "explain": "ผลสำรวจปี 2568 พบเด็กร้อยละ 65.54 เคยถูกกลั่นแกล้ง (<a href=\"https://www.thaipbs.or.th/now/content/4306\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "ติดตามสุขภาพจิตนักเรียนและครูที่ 1 3 และ 6 เดือน ร่วมกับหน่วยสาธารณสุข",
+      "legal": "ok",
+      "tags": [
+       "ปบ",
+       "รบ"
+      ],
+      "exp": 30,
+      "explain": "(<a href=\"https://policywatch.thaipbs.or.th/article/education-71\" target=\"_blank\" rel=\"noopener\">Policy Watch</a>)"
      }
     ]
    }
@@ -4056,26 +4056,6 @@ export const LEVELS = [
      },
      {
       "key": "ข",
-      "text": "แก้ไขเอกสารการยืมให้มีวัตถุประสงค์ย้อนหลังเพื่อให้ผ่านการตรวจ",
-      "legal": "illegal",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 0,
-      "explain": "การทำเอกสารราชการเท็จเป็นรูปแบบที่ศาลลงโทษในคดีเอกสารเบิกจ่าย (<a href=\"https://isranews.org/article/isranews-scoop/131425-invesqwe.html\" target=\"_blank\" rel=\"noopener\">อิศรา</a>)"
-     },
-     {
-      "key": "ค",
-      "text": "ขอบคุณครูต้นกล้า ยืนยันว่าจะคุ้มครองผู้พบเรื่อง และให้ทำงานร่วมกับผู้ตรวจสอบตามปกติ",
-      "legal": "ok",
-      "tags": [
-       "ปบ"
-      ],
-      "exp": 25,
-      "explain": "คำสั่งสนับสนุนเข้ากับ R3"
-     },
-     {
-      "key": "ง",
       "text": "ตั้งคณะทำงานตรวจทะเบียนคุมเงินทุกประเภทย้อนหลัง",
       "legal": "ok",
       "tags": [
@@ -4086,7 +4066,7 @@ export const LEVELS = [
       "explain": "แนวทางเงินอุดหนุนกำหนดให้มีทะเบียนคุมแยกตามประเภทเงิน (<a href=\"https://www.korat3.go.th/wp-content/uploads/2024/11/%E0%B9%81%E0%B8%99%E0%B8%A7%E0%B8%97%E0%B8%B2%E0%B8%87%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%94%E0%B8%B3%E0%B9%80%E0%B8%99%E0%B8%B4%E0%B8%99%E0%B8%87%E0%B8%B2%E0%B8%99-2568.pdf\" target=\"_blank\" rel=\"noopener\">แนวทาง 2568</a>)"
      },
      {
-      "key": "จ",
+      "key": "ค",
       "text": "เก็บเอกสารไว้ในลิ้นชัก รอดูว่าผู้ตรวจสอบจะพบเองหรือไม่",
       "legal": "ok",
       "tags": [
@@ -4094,6 +4074,26 @@ export const LEVELS = [
       ],
       "exp": 0,
       "explain": "การนิ่งเฉยหลังรู้เรื่อง ศธ. เคยสั่งให้ดำเนินการกับผู้ที่รู้แล้วนิ่งเฉยในกรณีปี 2569 (<a href=\"https://www.bangkokbiznews.com/news/news-update/1242416\" target=\"_blank\" rel=\"noopener\">กรุงเทพธุรกิจ</a>)"
+     },
+     {
+      "key": "ง",
+      "text": "ขอบคุณครูต้นกล้า ยืนยันว่าจะคุ้มครองผู้พบเรื่อง และให้ทำงานร่วมกับผู้ตรวจสอบตามปกติ",
+      "legal": "ok",
+      "tags": [
+       "ปบ"
+      ],
+      "exp": 25,
+      "explain": "คำสั่งสนับสนุนเข้ากับ R3"
+     },
+     {
+      "key": "จ",
+      "text": "แก้ไขเอกสารการยืมให้มีวัตถุประสงค์ย้อนหลังเพื่อให้ผ่านการตรวจ",
+      "legal": "illegal",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 0,
+      "explain": "การทำเอกสารราชการเท็จเป็นรูปแบบที่ศาลลงโทษในคดีเอกสารเบิกจ่าย (<a href=\"https://isranews.org/article/isranews-scoop/131425-invesqwe.html\" target=\"_blank\" rel=\"noopener\">อิศรา</a>)"
      }
     ]
    },
@@ -4106,26 +4106,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "รายงานเขตพื้นที่เป็นลายลักษณ์อักษร แนบเอกสารทั้งหมด และขอคำแนะนำขั้นตอนต่อไป",
-      "legal": "undetermined",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 30,
-      "explain": "ลำดับการรายงานที่ถูกต้องยังยืนยันไม่ได้ แต่การรายงานต่อต้นสังกัดเป็นขั้นที่ปลอดภัยที่สุด"
-     },
-     {
-      "key": "ข",
-      "text": "ติดต่ออดีตผู้อำนวยการเพื่อขอให้คืนเงินก่อน แล้วจึงตัดสินใจว่าจะรายงานหรือไม่",
-      "legal": "undetermined",
-      "tags": [
-       "ปบ"
-      ],
-      "exp": 5,
-      "explain": "ศาลไม่รอลงอาญาแม้มีการคืนเงิน (<a href=\"https://www.thaipost.net/main/detail/22947\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>) การคืนเงินจึงไม่ทำให้เรื่องจบ"
-     },
-     {
-      "key": "ค",
       "text": "รายงานต่อผู้ตรวจสอบภายในที่กำลังจะมาตรวจ",
       "legal": "undetermined",
       "tags": [
@@ -4135,7 +4115,7 @@ export const LEVELS = [
       "explain": "ไม่ผิด แต่ข้ามต้นสังกัดซึ่งต้องรับรู้เรื่องเดียวกัน"
      },
      {
-      "key": "ง",
+      "key": "ข",
       "text": "แจ้งคณะกรรมการสถานศึกษาให้รับทราบพร้อมกับรายงานเขตพื้นที่",
       "legal": "undetermined",
       "tags": [
@@ -4144,6 +4124,26 @@ export const LEVELS = [
       ],
       "exp": 25,
       "explain": "คณะกรรมการมีส่วนร่วมด้านการเงิน (<a href=\"https://cuir.car.chula.ac.th/dspace/bitstream/123456789/64505/2/Krittiya_si_ch1_p.pdf\" target=\"_blank\" rel=\"noopener\">CUIR</a>)"
+     },
+     {
+      "key": "ค",
+      "text": "รายงานเขตพื้นที่เป็นลายลักษณ์อักษร แนบเอกสารทั้งหมด และขอคำแนะนำขั้นตอนต่อไป",
+      "legal": "undetermined",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 30,
+      "explain": "ลำดับการรายงานที่ถูกต้องยังยืนยันไม่ได้ แต่การรายงานต่อต้นสังกัดเป็นขั้นที่ปลอดภัยที่สุด"
+     },
+     {
+      "key": "ง",
+      "text": "ติดต่ออดีตผู้อำนวยการเพื่อขอให้คืนเงินก่อน แล้วจึงตัดสินใจว่าจะรายงานหรือไม่",
+      "legal": "undetermined",
+      "tags": [
+       "ปบ"
+      ],
+      "exp": 5,
+      "explain": "ศาลไม่รอลงอาญาแม้มีการคืนเงิน (<a href=\"https://www.thaipost.net/main/detail/22947\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>) การคืนเงินจึงไม่ทำให้เรื่องจบ"
      },
      {
       "key": "จ",
@@ -4166,6 +4166,26 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
+      "text": "ย้ายครูออกจากงานพัสดุทันทีระหว่างตรวจสอบ",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 15,
+      "explain": "ลดความเสี่ยงแต่ยังไม่ได้ตอบคำขอ"
+     },
+     {
+      "key": "ข",
+      "text": "ไม่พูดเรื่องนี้กับครู ปล่อยให้ผู้ตรวจสอบจัดการ",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "ทิ้งให้ครูเผชิญกระบวนการโดยไม่มีข้อมูล"
+     },
+     {
+      "key": "ค",
       "text": "ตกลงไม่รายงานเรื่องใบตรวจรับเพราะครูใกล้เกษียณ",
       "legal": "undetermined",
       "tags": [
@@ -4175,7 +4195,7 @@ export const LEVELS = [
       "explain": "ข้อกฎหมายเรื่องหน้าที่รายงานของผู้บังคับบัญชา (มาตรา 98) ยังยืนยันไม่ได้ จึงไม่ตัดสินในชั้นที่ 1 แต่คดีจริงแสดงว่าผู้ลงนามตรวจรับโดยไม่ตรวจเองก็มีความผิด (<a href=\"https://isranews.org/article/isranews-scoop/131425-invesqwe.html\" target=\"_blank\" rel=\"noopener\">อิศรา</a>)"
      },
      {
-      "key": "ข",
+      "key": "ง",
       "text": "อธิบายตรง ๆ ว่าเก็บเรื่องไว้ไม่ได้ และแนะนำให้ครูให้ข้อเท็จจริงทั้งหมดต่อผู้ตรวจสอบ",
       "legal": "ok",
       "tags": [
@@ -4186,34 +4206,14 @@ export const LEVELS = [
       "explain": "ซื่อตรงต่อครูและต่อระบบในคราวเดียว"
      },
      {
-      "key": "ค",
-      "text": "ทำตามข้อ ข และแนะนำให้ครูขอคำปรึกษาทางกฎหมายจากหน่วยงานที่เกี่ยวข้อง",
+      "key": "จ",
+      "text": "แนะนำให้ครูขอคำปรึกษาทางกฎหมายจากหน่วยงานที่เกี่ยวข้อง และบอกตรง ๆ ว่าโรงเรียนต้องรายงานตามข้อเท็จจริง",
       "legal": "ok",
       "tags": [
        "ปบ"
       ],
       "exp": 25,
       "explain": "ใส่ใจสถานะของครูโดยไม่ละเลยหน้าที่"
-     },
-     {
-      "key": "ง",
-      "text": "ย้ายครูออกจากงานพัสดุทันทีระหว่างตรวจสอบ",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 15,
-      "explain": "ลดความเสี่ยงแต่ยังไม่ได้ตอบคำขอ"
-     },
-     {
-      "key": "จ",
-      "text": "ไม่พูดเรื่องนี้กับครู ปล่อยให้ผู้ตรวจสอบจัดการ",
-      "legal": "ok",
-      "tags": [
-       "⚠"
-      ],
-      "exp": 5,
-      "explain": "ทิ้งให้ครูเผชิญกระบวนการโดยไม่มีข้อมูล"
      }
     ]
    },
@@ -4226,23 +4226,23 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "กำหนดว่าการยืมเงินทุกครั้งต้องระบุวัตถุประสงค์และกำหนดคืน และผู้อนุมัติต้องไม่ใช่ผู้ยืม",
+      "text": "ไม่ต้องเปลี่ยนอะไร เพราะผู้บริหารคนใหม่ไม่ทุจริตอยู่แล้ว",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "ระบบที่ขึ้นกับความซื่อสัตย์ของคนคนเดียวคือช่องโหว่แบบเดียวกับในคดีจริง"
+     },
+     {
+      "key": "ข",
+      "text": "รายงานผลการควบคุมภายในต่อเขตพื้นที่ปีละครั้งตามรอบ",
       "legal": "ok",
       "tags": [
        "รบ"
       ],
-      "exp": 30,
-      "explain": "ปิดรูปแบบในคดีจริง (<a href=\"https://www.thaipost.net/main/detail/22947\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "อบรมครูทุกคนเรื่อง \"ห้ามลงนามตรวจรับโดยไม่ตรวจ\" โดยใช้คดีจริงที่ตัดชื่อแล้วเป็นกรณีศึกษา",
-      "legal": "ok",
-      "tags": [
-       "พค"
-      ],
-      "exp": 25,
-      "explain": "(<a href=\"https://isranews.org/article/isranews-scoop/131425-invesqwe.html\" target=\"_blank\" rel=\"noopener\">อิศรา</a>)"
+      "exp": 20,
+      "explain": "การควบคุมภายในเป็นงานบริหารทั่วไป ข้อ 1 (4) (ธ) (<a href=\"https://ops.moe.go.th/wp-content/uploads/2023/03/7.pdf\" target=\"_blank\" rel=\"noopener\">กฎกระทรวงฯ 2550</a>)"
      },
      {
       "key": "ค",
@@ -4256,23 +4256,23 @@ export const LEVELS = [
      },
      {
       "key": "ง",
-      "text": "รายงานผลการควบคุมภายในต่อเขตพื้นที่ปีละครั้งตามรอบ",
+      "text": "กำหนดว่าการยืมเงินทุกครั้งต้องระบุวัตถุประสงค์และกำหนดคืน และผู้อนุมัติต้องไม่ใช่ผู้ยืม",
       "legal": "ok",
       "tags": [
        "รบ"
       ],
-      "exp": 20,
-      "explain": "การควบคุมภายในเป็นงานบริหารทั่วไป ข้อ 1 (4) (ธ) (<a href=\"https://ops.moe.go.th/wp-content/uploads/2023/03/7.pdf\" target=\"_blank\" rel=\"noopener\">กฎกระทรวงฯ 2550</a>)"
+      "exp": 30,
+      "explain": "ปิดรูปแบบในคดีจริง (<a href=\"https://www.thaipost.net/main/detail/22947\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>)"
      },
      {
       "key": "จ",
-      "text": "ไม่ต้องเปลี่ยนอะไร เพราะผู้บริหารคนใหม่ไม่ทุจริตอยู่แล้ว",
+      "text": "อบรมครูทุกคนเรื่อง \"ห้ามลงนามตรวจรับโดยไม่ตรวจ\" โดยใช้คดีจริงที่ตัดชื่อแล้วเป็นกรณีศึกษา",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "พค"
       ],
-      "exp": 5,
-      "explain": "ระบบที่ขึ้นกับความซื่อสัตย์ของคนคนเดียวคือช่องโหว่แบบเดียวกับในคดีจริง"
+      "exp": 25,
+      "explain": "(<a href=\"https://isranews.org/article/isranews-scoop/131425-invesqwe.html\" target=\"_blank\" rel=\"noopener\">อิศรา</a>)"
      }
     ]
    }
@@ -4302,6 +4302,16 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
+      "text": "เรียกครูคนนั้นมาถามตรง ๆ วันนี้",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 5,
+      "explain": "เสี่ยงให้ผู้ถูกกล่าวหาไปกดดันผู้เสียหาย"
+     },
+     {
+      "key": "ข",
       "text": "ปรับตารางทันทีเพื่อไม่ให้ครูคนนั้นอยู่กับนักเรียนตามลำพัง มอบครูแนะแนวดูแลนักเรียนทั้งสองต่อ และแจ้งผู้ปกครองอย่างระมัดระวังโดยมีนักเรียนรับรู้",
       "legal": "ok",
       "tags": [
@@ -4312,27 +4322,7 @@ export const LEVELS = [
       "explain": "การคุ้มครองเด็กและแยกผู้ถูกกล่าวหาออกจากการติดต่อเป็นขั้นแรกในทุกกรณีจริง (<a href=\"https://www.thairath.co.th/news/local/central/2946040\" target=\"_blank\" rel=\"noopener\">ไทยรัฐ</a>)"
      },
      {
-      "key": "ข",
-      "text": "เรียกครูคนนั้นมาถามตรง ๆ วันนี้",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 5,
-      "explain": "เสี่ยงให้ผู้ถูกกล่าวหาไปกดดันผู้เสียหาย"
-     },
-     {
       "key": "ค",
-      "text": "รับปากนักเรียนว่าจะไม่บอกใครตามที่ขอ",
-      "legal": "ok",
-      "tags": [
-       "⚠"
-      ],
-      "exp": 0,
-      "explain": "การเก็บเงียบคือรูปแบบที่ ศธ. สั่งดำเนินการกับผู้ที่รู้แล้วไม่ทำอะไร (<a href=\"https://www.bangkokbiznews.com/news/news-update/1242416\" target=\"_blank\" rel=\"noopener\">กรุงเทพธุรกิจ</a>)"
-     },
-     {
-      "key": "ง",
       "text": "ขอให้ครูแนะแนวบันทึกคำบอกเล่าตามที่นักเรียนพูด โดยไม่ซักถามซ้ำ",
       "legal": "ok",
       "tags": [
@@ -4341,6 +4331,16 @@ export const LEVELS = [
       ],
       "exp": 25,
       "explain": "ลดการทำร้ายซ้ำจากการเล่าหลายรอบ"
+     },
+     {
+      "key": "ง",
+      "text": "รับปากนักเรียนว่าจะไม่บอกใครตามที่ขอ",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 0,
+      "explain": "การเก็บเงียบคือรูปแบบที่ ศธ. สั่งดำเนินการกับผู้ที่รู้แล้วไม่ทำอะไร (<a href=\"https://www.bangkokbiznews.com/news/news-update/1242416\" target=\"_blank\" rel=\"noopener\">กรุงเทพธุรกิจ</a>)"
      },
      {
       "key": "จ",
@@ -4363,23 +4363,24 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "สืบข้อเท็จจริงเบื้องต้น และรายงาน สพม.เขตจำลองทันที เพราะเป็นความผิดที่อาจร้ายแรงตามมาตรา 94 วรรคสาม",
-      "legal": "ok",
+      "text": "ขอให้ผู้ปกครองตกลงยุติเรื่องกับครูโดยไม่ต้องดำเนินการต่อ",
+      "legal": "undetermined",
       "tags": [
-       "รบ"
+       "⚠"
       ],
-      "exp": 30,
-      "explain": "ตรงกับขั้นตอนในกรณีปี 2564 (<a href=\"https://www.thaipbs.or.th/news/content/302322\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>; <a href=\"https://repository.stou.ac.th/items/164ece0d-1511-4cee-9e55-a0650caf6aed\" target=\"_blank\" rel=\"noopener\">มสธ.</a>)"
+      "exp": 0,
+      "explain": "ข้อห้ามไกล่เกลี่ยในตัวบทยังไม่ได้ตรวจ แต่บันทึกวิจัยระบุว่าเป็นตัวลวงชัดเจน"
      },
      {
       "key": "ข",
-      "text": "ผู้อำนวยการสั่งลงโทษไล่ออกเองเพราะหลักฐานชัดพอ",
-      "legal": "illegal",
+      "text": "ให้ข้อมูลกับตำรวจและสนับสนุนครอบครัวหากต้องการแจ้งความ โดยประสานมูลนิธิหรือหน่วยงานคุ้มครองเด็ก",
+      "legal": "ok",
       "tags": [
+       "ปบ",
        "รบ"
       ],
-      "exp": 0,
-      "explain": "ผู้อำนวยการสถานศึกษามีอำนาจเพียงภาคทัณฑ์หรือตัดเงินเดือน (<a href=\"https://www.thaipost.net/main/detail/15832\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>)"
+      "exp": 25,
+      "explain": "คดีอาญาดำเนินคู่ขนานในกรณีจริง (<a href=\"https://www.thairath.co.th/news/local/central/2946040\" target=\"_blank\" rel=\"noopener\">ไทยรัฐ</a>)"
      },
      {
       "key": "ค",
@@ -4393,24 +4394,23 @@ export const LEVELS = [
      },
      {
       "key": "ง",
-      "text": "ให้ข้อมูลกับตำรวจและสนับสนุนครอบครัวหากต้องการแจ้งความ โดยประสานมูลนิธิหรือหน่วยงานคุ้มครองเด็ก",
-      "legal": "ok",
+      "text": "ผู้อำนวยการสั่งลงโทษไล่ออกเองเพราะหลักฐานชัดพอ",
+      "legal": "illegal",
       "tags": [
-       "ปบ",
        "รบ"
       ],
-      "exp": 25,
-      "explain": "คดีอาญาดำเนินคู่ขนานในกรณีจริง (<a href=\"https://www.thairath.co.th/news/local/central/2946040\" target=\"_blank\" rel=\"noopener\">ไทยรัฐ</a>)"
+      "exp": 0,
+      "explain": "ผู้อำนวยการสถานศึกษามีอำนาจเพียงภาคทัณฑ์หรือตัดเงินเดือน (<a href=\"https://www.thaipost.net/main/detail/15832\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>)"
      },
      {
       "key": "จ",
-      "text": "ขอให้ผู้ปกครองตกลงยุติเรื่องกับครูโดยไม่ต้องดำเนินการต่อ",
-      "legal": "undetermined",
+      "text": "สืบข้อเท็จจริงเบื้องต้น และรายงาน สพม.เขตจำลองทันที เพราะเป็นความผิดที่อาจร้ายแรงตามมาตรา 94 วรรคสาม",
+      "legal": "ok",
       "tags": [
-       "⚠"
+       "รบ"
       ],
-      "exp": 0,
-      "explain": "ข้อห้ามไกล่เกลี่ยในตัวบทยังไม่ได้ตรวจ แต่บันทึกวิจัยระบุว่าเป็นตัวลวงชัดเจน"
+      "exp": 30,
+      "explain": "ตรงกับขั้นตอนในกรณีปี 2564 (<a href=\"https://www.thaipbs.or.th/news/content/302322\" target=\"_blank\" rel=\"noopener\">Thai PBS</a>; <a href=\"https://repository.stou.ac.th/items/164ece0d-1511-4cee-9e55-a0650caf6aed\" target=\"_blank\" rel=\"noopener\">มสธ.</a>)"
      }
     ]
    },
@@ -4423,16 +4423,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "คุยกับรองฯ มาลีเรื่องหน้าที่ของผู้บังคับบัญชาเมื่อได้ยินข้อกล่าวหา และวางแนวปฏิบัติร่วมกันสำหรับครั้งหน้า",
-      "legal": "ok",
-      "tags": [
-       "พค"
-      ],
-      "exp": 30,
-      "explain": "คำสั่งสอนงานเข้ากับ R2 ในเรื่องนี้"
-     },
-     {
-      "key": "ข",
       "text": "รายงานตามข้อเท็จจริงว่ารองฯ มาลีเคยได้ยินข่าวลือ หากคณะกรรมการสอบถาม",
       "legal": "ok",
       "tags": [
@@ -4440,6 +4430,16 @@ export const LEVELS = [
       ],
       "exp": 25,
       "explain": "ศธ. สั่งตรวจสอบผู้ที่รู้แล้วไม่ดำเนินการในกรณีปี 2569 (<a href=\"https://www.bangkokbiznews.com/news/news-update/1242416\" target=\"_blank\" rel=\"noopener\">กรุงเทพธุรกิจ</a>) ผลของคำสั่งนั้นยังไม่มี"
+     },
+     {
+      "key": "ข",
+      "text": "ไม่พูดถึงเรื่องนี้เพื่อรักษาความสัมพันธ์ในทีมบริหาร",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 0,
+      "explain": "เลือกความสัมพันธ์ในทีมเหนือความปลอดภัยของนักเรียน"
      },
      {
       "key": "ค",
@@ -4464,13 +4464,13 @@ export const LEVELS = [
      },
      {
       "key": "จ",
-      "text": "ไม่พูดถึงเรื่องนี้เพื่อรักษาความสัมพันธ์ในทีมบริหาร",
+      "text": "คุยกับรองฯ มาลีเรื่องหน้าที่ของผู้บังคับบัญชาเมื่อได้ยินข้อกล่าวหา และวางแนวปฏิบัติร่วมกันสำหรับครั้งหน้า",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "พค"
       ],
-      "exp": 0,
-      "explain": "เลือกความสัมพันธ์ในทีมเหนือความปลอดภัยของนักเรียน"
+      "exp": 30,
+      "explain": "คำสั่งสอนงานเข้ากับ R2 ในเรื่องนี้"
      }
     ]
    },
@@ -4483,14 +4483,14 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "จัดครูสอนแทนให้นักเรียนไม่เสียการเรียน และแจ้งผู้ปกครองว่าการสอนต่อเนื่อง",
+      "text": "จัดเวทีให้ครูพูดถึงความรู้สึกต่อเพื่อนร่วมงานที่ถูกกล่าวหา โดยไม่เปิดเผยข้อมูลผู้เสียหาย",
       "legal": "ok",
       "tags": [
-       "วก",
-       "รบ"
+       "ปบ",
+       "กจ"
       ],
-      "exp": 25,
-      "explain": "เขตพื้นที่จัดครูสอนแทนในกรณีจริง (<a href=\"https://www.thairath.co.th/news/local/central/2946040\" target=\"_blank\" rel=\"noopener\">ไทยรัฐ</a>)"
+      "exp": 20,
+      "explain": "ยอมรับความรู้สึกของครูที่สับสน แต่ต้องดูแลไม่ให้กลายเป็นการกดดันผู้เสียหาย"
      },
      {
       "key": "ข",
@@ -4504,27 +4504,17 @@ export const LEVELS = [
      },
      {
       "key": "ค",
-      "text": "จัดเวทีให้ครูพูดถึงความรู้สึกต่อเพื่อนร่วมงานที่ถูกกล่าวหา โดยไม่เปิดเผยข้อมูลผู้เสียหาย",
+      "text": "จัดครูสอนแทนให้นักเรียนไม่เสียการเรียน และแจ้งผู้ปกครองว่าการสอนต่อเนื่อง",
       "legal": "ok",
       "tags": [
-       "ปบ",
-       "กจ"
+       "วก",
+       "รบ"
       ],
-      "exp": 20,
-      "explain": "ยอมรับความรู้สึกของครูที่สับสน แต่ต้องดูแลไม่ให้กลายเป็นการกดดันผู้เสียหาย"
+      "exp": 25,
+      "explain": "เขตพื้นที่จัดครูสอนแทนในกรณีจริง (<a href=\"https://www.thairath.co.th/news/local/central/2946040\" target=\"_blank\" rel=\"noopener\">ไทยรัฐ</a>)"
      },
      {
       "key": "ง",
-      "text": "จัดอบรมการคุ้มครองเด็กและขอบเขตความสัมพันธ์ครูกับนักเรียนให้บุคลากรทุกคน",
-      "legal": "ok",
-      "tags": [
-       "พค"
-      ],
-      "exp": 25,
-      "explain": "สร้างความรู้ร่วมกันของบุคลากรทั้งโรงเรียน"
-     },
-     {
-      "key": "จ",
       "text": "ห้ามทุกคนพูดถึงเรื่องนี้ในโรงเรียน",
       "legal": "ok",
       "tags": [
@@ -4532,6 +4522,16 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "ความเงียบที่บังคับทำให้นักเรียนคนอื่นไม่กล้าแจ้งเหตุ"
+     },
+     {
+      "key": "จ",
+      "text": "จัดอบรมการคุ้มครองเด็กและขอบเขตความสัมพันธ์ครูกับนักเรียนให้บุคลากรทุกคน",
+      "legal": "ok",
+      "tags": [
+       "พค"
+      ],
+      "exp": 25,
+      "explain": "สร้างความรู้ร่วมกันของบุคลากรทั้งโรงเรียน"
      }
     ]
    }
@@ -4561,36 +4561,6 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "วิเคราะห์ข้อมูลการอ่านและคณิตศาสตร์ของนักเรียนในโรงเรียนเทียบกับกรอบระดับความสามารถของ PISA หาว่านักเรียนกลุ่มใดยังไม่ถึงระดับ 2",
-      "legal": "ok",
-      "tags": [
-       "วก"
-      ],
-      "exp": 30,
-      "explain": "ปัญหาหลักของไทยคือสัดส่วนนักเรียนที่ต่ำกว่าระดับ 2 (<a href=\"https://www.thaipost.net/news-update/1065497/\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>)"
-     },
-     {
-      "key": "ข",
-      "text": "นำชุดข้อสอบที่ ศน. แนบมาให้นักเรียน ม.3 สอบทันทีเพื่อดูคะแนนตั้งต้น",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 15,
-      "explain": "ได้ข้อมูลเร็ว แต่ข้อมูลจากข้อสอบชุดเดียวบอกสาเหตุได้น้อย"
-     },
-     {
-      "key": "ค",
-      "text": "ตั้งทีมครูแกนนำจากภาษาไทย คณิตศาสตร์ และวิทยาศาสตร์ ให้ครูอรุณเป็นผู้นำการวิเคราะห์",
-      "legal": "ok",
-      "tags": [
-       "กจ"
-      ],
-      "exp": 25,
-      "explain": "คำสั่งมอบหมายเข้ากับความพร้อม R4 ของครูอรุณ"
-     },
-     {
-      "key": "ง",
       "text": "ถามนักเรียนว่าอะไรทำให้การอ่านโจทย์ยาว ๆ ยาก",
       "legal": "ok",
       "tags": [
@@ -4601,7 +4571,7 @@ export const LEVELS = [
       "explain": "ฟังผู้เรียนเพื่อหาสาเหตุที่ข้อมูลตัวเลขไม่บอก"
      },
      {
-      "key": "จ",
+      "key": "ข",
       "text": "คัดลอกแผนของโรงเรียนข้างเคียงส่งเขตพื้นที่ให้ทันกำหนด",
       "legal": "ok",
       "tags": [
@@ -4609,6 +4579,36 @@ export const LEVELS = [
       ],
       "exp": 5,
       "explain": "ทำให้แผนไม่มีความหมายต่อการสอนจริง"
+     },
+     {
+      "key": "ค",
+      "text": "นำชุดข้อสอบที่ ศน. แนบมาให้นักเรียน ม.3 สอบทันทีเพื่อดูคะแนนตั้งต้น",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 15,
+      "explain": "ได้ข้อมูลเร็ว แต่ข้อมูลจากข้อสอบชุดเดียวบอกสาเหตุได้น้อย"
+     },
+     {
+      "key": "ง",
+      "text": "วิเคราะห์ข้อมูลการอ่านและคณิตศาสตร์ของนักเรียนในโรงเรียนเทียบกับกรอบระดับความสามารถของ PISA หาว่านักเรียนกลุ่มใดยังไม่ถึงระดับ 2",
+      "legal": "ok",
+      "tags": [
+       "วก"
+      ],
+      "exp": 30,
+      "explain": "ปัญหาหลักของไทยคือสัดส่วนนักเรียนที่ต่ำกว่าระดับ 2 (<a href=\"https://www.thaipost.net/news-update/1065497/\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>)"
+     },
+     {
+      "key": "จ",
+      "text": "ตั้งทีมครูแกนนำจากภาษาไทย คณิตศาสตร์ และวิทยาศาสตร์ ให้ครูอรุณเป็นผู้นำการวิเคราะห์",
+      "legal": "ok",
+      "tags": [
+       "กจ"
+      ],
+      "exp": 25,
+      "explain": "คำสั่งมอบหมายเข้ากับความพร้อม R4 ของครูอรุณ"
      }
     ]
    },
@@ -4621,17 +4621,26 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
-      "text": "ส่งแผนที่ตั้งเป้าเป็นสัดส่วนนักเรียนที่ผ่านระดับ 2 ด้านการอ่าน ไม่ใช่คะแนนเฉลี่ยหรืออันดับ และอ้างข้อเสนอของ สสวท.",
+      "text": "ส่งแผนตามแบบฟอร์มให้ทันกำหนด แล้วทำงานตามเดิม",
       "legal": "ok",
       "tags": [
-       "ทศ",
-       "วก"
+       "⚠"
       ],
-      "exp": 30,
-      "explain": "(<a href=\"https://www.thaipost.net/news-update/1065497/\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>)"
+      "exp": 5,
+      "explain": "การเปลี่ยนแปลงกลายเป็นเหตุการณ์บนกระดาษตามที่ Hallinger และ Lee วิจารณ์ (<a href=\"https://repository.eduhk.hk/en/publications/a-decade-of-education-reform-in-thailand-broken-promise-or-imposs-9/\" target=\"_blank\" rel=\"noopener\">Hallinger &amp; Lee, 2011</a>)"
      },
      {
       "key": "ข",
+      "text": "ชวนโรงเรียนในกลุ่มเครือข่ายเสนอแผนร่วมกันต่อเขตพื้นที่",
+      "legal": "ok",
+      "tags": [
+       "กจ"
+      ],
+      "exp": 20,
+      "explain": "เพิ่มอำนาจต่อรองและแบ่งปันทรัพยากร แต่ช้ากว่าการเริ่มในโรงเรียนเอง"
+     },
+     {
+      "key": "ค",
       "text": "รับเป้าคะแนนตามที่เขตพื้นที่ต้องการ และสัญญาว่าจะติวเข้มทุกเย็น",
       "legal": "ok",
       "tags": [
@@ -4641,7 +4650,7 @@ export const LEVELS = [
       "explain": "ขัดกับท่าทีของรัฐมนตรีที่ให้ PISA เป็นเครื่องมือวัด ไม่ใช่เป้าหมาย (<a href=\"https://www.dailynews.co.th/news/4788554/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>) และใกล้กับแนวทางติวเข้มที่ ศธ. ไม่สนับสนุนในกรณี O-NET (<a href=\"https://www.thansettakij.com/general-news/513646\" target=\"_blank\" rel=\"noopener\">ฐานเศรษฐกิจ</a>)"
      },
      {
-      "key": "ค",
+      "key": "ง",
       "text": "ขอนัดคุยกับผู้อำนวยการเขตฯ พร้อมข้อมูลภาระงานครู และเสนอให้ใช้ PLC ที่มีอยู่แล้วแทนโครงการใหม่",
       "legal": "ok",
       "tags": [
@@ -4652,24 +4661,15 @@ export const LEVELS = [
       "explain": "ศธ. ปี 2569 ให้ความสำคัญกับการคืนเวลาสอนให้ครู (<a href=\"https://www.naewna.com/n/?p=50375\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
      },
      {
-      "key": "ง",
-      "text": "ชวนโรงเรียนในกลุ่มเครือข่ายเสนอแผนร่วมกันต่อเขตพื้นที่",
-      "legal": "ok",
-      "tags": [
-       "กจ"
-      ],
-      "exp": 20,
-      "explain": "เพิ่มอำนาจต่อรองและแบ่งปันทรัพยากร แต่ช้ากว่าการเริ่มในโรงเรียนเอง"
-     },
-     {
       "key": "จ",
-      "text": "ส่งแผนตามแบบฟอร์มให้ทันกำหนด แล้วทำงานตามเดิม",
+      "text": "ส่งแผนที่ตั้งเป้าเป็นสัดส่วนนักเรียนที่ผ่านระดับ 2 ด้านการอ่าน ไม่ใช่คะแนนเฉลี่ยหรืออันดับ และอ้างข้อเสนอของ สสวท.",
       "legal": "ok",
       "tags": [
-       "⚠"
+       "ทศ",
+       "วก"
       ],
-      "exp": 5,
-      "explain": "การเปลี่ยนแปลงกลายเป็นเหตุการณ์บนกระดาษตามที่ Hallinger และ Lee วิจารณ์ (<a href=\"https://repository.eduhk.hk/en/publications/a-decade-of-education-reform-in-thailand-broken-promise-or-imposs-9/\" target=\"_blank\" rel=\"noopener\">Hallinger &amp; Lee, 2011</a>)"
+      "exp": 30,
+      "explain": "(<a href=\"https://www.thaipost.net/news-update/1065497/\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>)"
      }
     ]
    },
@@ -4682,6 +4682,36 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
+      "text": "แจกชุดข้อสอบให้ครูแล้วให้แต่ละคนใช้ตามสะดวก",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "ไม่มีวงสะท้อนผล ข้อสอบจึงไม่ได้เปลี่ยนการสอน"
+     },
+     {
+      "key": "ข",
+      "text": "ผู้อำนวยการร่วมวง PLC เดือนละครั้งเพื่อดูงานของนักเรียนกับครู",
+      "legal": "ok",
+      "tags": [
+       "พค"
+      ],
+      "exp": 30,
+      "explain": "ผู้บริหารร่วมเรียนรู้กับครูมีขนาดอิทธิพลสูงสุด (ES 0.84) (<a href=\"https://cdn.auckland.ac.nz/assets/education/about/research/LRG/Robinson,%20Lloyd%20&amp;%20Rowe%20(2008)%20The%20impact%20of%20leadership%20on%20student%20outcomes%20-%20An%20analysis%20of%20the%20differential%20effects%20of%20leadership%20types.pdf\" target=\"_blank\" rel=\"noopener\">Robinson</a>)"
+     },
+     {
+      "key": "ค",
+      "text": "จัดคาบติว PISA เพิ่มทุกเย็นสำหรับ ม.3",
+      "legal": "ok",
+      "tags": [
+       "รบ"
+      ],
+      "exp": 5,
+      "explain": "ไม่ผิดระเบียบ แต่เป็นการสอนเพื่อสอบที่เพิ่มภาระทั้งครูและนักเรียน"
+     },
+     {
+      "key": "ง",
       "text": "ให้ครูทุกกลุ่มสาระใช้ข้อคำถามแนว PISA เป็นการประเมินระหว่างเรียน แล้วนำผลมาปรับการสอนในวง PLC",
       "legal": "ok",
       "tags": [
@@ -4692,27 +4722,7 @@ export const LEVELS = [
       "explain": "ตรงกับท่าทีของรัฐมนตรีที่ให้ใช้ข้อสอบแนว PISA วัดผลในชั้นเรียนทุกวิชา (<a href=\"https://www.dailynews.co.th/news/4788554/\" target=\"_blank\" rel=\"noopener\">เดลินิวส์</a>)"
      },
      {
-      "key": "ข",
-      "text": "จัดคาบติว PISA เพิ่มทุกเย็นสำหรับ ม.3",
-      "legal": "ok",
-      "tags": [
-       "รบ"
-      ],
-      "exp": 5,
-      "explain": "ไม่ผิดระเบียบ แต่เป็นการสอนเพื่อสอบที่เพิ่มภาระทั้งครูและนักเรียน"
-     },
-     {
-      "key": "ค",
-      "text": "ผู้อำนวยการร่วมวง PLC เดือนละครั้งเพื่อดูงานของนักเรียนกับครู",
-      "legal": "ok",
-      "tags": [
-       "พค"
-      ],
-      "exp": 30,
-      "explain": "ผู้บริหารร่วมเรียนรู้กับครูมีขนาดอิทธิพลสูงสุด (ES 0.84) (<a href=\"https://cdn.auckland.ac.nz/assets/education/about/research/LRG/Robinson,%20Lloyd%20&amp;%20Rowe%20(2008)%20The%20impact%20of%20leadership%20on%20student%20outcomes%20-%20An%20analysis%20of%20the%20differential%20effects%20of%20leadership%20types.pdf\" target=\"_blank\" rel=\"noopener\">Robinson</a>)"
-     },
-     {
-      "key": "ง",
+      "key": "จ",
       "text": "ตั้งเป้าการอ่านเชิงลึกและการประเมินข้อมูลจากหลายแหล่ง แล้วบูรณาการเรื่องการรู้เท่าทันสื่อและ AI ไว้ในวิชาเดิม",
       "legal": "ok",
       "tags": [
@@ -4721,16 +4731,6 @@ export const LEVELS = [
       ],
       "exp": 25,
       "explain": "(<a href=\"https://www.thaipost.net/news-update/1065497/\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>; <a href=\"https://www.naewna.com/n/?p=50375\" target=\"_blank\" rel=\"noopener\">แนวหน้า</a>)"
-     },
-     {
-      "key": "จ",
-      "text": "แจกชุดข้อสอบให้ครูแล้วให้แต่ละคนใช้ตามสะดวก",
-      "legal": "ok",
-      "tags": [
-       "⚠"
-      ],
-      "exp": 5,
-      "explain": "ไม่มีวงสะท้อนผล ข้อสอบจึงไม่ได้เปลี่ยนการสอน"
      }
     ]
    },
@@ -4743,6 +4743,16 @@ export const LEVELS = [
     "options": [
      {
       "key": "ก",
+      "text": "ยอมรับว่าผลช่วงแรกอาจตกลงเมื่อครูเริ่มเปลี่ยนวิธีสอน และวางแผนต่อเนื่อง 3 ปี",
+      "legal": "ok",
+      "tags": [
+       "นว"
+      ],
+      "exp": 25,
+      "explain": "Fullan เรียกช่วงนี้ว่า implementation dip และ Hallinger กับ Lee เตือนเรื่องการมองการเปลี่ยนแปลงเป็นเหตุการณ์ครั้งเดียว (<a href=\"https://repository.eduhk.hk/en/publications/a-decade-of-education-reform-in-thailand-broken-promise-or-imposs-9/\" target=\"_blank\" rel=\"noopener\">Hallinger &amp; Lee, 2011</a>)"
+     },
+     {
+      "key": "ข",
       "text": "เปรียบเทียบสัดส่วนนักเรียนที่ผ่านระดับ 2 ต้นปีกับปลายปี แยกตามกลุ่ม และดูว่าช่องว่างแคบลงหรือไม่",
       "legal": "ok",
       "tags": [
@@ -4752,7 +4762,17 @@ export const LEVELS = [
       "explain": "(<a href=\"https://www.thaipost.net/news-update/1065497/\" target=\"_blank\" rel=\"noopener\">ไทยโพสต์</a>)"
      },
      {
-      "key": "ข",
+      "key": "ค",
+      "text": "หยุดโครงการเพราะคะแนนปีแรกยังไม่ขึ้น",
+      "legal": "ok",
+      "tags": [
+       "⚠"
+      ],
+      "exp": 5,
+      "explain": "ตัดสินโครงการระยะยาวด้วยผลระยะสั้น"
+     },
+     {
+      "key": "ง",
       "text": "รายงานเขตพื้นที่ด้วยข้อมูลพัฒนาการ พร้อมเรื่องเล่าจากห้องเรียน",
       "legal": "ok",
       "tags": [
@@ -4763,17 +4783,7 @@ export const LEVELS = [
       "explain": "สื่อสารความก้าวหน้าโดยไม่ลดทอนเป็นตัวเลขอย่างเดียว"
      },
      {
-      "key": "ค",
-      "text": "ยอมรับว่าผลช่วงแรกอาจตกลงเมื่อครูเริ่มเปลี่ยนวิธีสอน และวางแผนต่อเนื่อง 3 ปี",
-      "legal": "ok",
-      "tags": [
-       "นว"
-      ],
-      "exp": 25,
-      "explain": "Fullan เรียกช่วงนี้ว่า implementation dip และ Hallinger กับ Lee เตือนเรื่องการมองการเปลี่ยนแปลงเป็นเหตุการณ์ครั้งเดียว (<a href=\"https://repository.eduhk.hk/en/publications/a-decade-of-education-reform-in-thailand-broken-promise-or-imposs-9/\" target=\"_blank\" rel=\"noopener\">Hallinger &amp; Lee, 2011</a>)"
-     },
-     {
-      "key": "ง",
+      "key": "จ",
       "text": "ให้รางวัลครูที่นักเรียนพัฒนามากที่สุด ตามเกณฑ์ที่ประกาศไว้ล่วงหน้า",
       "legal": "ok",
       "tags": [
@@ -4781,16 +4791,6 @@ export const LEVELS = [
       ],
       "exp": 15,
       "explain": "contingent reward ใช้ได้ แต่เสี่ยงทำลายการร่วมมือใน PLC"
-     },
-     {
-      "key": "จ",
-      "text": "หยุดโครงการเพราะคะแนนปีแรกยังไม่ขึ้น",
-      "legal": "ok",
-      "tags": [
-       "⚠"
-      ],
-      "exp": 5,
-      "explain": "ตัดสินโครงการระยะยาวด้วยผลระยะสั้น"
      }
     ]
    }

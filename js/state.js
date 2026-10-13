@@ -6,6 +6,7 @@ if (!LEVELS.some(l => l.id === LEVELS2[0].id)) LEVELS.push(...LEVELS2);
 import { LEVELS3 } from './data/levels3.js';
 if (!LEVELS.some(l => l.id === LEVELS3[0].id)) LEVELS.push(...LEVELS3);
 import { applyCopy } from './data/copy.js';
+import { OPT_PERM } from './data/optorder.js';
 applyCopy(LEVELS);
 import { TIERS, COMMAND_TASKS, FIT_BY_READINESS, PASS_RATIO, COMMAND_EXP, RANKS, CHARACTERS, PROFILES } from './data/world.js';
 
@@ -17,6 +18,7 @@ function freshState(name = '') {
   for (const id of Object.keys(CHARACTERS)) chars[id] = { credits: 0, morale: 70, log: [] };
   return {
     v: 1, playerName: name, startedAt: Date.now(), updatedAt: Date.now(),
+    optOrder: 2,          // รุ่นของลำดับตัวเลือก (2 = จัดใหม่ ต.ค. 2569)
     levels: {},           // id -> { status, bestExp, record, attempt, reflectionBefore, lesson }
     chars,
     debrief: {},          // mid / final -> {q1,q2,q3,p,i,e}
@@ -48,6 +50,18 @@ function migrate(o) {
   const base = freshState(o.playerName || '');
   const out = Object.assign(base, o);
   for (const id of Object.keys(CHARACTERS)) if (!out.chars[id]) out.chars[id] = { credits: 0, morale: 70, log: [] };
+  // เซฟก่อนจัดลำดับตัวเลือกใหม่: แปลงหมายเลขตัวเลือกที่เคยตอบให้ชี้ไปที่ตัวเลือกเดิม
+  if ((o.optOrder || 1) < 2) {
+    for (const [id, l] of Object.entries(out.levels || {})) {
+      const P = OPT_PERM[id]; if (!P) continue;
+      for (const list of [l.record?.answers, l.attempt?.answers]) (list || []).forEach((a, i) => {
+        if (!a || !P[i]) return;
+        if (a.first != null) a.first = P[i][a.first];
+        if (a.final != null) a.final = P[i][a.final];
+      });
+    }
+    out.optOrder = 2;
+  }
   return out;
 }
 
@@ -122,9 +136,7 @@ export function startAttempt(id) {
 }
 function shuffleOrders(id) {
   return LEVEL_BY_ID[id].steps.map(() => {
-    const a = [0, 1, 2, 3, 4];
-    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
-    return a;
+    return [0, 1, 2, 3, 4];   // ไม่สลับตัวเลือก ให้ตรงกับคำเฉลยที่อ้างถึงข้อ ก–จ
   });
 }
 
