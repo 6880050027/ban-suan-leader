@@ -297,4 +297,5 @@ export function schoolMeters() {
   return { keng, dee, suk, P };
 }
 
+export function isDone(id) { const st = S.levels[id]?.status; return st === 'passed' || st === 'skipped'; }
 export function completedCount() { return Object.values(S.levels).filter(l => l.status === 'passed' || l.status === 'skipped').length; }

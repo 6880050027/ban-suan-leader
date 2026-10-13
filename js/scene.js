@@ -84,6 +84,7 @@ export function initScene(el, labels, h) {
   clayBump = makeClayBump();
   addLights();
   buildWorld();
+  buildDecor();
   setupDaily();
   spawnPets();
 
@@ -653,7 +654,7 @@ function updateLabels() {
     if (!c.labelEl && !c.markerEl) continue;
     const head = c.group.position.clone(); head.y += 3.4 * c.group.scale.y;
     const p = project(head);
-    const off = p.behind || p.x < -40 || p.x > container.clientWidth + 40 || p.y < -40 || p.y > container.clientHeight + 40;
+    const off = !c.group.visible || p.behind || p.x < -40 || p.x > container.clientWidth + 40 || p.y < -40 || p.y > container.clientHeight + 40;
     if (c.labelEl) {
       const vis = !off && (showChars || hovered === id || id === 'player' || questChars.has(id));
       c.labelEl.style.display = vis ? '' : 'none';
@@ -735,7 +736,8 @@ const FAC_POS = { garden: [17, 17, 3], bikepark: [-20, 16.8, 3.2], reno: [-19, -
   dome: [13, -32.5, 8], newbldg: [-9, -32.5, 13], roof: [-20, 11, 7.6], toiletReno: [17, 13, 4.3], electric: [2.6, 4, 4.6], smartboard: [-19, -7.4, 10.5], nurse: [20.8, 7.6, 3.6], band: [14.5, -4, 5.2],
   expansion: [0, -32.5, 2], land2: [44.5, -32.5, 4.5],
   treecare: [10, 16, 5], pump: [21.4, -14.2, 3], generator: [21.5, -11.3, 3], wifi: [-10.3, -14.9, 12.5], airpurifier: [-11.8, -17.6, 4], fire: [9.2, -7.7, 3.4], langlab: [3.5, -18.5, 5], maker: [-19.3, -32.5, 5], hall: [34.5, -32.5, 8.5],
-  land3: [72, 2, 3], land4: [72, -24, 3], newbldg2: [66, 2, 12.5], gym: [78, 2, 9], scibldg: [66, -24, 9.5], housing: [77, -25, 6] };
+  land3: [72, 2, 3], land4: [72, -24, 3],
+  flowers: [-9, 17.9, 2.2], shadeTrees: [-29, -2, 6], hedge: [12, 18.6, 2.4], benches: [-26.8, 0, 2.4], pond: [-28, -17, 2.6], sala: [19.5, 2.5, 4.2], pathLamps: [16, 17.6, 4], schoolSign: [5.5, 17.9, 3.4], recycle: [-12.5, 13.6, 2.4], artWall: [-26.5, 9, 3.6], newbldg2: [66, 2, 12.5], gym: [78, 2, 9], scibldg: [66, -24, 9.5], housing: [77, -25, 6] };
 // ของที่ซื้อซ้ำได้และกิจกรรม: แสดงในเมืองเฉพาะภาคเรียนที่ใช้งาน [x, z, ความสูงป้าย]
 const EV_POS = { teacher: [-11, -4.6, 3.8], foreign: [-26, -4.4, 3.8], janitor: [-28.5, 12, 3.8], scilab: [-21, -4.4, 2.6], pd: [-16, -4.4, 3.2], coding: [-6.5, -4.6, 2.6],
   uniform: [5, -6, 2.6], sports: [6.5, 4.5, 2.6], camp: [-9, 10.5, 3.4], scout: [0.5, 10.5, 3.4], moral: [-4, 13.2, 3.8], museum: [-35, -6, 4.4], scholar: [-25, 6.6, 3.6], lunchSec: [-17, 5, 2.6], counselor: [-4.5, -13.6, 3.8], plcnet: [-3.4, -7.4, 3.2], langcamp: [-4, 3.6, 3.4], eyes: [21.5, 10.6, 2.6] };
@@ -1249,6 +1251,50 @@ function tickHazard(dt, t) {
 }
 
 
+// ---------- ภูมิทัศน์และของตกแต่ง (ร้านค้า หมวดภูมิทัศน์) ----------
+function buildDecor() {
+  let g = fgroup('flowers');
+  for (const [x0, x1] of [[-13, -5.5], [8.5, 13]]) for (let x = x0; x <= x1; x += 0.75) {
+    const bed = mesh(rbox(0.7, 0.25, 0.9, 0.08), clay('#8A5A3C')); bed.position.set(x, 0.3, 17.9); g.add(bed);
+    const f = mesh(new THREE.IcosahedronGeometry(0.22, 1), clay(['#F2C14E', '#E86A92', '#F28C3A', '#C56BD6'][Math.round(x * 4) & 3])); f.position.set(x, 0.62, 17.9); g.add(f);
+  }
+  g = fgroup('shadeTrees');
+  for (let k = 0; k < 6; k++) { const z = -16 + k * 5.6;
+    const t = mesh(new THREE.CylinderGeometry(0.22, 0.3, 2.2, 8), clay('#7A5236')); t.position.set(-29.3, 1.25, z); g.add(t);
+    const c = mesh(new THREE.IcosahedronGeometry(1.4, 1), clay(k % 2 ? '#6AAE50' : '#7DBB5E')); c.position.set(-29.3, 3, z); g.add(c); }
+  g = fgroup('hedge');
+  for (const [x0, x1] of [[-30.5, -14.5], [-1, 21.5]]) { const len = x1 - x0;
+    const h = mesh(rbox(len, 0.8, 0.6, 0.25), clay('#5E9E4A')); h.position.set((x0 + x1) / 2, 0.6, 18.75); g.add(h); }
+  g = fgroup('benches');
+  for (const z of [-6, 0, 6]) { const seat = mesh(rbox(0.6, 0.12, 1.8, 0.05), clay('#B07A4E')); seat.position.set(-27.4, 0.6, z); g.add(seat);
+    const back = mesh(rbox(0.1, 0.5, 1.8, 0.04), clay('#B07A4E')); back.position.set(-27.75, 0.9, z); g.add(back);
+    for (const dz of [-0.75, 0.75]) { const leg = mesh(rbox(0.5, 0.45, 0.1, 0.03), clay('#6B4A33')); leg.position.set(-27.4, 0.35, z + dz); g.add(leg); } }
+  g = fgroup('pond');
+  { const rim = mesh(new THREE.CylinderGeometry(1.9, 2, 0.3, 24), clay('#BDB5A6')); rim.position.set(-28, 0.3, -17); g.add(rim);
+    const w = mesh(new THREE.CylinderGeometry(1.6, 1.6, 0.05, 24), new THREE.MeshStandardMaterial({ color: '#6FB7C9', roughness: 0.15, metalness: 0.1 })); w.position.set(-28, 0.44, -17); g.add(w);
+    for (const [dx, dz, c] of [[0.5, 0.2, '#F28C3A'], [-0.4, -0.5, '#FFFFFF'], [-0.2, 0.7, '#F2C14E']]) { const fish = mesh(new THREE.SphereGeometry(0.14, 8, 6), clay(c)); fish.scale.set(1.6, 0.6, 0.8); fish.position.set(-28 + dx, 0.48, -17 + dz); g.add(fish); }
+    for (const [dx, dz] of [[2.3, 0.6], [-2.2, -0.9], [0.8, -2.2]]) { const r = mesh(new THREE.IcosahedronGeometry(0.4, 0), clay('#9A9389')); r.position.set(-28 + dx, 0.4, -17 + dz); g.add(r); } }
+  g = fgroup('sala');
+  { const base = mesh(rbox(4, 0.25, 3, 0.1), clay('#D9C7A8')); base.position.set(19.5, 0.3, 2.5); g.add(base);
+    for (const [dx, dz] of [[-1.7, -1.2], [1.7, -1.2], [-1.7, 1.2], [1.7, 1.2]]) { const p = mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.2, 8), clay('#8A5A3C')); p.position.set(19.5 + dx, 1.5, 2.5 + dz); g.add(p); }
+    const roof = mesh(new THREE.ConeGeometry(3.2, 1.3, 4), clay('#C0504D')); roof.rotation.y = Math.PI / 4; roof.position.set(19.5, 3.2, 2.5); g.add(roof);
+    const seat = mesh(rbox(3, 0.15, 0.6, 0.05), clay('#B07A4E')); seat.position.set(19.5, 0.8, 3.4); g.add(seat); }
+  g = fgroup('pathLamps');
+  for (let x = -27; x <= 20; x += 7.8) { const post = mesh(new THREE.CylinderGeometry(0.06, 0.08, 2.4, 8), clay('#3A3A3A')); post.position.set(x, 1.4, 17.6); g.add(post);
+    const head = mesh(new THREE.SphereGeometry(0.22, 12, 8), clay('#FFF2C2', { emissive: '#FFE7A0', ei: 0.6, noBump: true })); head.position.set(x, 2.7, 17.6); g.add(head);
+    const panel = mesh(rbox(0.5, 0.05, 0.4, 0.02), clay('#2B3A55', { noBump: true })); panel.position.set(x, 2.95, 17.6); g.add(panel); }
+  g = fgroup('schoolSign');
+  { const board = mesh(rbox(3.6, 1.2, 0.25, 0.08), clay('#F4E6CF')); board.position.set(5.5, 1.3, 18); g.add(board);
+    const band = mesh(rbox(3.4, 0.25, 0.27, 0.04), clay('#2F5D8A')); band.position.set(5.5, 1.6, 18); g.add(band);
+    for (const dx of [-1.5, 1.5]) { const leg = mesh(rbox(0.25, 0.8, 0.25, 0.05), clay('#B07A4E')); leg.position.set(5.5 + dx, 0.5, 18); g.add(leg); } }
+  g = fgroup('recycle');
+  ['#2F6FB0', '#3E9E5A', '#E8C25A', '#C0504D'].forEach((c, i) => { const bin = mesh(rbox(0.6, 0.9, 0.6, 0.1), clay(c)); bin.position.set(-14 + i * 0.8, 0.65, 13.6); g.add(bin);
+    const lid = mesh(rbox(0.66, 0.1, 0.66, 0.04), clay('#EDEDED')); lid.position.set(-14 + i * 0.8, 1.15, 13.6); g.add(lid); });
+  g = fgroup('artWall');
+  { const wall = mesh(rbox(0.4, 2, 4.2, 0.1), clay('#F4E6CF')); wall.position.set(-27, 1.2, 9); g.add(wall);
+    ['#E86A92', '#5B8DD6', '#F2C14E', '#6FAF7A', '#F28C3A'].forEach((c, i) => { const blob = mesh(new THREE.CircleGeometry(0.35 + (i % 2) * 0.15, 16), clay(c, { noBump: true })); blob.position.set(-26.78, 0.8 + (i % 3) * 0.45, 7.4 + i * 0.75); blob.rotation.y = Math.PI / 2; g.add(blob); }); }
+}
+
 // ---------- นาฬิกาในเกม กลางวัน กลางคืน และกิจวัตรของโรงเรียน ----------
 // เวลาไม่ใช่เวลาจริง: ช่วงกลางวันเดินช้า ช่วงกลางคืนเดินเร็ว ช่วงเข้าแถวเดินช้าเป็นพิเศษให้เห็นพิธี
 let clockMin = 6 * 60 + 40, dayIdx = 0, studentMode = 'arrive', clockOn = true;
@@ -1281,7 +1327,8 @@ export function clockInfo() {
   return { time: `${hh}:${mm}`, day: DAYS[dayIdx % 5], mode: studentMode, label: MODE_TH[studentMode] };
 }
 export function setClockRunning(on) { clockOn = on; }
-export function setClock(min) { clockMin = min; }
+export function setClock(min) { clockMin = min; const m = modeAt(clockMin); if (m !== studentMode) { studentMode = m; onModeChange(); } }
+export function isNight() { return studentMode === 'night'; }
 let flagMover = null, ball = null, ballT = 0, ballFrom = null, ballTo = null, lampLights = [];
 function minuteSeconds(m) { // วินาทีจริงต่อ 1 นาทีในเกม
   if (m >= 7 * 60 + 35 && m < 8 * 60 + 15) return 0.75;
@@ -1321,8 +1368,26 @@ function tickClock(dt) {
     }
   }
 }
+// บุคลากรและผู้เกี่ยวข้องกลับบ้านตอนกลางคืน มาใหม่ตอนเช้า ช่วงนักเรียนมาและกลับบ้านมีครูเวรยืนหน้าประตู
+const DUTY = { somsak: new THREE.Vector3(-4.2, 0.2, 16.6), pe: new THREE.Vector3(1.2, 0.2, 16.6) };
+function applyStaffPresence() {
+  const night = studentMode === 'night';
+  for (const [id, c] of Object.entries(chars)) {
+    if (id.startsWith('student')) continue;
+    c.homeOrig ??= c.home.clone();
+    c.group.visible = !night || questChars.has(id);
+    if (DUTY[id]) {
+      const duty = studentMode === 'arrive' || studentMode === 'home';
+      c.home = duty ? DUTY[id].clone() : c.homeOrig.clone();
+      c.wanderOrig ??= c.wander; c.wander = duty ? 0.6 : c.wanderOrig;
+      c.target = c.home.clone(); c.wait = 0;
+      if (c.labelEl) c.labelEl.textContent = duty ? `${c.baseName ??= c.labelEl.textContent} · ครูเวรหน้าประตู` : (c.baseName ?? c.labelEl.textContent);
+    }
+  }
+}
 function onModeChange() {
   applyStudentVisibility();
+  applyStaffPresence();
   for (let i = 0; i < MAX_STUDENTS; i++) { const c = chars['student' + i]; if (c) { c.target = null; c.wait = Math.random() * 1.5; } }
   handlers.onClockMode?.(studentMode);
 }
@@ -1336,6 +1401,7 @@ function studentTarget(c, i, t) {
   return null;
 }
 function setupDaily() {
+  setTimeout(applyStaffPresence, 0);
   flagMover = movers.find(m => m.type === 'flag') || null;
   ball = mesh(new THREE.SphereGeometry(0.3, 16, 12), clay('#FFFFFF')); ball.userData.dynamic = true; ball.position.set(-4, 0.3, 7); ball.visible = false; scene.add(ball);
   for (const [x, z] of [[-4, 0], [0, 12], [-20, 6], [14, -6], [-14, -14]]) { const l = new THREE.PointLight('#FFD99A', 0, 26, 1.6); l.position.set(x, 5, z); scene.add(l); lampLights.push(l); }
@@ -1416,6 +1482,7 @@ export function setStaff(deputies = [], extraTeachers = 0) {
     chars[key] = { group: g, home: g.position.clone(), target: null, wait: Math.random() * 3, wander: 3, phase: Math.random() * 6, labelEl: i === 0 ? makeLabel(`ครูที่ได้รับจัดสรรเพิ่ม ${extraTeachers} คน`, 'c-label') : null };
     staffKeys.push(key);
   }
+  applyStaffPresence();
 }
 
 // ---------- ถ้วยรางวัลในหอเกียรติยศ ----------

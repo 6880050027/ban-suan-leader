@@ -102,10 +102,10 @@ ITEMS.push(
   { id: 'pd', group: 'people', th: 'เชิญวิทยากรอบรมครูเรื่องการวัดผลแนว PISA', price: 25000, cat: 'people', facility: null, oneTime: false, rep: 2, keng: 3, desc: 'อบรมเชิงปฏิบัติการ 2 วัน สำหรับครูทุกกลุ่มสาระ',
     rules: { perhead: UNV('ยังไม่พบตัวบทเรื่องค่าพัฒนาครูในค่าจัดการเรียนการสอน'), income: UNV(), activity: UNV('เงินกิจกรรมพัฒนาคุณภาพผู้เรียนผูกกับกิจกรรมของนักเรียน 5 ประเภท ยังไม่พบตัวบทที่ระบุเรื่องการอบรมครู'), donation: R_DON('people'), student: R_STUDENT_BAD, capital: R_CAP_ONLY } },
   // กิจกรรมนักเรียน
-  { id: 'scout', group: 'activity', th: 'ค่ายลูกเสือ-เนตรนารี ม.1', price: 40000, cat: 'activity', facility: null, oneTime: false, rep: 2, suk: 3, desc: 'เข้าค่ายพักแรม 2 วัน 1 คืน', rules: ACT_RULES('กิจกรรมคุณธรรม/ลูกเสือ') },
+  { id: 'scout', group: 'activity', th: 'ค่ายลูกเสือ-เนตรนารี ม.1', price: 40000, cat: 'activity', facility: null, oneTime: false, rep: 2, suk: 2, dee: 3, desc: 'เข้าค่ายพักแรม 2 วัน 1 คืน', rules: ACT_RULES('กิจกรรมคุณธรรม/ลูกเสือ') },
   { id: 'coding', group: 'activity', th: 'ค่ายโค้ดดิ้งและเทคโนโลยี', price: 30000, cat: 'activity', facility: null, oneTime: false, rep: 2, keng: 3, desc: 'กิจกรรมเรียนรู้เทคโนโลยีสารสนเทศสำหรับนักเรียน ม.2', rules: ACT_RULES('กิจกรรมบริการสารสนเทศ (ICT)') },
   { id: 'museum', group: 'activity', th: 'ทัศนศึกษาพิพิธภัณฑ์วิทยาศาสตร์ ม.1', price: 45000, cat: 'activity', facility: null, oneTime: false, rep: 2, keng: 2, suk: 2, desc: 'ไป-กลับภายในวัน นักเรียน 200 คน (ต้องขออนุญาตตามระเบียบการพานักเรียนไปนอกสถานศึกษา)', rules: ACT_RULES('กิจกรรมทัศนศึกษา') },
-  { id: 'moral', group: 'activity', th: 'ค่ายคุณธรรมจริยธรรม', price: 25000, cat: 'activity', facility: null, oneTime: false, rep: 2, suk: 3, desc: 'กิจกรรมพัฒนาคุณธรรมร่วมกับวัดในชุมชน', rules: ACT_RULES('กิจกรรมคุณธรรม') },
+  { id: 'moral', group: 'activity', th: 'ค่ายคุณธรรมจริยธรรม', price: 25000, cat: 'activity', facility: null, oneTime: false, rep: 2, suk: 1, dee: 4, desc: 'กิจกรรมพัฒนาคุณธรรมร่วมกับวัดในชุมชน', rules: ACT_RULES('กิจกรรมคุณธรรม') },
   // ทุนและสวัสดิการ
   { id: 'lunchSec', group: 'welfare', th: 'อาหารกลางวันสำหรับนักเรียน ม.ต้น ที่ขาดแคลน', price: 60000, cat: 'scholar', facility: null, oneTime: false, rep: 3, suk: 4, desc: 'อาหารกลางวันหนึ่งภาคเรียนสำหรับนักเรียน 60 คน',
     rules: { student: { v: 'bad', why: 'เงินอุดหนุนค่าอาหารกลางวันตามมติคณะรัฐมนตรีครอบคลุมเฉพาะระดับอนุบาลถึง ป.6 ส่วนเงินของนักเรียนประเภทอื่นผูกกับวัตถุประสงค์เฉพาะ จึงนำมาใช้ไม่ได้', src: SRC.guide2568 },
@@ -143,7 +143,23 @@ ITEMS.push(
   { id: 'scibldg', group: 'building', minLv: 24, needLand: 4, th: 'อาคารปฏิบัติการวิทยาศาสตร์', price: 4200000, cat: 'learning', facility: 'scibldg', rep: 9, keng: 5, capitalOnly: true, desc: 'ห้องปฏิบัติการ 6 ห้องพร้อมระบบความปลอดภัย สร้างบนที่ดินแปลงที่ 4', rules: CAP_RULES('scibldg') },
   { id: 'housing', group: 'building', minLv: 20, needLand: 4, th: 'บ้านพักครู 8 หน่วย', price: 2400000, cat: 'building', facility: 'housing', rep: 4, suk: 4, capitalOnly: true, desc: 'ช่วยครูที่บ้านไกลและครูบรรจุใหม่ สร้างบนที่ดินแปลงที่ 4', rules: CAP_RULES('housing') },
 );
-export const SHOP_GROUPS = { building: 'อาคารสถานที่', equipment: 'ครุภัณฑ์และสื่อ', people: 'บุคลากรและการพัฒนาครู', activity: 'กิจกรรมนักเรียน', welfare: 'ทุนและสวัสดิการ' };
+// ภูมิทัศน์และของตกแต่ง: ใช้เงินรายได้สถานศึกษาหรือเงินบริจาคเพื่ออาคารสถานที่ได้ ส่วนเงินรายหัวยังไม่ตัดสิน
+const DECOR_RULES = () => ({ perhead: UNV('ยังไม่พบตัวบทที่ระบุงานภูมิทัศน์และของตกแต่งไว้ในค่าจัดการเรียนการสอน'), income: R_INCOME_OK, donation: R_DON('building'), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD, capital: R_CAP_ONLY });
+ITEMS.push(
+  { id: 'flowers', group: 'decor', th: 'แปลงดอกไม้หน้าอาคาร', price: 15000, cat: 'building', facility: 'flowers', rep: 1, suk: 1, desc: 'ดาวเรือง บานชื่น และเฟื่องฟ้า ให้นักเรียนแต่ละสีดูแล', rules: DECOR_RULES() },
+  { id: 'shadeTrees', group: 'decor', th: 'ปลูกไม้ยืนต้นให้ร่มเงาริมรั้ว', price: 30000, cat: 'building', facility: 'shadeTrees', rep: 1, suk: 2, desc: 'ต้นไม้ใหญ่ 6 ต้นตามแนวรั้วด้านตะวันตก ลดความร้อนช่วงบ่าย', rules: DECOR_RULES() },
+  { id: 'hedge', group: 'decor', th: 'รั้วต้นไม้ตัดแต่งด้านหน้าโรงเรียน', price: 40000, cat: 'building', facility: 'hedge', rep: 2, suk: 1, dee: 1, desc: 'ไม้พุ่มตัดแต่งเป็นแนวรั้วด้านในตลอดแนวหน้าโรงเรียน', rules: DECOR_RULES() },
+  { id: 'benches', group: 'decor', th: 'ม้านั่งใต้ร่มไม้', price: 25000, cat: 'building', facility: 'benches', rep: 1, suk: 2, desc: 'ม้านั่ง 3 ตัวให้นักเรียนนั่งอ่านหนังสือและรอผู้ปกครอง', rules: DECOR_RULES() },
+  { id: 'pond', group: 'decor', th: 'สวนหย่อมและบ่อปลา', price: 60000, cat: 'building', facility: 'pond', rep: 2, suk: 2, keng: 1, desc: 'มุมสงบสำหรับพักผ่อน และใช้เรียนระบบนิเวศในวิชาวิทยาศาสตร์', rules: DECOR_RULES() },
+  { id: 'sala', group: 'decor', th: 'ศาลาพักคอยผู้ปกครอง', price: 150000, cat: 'building', facility: 'sala', rep: 3, suk: 2, dee: 1, desc: 'ที่นั่งรอรับส่งนักเรียนที่มีหลังคา ผู้ปกครองไม่ต้องยืนตากแดดหน้าประตู', rules: DECOR_RULES() },
+  { id: 'pathLamps', group: 'decor', th: 'ไฟส่องทางเดินพลังงานแสงอาทิตย์', price: 70000, cat: 'safety', facility: 'pathLamps', rep: 1, dee: 2, desc: 'เสาไฟส่องทางตามแนวรั้วหน้า ช่วยเรื่องความปลอดภัยช่วงเช้ามืดและหัวค่ำ', rules: DECOR_RULES() },
+  { id: 'schoolSign', group: 'decor', th: 'ป้ายชื่อโรงเรียนและป้ายคำขวัญ', price: 35000, cat: 'building', facility: 'schoolSign', rep: 2, dee: 1, desc: 'ป้ายชื่อและปรัชญาโรงเรียนที่นักเรียนร่วมออกแบบ', rules: DECOR_RULES() },
+  { id: 'recycle', group: 'decor', th: 'จุดคัดแยกขยะและธนาคารขยะ', price: 18000, cat: 'building', facility: 'recycle', rep: 1, dee: 2, desc: 'ถังแยกขยะ 4 ประเภท สภานักเรียนดูแลธนาคารขยะ', rules: DECOR_RULES() },
+  { id: 'artWall', group: 'decor', th: 'กำแพงศิลปะฝีมือนักเรียน', price: 20000, cat: 'building', facility: 'artWall', rep: 1, suk: 1, keng: 1, desc: 'ผนังภาพวาดที่นักเรียนชุมนุมศิลปะออกแบบและลงสีเอง', rules: DECOR_RULES() },
+  { id: 'volunteer', group: 'activity', th: 'โครงการจิตอาสาพัฒนาชุมชน', price: 20000, cat: 'activity', facility: null, oneTime: false, rep: 2, dee: 4, desc: 'นักเรียนออกไปช่วยงานวัด โรงเรียนประถม และชุมชนรอบโรงเรียน', rules: ACT_RULES('กิจกรรมคุณธรรมและจิตอาสา') },
+  { id: 'councilDay', group: 'activity', th: 'กิจกรรมส่งเสริมประชาธิปไตยและสภานักเรียน', price: 15000, cat: 'activity', facility: null, oneTime: false, rep: 1, dee: 3, desc: 'เลือกตั้งสภานักเรียนและเวทีให้นักเรียนเสนอเรื่องที่อยากให้โรงเรียนแก้', rules: ACT_RULES('กิจกรรมคุณธรรม') },
+);
+export const SHOP_GROUPS = { building: 'อาคารสถานที่', decor: 'ภูมิทัศน์และตกแต่ง', equipment: 'ครุภัณฑ์และสื่อ', people: 'บุคลากรและการพัฒนาครู', activity: 'กิจกรรมนักเรียน', welfare: 'ทุนและสวัสดิการ' };
 for (const it of ITEMS) if (it.oneTime !== false && !it.facility) it.facility = it.id;
 export const ITEM = Object.fromEntries(ITEMS.map(i => [i.id, i]));
 
@@ -276,6 +292,7 @@ export function donationTotal(purpose) {
   return econ().donations.filter(d => !purpose || d.purpose === purpose).reduce((s, d) => s + d.amount, 0);
 }
 export function capitalFor(item) {
+  refreshCapital();
   const c = econ().capital.find(c => c.item === item && c.ready && !c.used);
   return c ? c.amount : 0;
 }
@@ -373,8 +390,19 @@ export function buy(itemId, wallet) {
   checkCrisis(); St.save();
   return { ok: true, verdict: 'ok', why: j.why, src: j.src, note: j.note || it.rules[wallet]?.note, method };
 }
+// งบลงทุนที่ยื่นไว้: ได้รับเมื่อผ่านอีก 3 ด่าน แต่ไม่เกินจำนวนด่านทั้งหมด (ด่านท้าย ๆ จะได้ไม่ค้างตลอดไป)
+export function refreshCapital() {
+  const e = econ(), total = Object.keys(St.LEVEL_BY_ID).length, done = St.completedCount();
+  let changed = false;
+  for (const c of e.capital) {
+    if (c.readyAfter > total) { c.readyAfter = total; changed = true; }
+    if (!c.ready && done >= c.readyAfter) { c.ready = true; changed = true; addLog(`ได้รับจัดสรรงบลงทุน: ${ITEM[c.item].th}`, c.amount); }
+  }
+  if (changed) St.save();
+}
 // สถานะการสร้างอาคารแต่ละหลัง สำหรับแท็บ "สร้างอาคาร"
 export function buildStatus(id) {
+  refreshCapital();
   const e = econ(), it = ITEM[id];
   if (it.facility && e.owned[it.facility]) return { step: 'done' };
   if (it.minLv && St.completedCount() < it.minLv) return { step: 'lvlock', need: it.minLv };
@@ -435,7 +463,7 @@ export function finishQuest(qid, answers) {
       text = `คำขอ "${capIt.th}" ยังไม่ผ่านการพิจารณา เพราะ${(capIt.needLand || 0) > (e.land || 0) ? `ยังไม่มีที่ดินแปลงที่ ${capIt.needLand}` : `ต้องผ่านอย่างน้อย ${capIt.minLv} ด่านก่อน`}`;
     } else if (cap && !bad) {
       const it = ITEM[cap];
-      e.capital.push({ item: cap, amount: it.price, approvedAt: Date.now(), readyAfter: St.completedCount() + 3, ready: false, used: false });
+      e.capital.push({ item: cap, amount: it.price, approvedAt: Date.now(), readyAfter: Math.min(St.completedCount() + 3, Object.keys(St.LEVEL_BY_ID).length), ready: false, used: false });
       text = `ส่งคำขอ "${it.th}" แล้ว จะได้รับจัดสรรเมื่อท่านผ่านอีก 3 ด่าน`;
       addLog(`ยื่นคำขอตั้งงบลงทุน: ${it.th}`, 0);
     } else text = 'คำขอไม่ได้รับการพิจารณา';
@@ -470,6 +498,7 @@ export function semesterTick(levelId, meters) {
   // นักเรียนใช้เงินของนักเรียนตามวัตถุประสงค์ (ไม่สะสมเกินจริง)
   e.wallets.student = Math.min(e.wallets.student, n * 400);
   // ความพร้อมรับงบลงทุน
+  refreshCapital();
   for (const c of e.capital) if (!c.ready && St.completedCount() >= c.readyAfter) { c.ready = true; addLog(`ได้รับจัดสรรงบลงทุน: ${ITEM[c.item].th}`, c.amount); }
   // การเติบโตของจำนวนนักเรียน: ชื่อเสียงจากตัวชี้วัด + สิ่งอำนวยความสะดวก − วิกฤต
   const vals = [meters.keng, meters.dee, meters.suk].filter(v => v != null);
@@ -524,7 +553,7 @@ export function decodeVisit(code) {
 
 // ตัวชี้วัดเก่ง ดี มีสุข หลังรวมผลของสิ่งอำนวยความสะดวกและภาวะวิกฤต
 // ผลของของที่มีต่อตัวชี้วัด: สิ่งก่อสร้างมีผลถาวร ของ/กิจกรรมที่ซื้อซ้ำได้มีผลเฉพาะภาคเรียนที่ใช้
-export const BONUS_CAP = { owned: 25, events: 12 };
+export const BONUS_CAP = { owned: 12, events: 6 };   // รวมไม่เกิน +18 ก่อนปรับตามช่องว่างที่เหลือ
 export function itemBonus() {
   const e = econ(), own = { keng: 0, dee: 0, suk: 0 }, ev = { keng: 0, dee: 0, suk: 0 };
   for (const it of ITEMS) if (it.facility && e.owned[it.facility]) for (const k in own) own[k] += it[k] || 0;
@@ -536,9 +565,17 @@ export function itemBonus() {
 export function meters() {
   const m = St.schoolMeters();
   const e = econ(), b = e.bonus || {}, ib = itemBonus();
-  // ยังไม่ได้เล่นด่าน: ใช้ 50 เป็นฐานเมื่อมีของที่ให้ผลแล้ว เพื่อให้เห็นผลของการจัดหา
-  const adj = (v, k) => { const add = (b[k] || 0) + (ib[k] || 0); if (v == null && !add) return null; return Math.max(0, Math.min(100, Math.round((v ?? 50) + add - (e.crisis ? 15 : 0)))); };
-  return { ...m, keng: adj(m.keng, 'keng'), dee: adj(m.dee, 'dee'), suk: adj(m.suk, 'suk') };
+  const parts = {};
+  // ทรัพยากรบวกเป็นสัดส่วนของช่องว่างที่เหลือถึง 100 ฐานยิ่งสูง ของที่ซื้อยิ่งบวกได้น้อย จึงซื้อจนเต็ม 100 ไม่ได้
+  // ค่าลบ (ใช้เงินผิดประเภท วิกฤตการเงิน) หักตรง ส่วนบุคลากรที่ได้รับจัดสรรนับเป็นทรัพยากร
+  const adj = (v, k) => {
+    const res = (ib[k] || 0) + Math.max(0, b[k] || 0), neg = Math.min(0, b[k] || 0) - (e.crisis ? 15 : 0);
+    if (v == null && !res && !neg) { parts[k] = null; return null; }
+    const base = v ?? 50, gain = res * (100 - base) / 100;
+    parts[k] = { base: Math.round(base), res: Math.round(gain), neg };
+    return Math.max(0, Math.min(100, Math.round(base + gain + neg)));
+  };
+  return { ...m, keng: adj(m.keng, 'keng'), dee: adj(m.dee, 'dee'), suk: adj(m.suk, 'suk'), parts };
 }
 
 // ---------- อัตรากำลังตามจำนวนนักเรียน ----------
@@ -550,9 +587,18 @@ export const DEPUTY_STEPS = [
   { min: 0, n: 2 }, { min: 1080, n: 3 }, { min: 1680, n: 4 },
 ];
 export const DEPUTY_SRC = 'https://www.kruwandee.com/news-id45582.html';
+// การแบ่งงานรองผู้อำนวยการ: ช่วงที่มีรองฯ 2 คน รองฯ ประเสริฐรักษางานงบประมาณ รองฯ มาลีรักษางานบุคคล
+// เมื่อได้รองฯ คนใหม่ งานที่รักษาไว้จะส่งต่อให้คนใหม่รับผิดชอบโดยตรง
+export function deputyDuties(n = staff().deputies) {
+  const d = { prasert: ['บริหารทั่วไป'], malee: ['วิชาการ'] };
+  if (n >= 3) d.deputy3 = ['งบประมาณ']; else d.prasert.push('งบประมาณ');
+  if (n >= 4) d.deputy4 = ['บุคคล']; else d.malee.push('บุคคล');
+  return d;
+}
+export const HANDOVER = { deputy3: { from: 'prasert', fromName: 'รองฯ ประเสริฐ', area: 'งบประมาณ' }, deputy4: { from: 'malee', fromName: 'รองฯ มาลี', area: 'บุคคล' } };
 export const NEW_DEPUTIES = [
-  { id: 'deputy3', name: 'รองฯ วิทยา', role: 'รองผู้อำนวยการกลุ่มบริหารงบประมาณ', look: { shirt: '#5B8DD6', skin: '#E5B48C', hair: '#2A2A2A', acc: 'tie' } },
-  { id: 'deputy4', name: 'รองฯ สุดา', role: 'รองผู้อำนวยการกลุ่มบริหารงานบุคคล', look: { shirt: '#B59AD6', skin: '#F2C9A5', hair: '#3B2A22', acc: 'bun' } },
+  { id: 'deputy3', bio: 'ย้ายมาจากโรงเรียนขนาดใหญ่ในจังหวัดใกล้เคียง เคยเป็นหัวหน้างานการเงินมาแปดปี ละเอียดเรื่องเอกสาร แต่ยังไม่รู้จักคนในชุมชน', hello: 'ยินดีที่ได้ร่วมงานครับ ผมขอเรียนรู้งานจากรองฯ ประเสริฐก่อนสักสองสัปดาห์', name: 'รองฯ วิทยา', role: 'รองผู้อำนวยการกลุ่มบริหารงบประมาณ', look: { shirt: '#5B8DD6', skin: '#E5B48C', hair: '#2A2A2A', acc: 'tie' } },
+  { id: 'deputy4', bio: 'เคยเป็นครูแนะแนวและหัวหน้างานบุคคลที่โรงเรียนเดิม ใจเย็นและฟังคนเก่ง แต่ยังไม่เคยทำเรื่องวินัยด้วยตัวเอง', hello: 'ยินดีที่ได้ร่วมงานค่ะ งานบุคคลที่รองฯ มาลีดูแลไว้ ดิฉันจะรับช่วงต่อให้เรียบร้อยค่ะ', name: 'รองฯ สุดา', role: 'รองผู้อำนวยการกลุ่มบริหารงานบุคคล', look: { shirt: '#B59AD6', skin: '#F2C9A5', hair: '#3B2A22', acc: 'bun' } },
 ];
 // เกณฑ์ครูระดับมัธยมศึกษาตาม ว 23/2563 (อ่านจากสรุปของเว็บไซต์ข่าวการศึกษาและแผนอัตรากำลังของเขตพื้นที่ ตัวหนังสือฉบับจริงเป็นไฟล์สแกนที่ยังเปิดอ่านไม่ได้)
 // ห้องละ 35 คน เศษตั้งแต่ 10 คนนับเพิ่ม 1 ห้อง · ม.ต้น 30 ชม./สัปดาห์ ม.ปลาย 35 ชม./สัปดาห์ · หารด้วยชั่วโมงปฏิบัติงานครู 20 ชม./สัปดาห์

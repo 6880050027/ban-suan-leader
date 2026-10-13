@@ -1,7 +1,7 @@
 // หน้าจอ ภารกิจ การสั่งงานตัวละคร สมุดผู้นำ และการบันทึก
 import { LEVELS } from './data/levels.js';
 import {
-  AREAS, TIERS, TAGS, COMMANDS, READINESS_TH, CUES, CHARACTERS, COMMAND_TASKS, COMMAND_REACTIONS,
+  AREAS, TIERS, TAGS, COMMANDS, READINESS_TH, CUES, CHARACTERS, COMMAND_TASKS, COMMAND_REACTIONS, GENDER, polite,
   PASS_RATIO, RANKS, BIOS, BIO_GROUPS, COMMON_ADVICE, VALIDITY_NOTE, TEACHER_VIEW, SCHOOL_NAME, AREA_OFFICE, REF, COMMAND_EXP,
 } from './data/world.js';
 import * as St from './state.js';
@@ -112,6 +112,8 @@ export function refreshHUD() {
     const v = m[k];
     $(`#m-${k} .bar i`).style.width = (v ?? 0) + '%';
     $(`#m-${k} b`).textContent = v == null ? '–' : v;
+    const pt = m.parts?.[k];
+    $(`#m-${k}`).title = pt ? `จากการตัดสินใจในด่าน ${pt.base}${St.completedCount() ? '' : ' (ยังไม่ได้เล่นด่าน ใช้ฐาน 50)'} · จากทรัพยากรที่จัดหา +${pt.res}${pt.neg ? ` · หัก ${-pt.neg}` : ''}` : 'ยังไม่มีข้อมูล';
   }
   $('#hud-progress').textContent = `${St.completedCount()}/${LEVELS.length} ด่าน`;
   Sc.setPlayerScale(r.scale);
@@ -129,6 +131,9 @@ export function refreshHUD() {
   if (evKey !== lastEvKey) { lastEvKey = evKey; Sc.setEvents(evs); }
   Sc.setStudentCount(e.students);
   const stf = Ec.staff(), stKey = stf.deputies + ':' + stf.teachers;
+  { const du = Ec.deputyDuties(stf.deputies);
+    CHARACTERS.prasert.role = `รองผู้อำนวยการกลุ่มบริหารทั่วไป${du.prasert.includes('งบประมาณ') ? ' (รักษางานงบประมาณด้วย)' : ''} ทำงานอาคารและความปลอดภัยมา 15 ปี`;
+    CHARACTERS.malee.role = `รองผู้อำนวยการกลุ่มวิชาการ${du.malee.includes('บุคคล') ? ' (รักษางานบุคคลด้วย)' : ''} เพิ่งย้ายมาจากสายการสอน`; }
   if (stKey !== lastStaffKey) { lastStaffKey = stKey; Sc.setStaff(Ec.NEW_DEPUTIES.slice(0, Math.max(0, stf.deputies - 2)), Math.max(0, stf.teachers - stf.base)); }
   const gap = Ec.staffGap();
   $('#hud-staff-alert').hidden = !(gap.deputies > 0 || gap.teachers > 0) || stf.pending.length >= (gap.deputies > 0) + (gap.teachers > 0);
@@ -333,9 +338,14 @@ function statusChip(id) {
   return `<span class="chip st-${st}">${map[st]}</span>`;
 }
 function questBoard() {
-  const tiers = TIERS.map(t => {
+  // ภารกิจที่ทำสำเร็จแล้วย้ายลงล่างสุด ทั้งในแต่ละช่วงและทั้งช่วงที่ผ่านครบแล้ว
+  const isDone = id => St.isDone(id);
+  const tierDone = t => t.levels.every(isDone);
+  const ordered = [...TIERS].sort((a, b) => tierDone(a) - tierDone(b));
+  const tiers = ordered.map(t => {
     const open = St.tierOpen(t.id);
-    const rows = t.levels.map(id => {
+    const ids = [...t.levels].sort((a, b) => isDone(a) - isDone(b));
+    const rows = ids.map(id => {
       const L = St.LEVEL_BY_ID[id], A = AREAS[L.area], l = St.S.levels[id];
       const locked = !open;
       const best = l?.bestExp ? `${l.bestExp}/${St.maxExp(id)} EXP` : `สูงสุด ${St.maxExp(id)} EXP`;
@@ -349,7 +359,7 @@ function questBoard() {
           ${l?.status === 'pending' ? `<div class="btn-row left"><button class="btn sm" data-act="reqs" data-arg="${id}">ดูสิ่งที่ยังขาด</button></div>` : ''}</div>
         <div class="q-side">${statusChip(id)}${btn}</div></div>`;
     }).join('');
-    return `<section class="tier ${open ? '' : 'locked'}"><h3>${t.th} ${open ? '' : '<span class="chip">ผ่านช่วงก่อนหน้าให้ครบ รวมเกณฑ์โรงเรียน เพื่อปลดล็อก</span>'}</h3>${rows}</section>`;
+    return `<section class="tier ${open ? '' : 'locked'} ${tierDone(t) ? 'done' : ''}"><h3>${t.th} ${tierDone(t) ? '<span class="chip">ผ่านครบแล้ว</span>' : open ? '' : '<span class="chip">ผ่านช่วงก่อนหน้าให้ครบ รวมเกณฑ์โรงเรียน เพื่อปลดล็อก</span>'}</h3>${rows}</section>`;
   }).join('');
   openModal(`<h2>ภารกิจ ${LEVELS.length} ด่าน</h2>
     <p class="small">งาน 4 ด้านวนสลับกัน ด้านละ 5 ด่าน ภายในช่วงเดียวกันเลือกเล่นด่านไหนก่อนก็ได้ ด่านจะนับว่าผ่านเมื่อได้ EXP ถึงเกณฑ์ <b>และ</b> โรงเรียนมีความพร้อมตามเกณฑ์ของด่าน (สิ่งก่อสร้างหรือของที่ต้องมี ตัวชี้วัดเก่ง ดี มีสุข สถานะการเงิน จำนวนนักเรียน หรือพื้นที่)</p>
@@ -392,6 +402,8 @@ function levelHeader(L, att) {
 }
 
 function renderPhase() {
+  // เล่นด่านตอนกลางคืน: ข้ามไปเช้าวันใหม่ บุคลากรมาทำงานแล้ว
+  if (Sc.isNight?.()) { Sc.setClock(7 * 60 + 5); toast('ข้ามไปเช้าวันใหม่ บุคลากรมาถึงโรงเรียนแล้ว'); }
   lastLevelAct = Date.now();
   const id = activeLevel; const L = St.LEVEL_BY_ID[id]; const l = St.lv(id); const att = l.attempt;
   if (!att) return;
@@ -571,7 +583,7 @@ function finishLevelUI(L) {
     if (tick.full) setTimeout(() => toast('จำนวนนักเรียนเต็มความจุแล้ว ต้องสร้างอาคารเรียนเพิ่ม ดูขั้นตอนที่หน้างบประมาณ แท็บ "สร้างอาคาร"', 'rank'), 2400);
     if (tick.crisisStart) setTimeout(() => crisisModal(), 1800);
     if (tick.crisisEnd) setTimeout(() => toast('โรงเรียนพ้นภาวะวิกฤตทางการเงินแล้ว', 'rank'), 1800);
-    (tick.staffGot || []).forEach((g, i) => setTimeout(() => { Au.sfx.unlock?.(); toast(g.kind === 'deputy' ? `เขตพื้นที่จัดสรรอัตรารองผู้อำนวยการเพิ่ม: <b>${esc(g.who?.name || 'รองผู้อำนวยการ')}</b> ${esc(g.who?.role || '')}` : `ได้รับจัดสรรครูเพิ่ม ${g.n} คน`, 'rank'); }, 3000 + i * 900));
+    if (tick.staffGot?.length) { (St.S.staffCards ||= []).push(...tick.staffGot.map(g => ({ kind: g.kind, id: g.who?.id, n: g.n }))); St.save(); }
     if (!tick.staffGot?.length) { const gp = Ec.staffGap(), st = Ec.staff(); if (gp.deputies > 0 && !st.pending.some(p => p.kind === 'deputy')) setTimeout(() => toast(`นักเรียน ${Ec.fmt(tick.students)} คน เกินเกณฑ์รองผู้อำนวยการที่มีอยู่ ยื่นขออัตราเพิ่มได้ที่หน้างบประมาณ`, 'rank'), 3200); }
   }
   // ความพร้อมของตัวละครที่เติบโต
@@ -645,14 +657,14 @@ function openChar(id) {
     (ok ? Au.sfx.cmdFit : Au.sfx.cmdMiss)();
     St.addLog(id, `งานประจำ "${ROUTINE[id]}": ได้รับการ${COMMANDS[k].th}จาก ผอ. ${ok ? '(ทำได้ราบรื่น)' : '(ดูอึดอัด)'}`);
     St.save(); refreshHUD();
-    toast(`${esc(CHARACTERS[id].name)}: ${esc(pickLine(ok ? (fit === 'consult' ? 'consultFit' : 'fit') : (readiness === 'ST' ? 'stakeholderCommand' : (['direct', 'coach', 'support', 'delegate'].indexOf(k) < ['direct', 'coach', 'support', 'delegate'].indexOf(fit) ? 'over' : 'under'))))}`);
+    toast(`${esc(CHARACTERS[id].name)}: ${esc(pickLine(ok ? (fit === 'consult' ? 'consultFit' : 'fit') : (readiness === 'ST' ? 'stakeholderCommand' : (['direct', 'coach', 'support', 'delegate'].indexOf(k) < ['direct', 'coach', 'support', 'delegate'].indexOf(fit) ? 'over' : 'under')), id))}`);
     openChar(id);
   }));
 }
-function pickLine(k) { const a = COMMAND_REACTIONS[k]; return a[Math.floor(Math.random() * a.length)]; }
+function pickLine(k, id) { const g = COMMAND_REACTIONS[k], a = g[GENDER[id] === 'f' ? 'f' : 'm']; return a[Math.floor(Math.random() * a.length)]; }
 function cmdFeedback(id, d) {
   const key = d.result === 'fit' ? (d.fit === 'consult' ? 'consultFit' : 'fit') : (d.fit === 'consult' ? 'stakeholderCommand' : (['direct', 'coach', 'support', 'delegate'].indexOf(d.cmd) < ['direct', 'coach', 'support', 'delegate'].indexOf(d.fit) ? 'over' : 'under'));
-  const line = COMMAND_REACTIONS[key][0];
+  const line = COMMAND_REACTIONS[key][GENDER[id] === 'f' ? 'f' : 'm'][0];
   return `<div class="fb ${d.result === 'fit' ? 'ok' : d.result === 'near' ? 'undetermined' : 'illegal'}">
     <p class="say">“${esc(line)}”</p>
     <p class="small"><b>เฉลย:</b> ${esc(READINESS_TH[d.readiness])}${(() => { const t = (COMMAND_TASKS[currentAttemptLevel()] || []).find(x => x.c === id); return t?.note ? ` — ${esc(t.note)}` : ''; })()}</p>
@@ -670,6 +682,8 @@ function closeSheet() { $('#sheet').classList.remove('show'); }
 
 // นาฬิกาในเกม (ไม่ใช่เวลาจริง)
 function updateClock() {
+  // นาฬิกาหยุดระหว่างที่ผู้เล่นกำลังเล่นด่าน (ไม่นับด่านที่เปิดค้างไว้นานเกิน 5 นาที)
+  Sc.setClockRunning?.(!(activeLevel && Date.now() - lastLevelAct < 5 * 60 * 1000));
   const c = Sc.clockInfo?.(); if (!c) return;
   const row = $('.clock-row'); if (!row) return;
   $('#clk-time').textContent = c.time; $('#clk-day').textContent = c.day; $('#clk-mode').textContent = c.label;
@@ -826,6 +840,7 @@ function showReader(charId, line, big) {
   const cv = Sc.portraitCanvas();
   if (cv.parentElement !== pic) pic.appendChild(cv);
   r.querySelector('.who').textContent = CHARACTERS[charId].name;
+  line = polite(charId, line);
   r.querySelector('.say').textContent = line || '';
   r.classList.add('inline'); r.classList.toggle('lg', wide);
   const body = $('#modal-body');
@@ -995,10 +1010,11 @@ function staffPanel() {
     const btn = pend(k) ? '<span class="chip">ยื่นแล้ว รอผลหลังผ่านด่านถัดไป</span>' : short > 0 ? `<button class="btn sm go" data-act="staffReq" data-arg="${k}">ยื่นขออัตรา</button>` : '<span class="chip">ครบตามเกณฑ์</span>';
     return `<div class="staff-row ${short > 0 ? 'short' : ''}"><span>${th}</span><b>${have} / ${can}</b>${btn}</div>`;
   };
-  const deps = ['รองฯ ประเสริฐ (บริหารทั่วไป)', 'รองฯ มาลี (วิชาการ)', ...Ec.NEW_DEPUTIES.slice(0, Math.max(0, st.deputies - 2)).map(d => `${d.name} (${d.role.replace('รองผู้อำนวยการ', '')})`)];
+  const du = Ec.deputyDuties(st.deputies), nm = { prasert: 'รองฯ ประเสริฐ', malee: 'รองฯ มาลี', deputy3: 'รองฯ วิทยา', deputy4: 'รองฯ สุดา' };
+  const deps = Object.entries(du).map(([k, v]) => `${nm[k]} (งาน${v.join(' และงาน')})`);
   return `<h3>อัตรากำลัง (มีอยู่ / ตามเกณฑ์ในเกม)</h3>
     <div class="staff-box">${row('deputy', 'รองผู้อำนวยการ', st.deputies, ent.deputies)}${row('teacher', `ครู (${cr.lower + cr.upper} ห้องเรียน · ม.ต้น ${cr.lower} ม.ปลาย ${cr.upper})`, st.teachers, ent.teachers)}
-    <p class="tiny">รองผู้อำนวยการที่มี: ${deps.map(esc).join(', ')}</p>
+    <p class="tiny">การแบ่งงาน: ${deps.map(esc).join(' · ')}</p>
     <p class="tiny">เกณฑ์รองผู้อำนวยการตามหนังสือ ก.ค.ศ. ว 23/2563: นักเรียน 120–719 คน 1 คน · 720–1,079 คน 2 คน · 1,080–1,679 คน 3 คน · 1,680 คนขึ้นไป 4 คน (สูงสุด 4 คน) <a href="${Ec.DEPUTY_SRC}" target="_blank" rel="noopener">แหล่งอ้างอิง</a> (แหล่งรอง) ในเกม โรงเรียนเริ่มด้วยรองฯ 2 คนตามเนื้อเรื่อง แม้เกณฑ์จริงที่ 640 คนจะให้ 1 คน </p>
     <p class="tiny">เกณฑ์ครูตามหนังสือฉบับเดียวกัน: ห้องเรียนละ 35 คน (เศษตั้งแต่ 10 คนเปิดเพิ่ม 1 ห้อง) ชั่วโมงเรียน ม.ต้น 30 ม.ปลาย 35 ชั่วโมงต่อสัปดาห์ หารด้วยชั่วโมงปฏิบัติงานครู 20 ชั่วโมงต่อสัปดาห์ แล้วรวมสองระดับ เศษตั้งแต่ 0.5 ปัดขึ้น <a href="${Ec.TEACHER_SRC}" target="_blank" rel="noopener">แหล่งอ้างอิง</a> (แหล่งรอง) เกมสมมติว่านักเรียนกระจายเท่ากันทั้ง 6 ชั้น${gap.teachers > 0 ? ` ตอนนี้ครูขาด ${gap.teachers} คน ภาระสอนต่อคนสูงขึ้น` : ''}</p></div>`;
 }
@@ -1095,7 +1111,7 @@ function buyModal(id) {
     if (r.ok) {
       Au.sfx.levelClear(); $('#modal-body').querySelectorAll('.src').forEach(x => x.disabled = true);
       const mA = Ec.meters(), TH = { keng: 'เก่ง', dee: 'ดี', suk: 'มีสุข' };
-      const ch = ['keng', 'dee', 'suk'].filter(k => it[k]).map(k => mA[k] !== mBefore[k] ? `${TH[k]} ${mBefore[k] ?? '–'} → ${mA[k]}` : `${TH[k]} ไม่เพิ่ม (ของประเภทนี้ให้ผลถึงเพดานแล้ว)`);
+      const ch = ['keng', 'dee', 'suk'].filter(k => it[k]).map(k => mA[k] !== mBefore[k] ? `${TH[k]} ${mBefore[k] ?? '–'} → ${mA[k]}` : `${TH[k]} ไม่เพิ่ม (ของที่ซื้อให้ผลถึงเพดานแล้ว หรือค่าใกล้เต็ม)`);
       toast(`จัดหา "${esc(it.th)}" แล้ว${ch.length ? '<br>' + ch.join(' · ') + (it.oneTime === false ? (it.group === 'people' ? ' (มีผล 2 ภาคเรียน)' : ' (มีผลภาคเรียนนี้)') : '') : ''}`, 'good');
     }
     else if (r.verdict === 'bad') { Au.sfx.bad(); $('#modal-body').querySelectorAll('.src').forEach(x => x.disabled = true); }
@@ -1239,11 +1255,45 @@ function cardTick() {
   if ($('#modal').classList.contains('show') || !$('#intro').hidden || $('#news')) return;
   if (currentAttemptLevel() && Date.now() - lastLevelAct < 5 * 60 * 1000) return;   // ไม่แทรกระหว่างเล่นด่าน (ด่านที่เปิดค้างไว้นานเกิน 5 นาทีไม่กันการ์ด)
   const c = cardState();
+  if (St.S.staffCards?.length && !cardShowing) return showStaffCard(St.S.staffCards[0]);   // แนะนำบุคลากรใหม่ก่อนการ์ดเหตุการณ์
   if (c.active) return showCard(CARD[c.active]);  // เคยเปิดค้างไว้ (เช่น รีเฟรชหน้า)
   if (Ec.semCount() < c.nextSem || Date.now() < c.notBefore) return;
   const card = pickCard(); if (!card) return;
   c.active = card.id; St.save();
   showCard(card);
+}
+// การ์ดแนะนำบุคลากรใหม่ ลอยเข้ามาแบบเดียวกับการ์ดเหตุการณ์
+function showStaffCard(sc) {
+  if ($('#news') || cardShowing) return;
+  cardShowing = true;
+  const done = () => { St.S.staffCards.shift(); St.save(); cardShowing = false; };
+  let body;
+  if (sc.kind === 'deputy') {
+    const d = Ec.NEW_DEPUTIES.find(x => x.id === sc.id); if (!d) { done(); return; }
+    const h = Ec.HANDOVER[d.id];
+    body = `<div class="memo-head">คำสั่งแต่งตั้ง</div>
+      <div class="news-from"><span class="chip kind">บุคลากรใหม่</span> <small>สำนักงานเขตพื้นที่จัดสรรอัตราตามจำนวนนักเรียน</small></div>
+      <h2 id="news-h">${esc(d.name)}</h2>
+      <p class="small"><b>${esc(d.role)}</b></p>
+      <div class="news-body"><p>${esc(d.bio)}</p><p class="say">“${esc(d.hello)}”</p>
+      ${h ? `<p class="handover">ตั้งแต่วันนี้ <b>งาน${esc(h.area)}</b> ที่${esc(h.fromName)}รักษาไว้ ส่งต่อให้${esc(d.name)}รับผิดชอบโดยตรง ${esc(h.fromName)}จะได้ทุ่มเทกับงานหลักของตนเต็มที่</p>` : ''}</div>`;
+  } else {
+    body = `<div class="memo-head">ครูบรรจุใหม่</div>
+      <div class="news-from"><span class="chip kind">บุคลากรใหม่</span> <small>ได้รับจัดสรรตามเกณฑ์อัตรากำลัง</small></div>
+      <h2 id="news-h">ครูใหม่ ${sc.n} คน</h2>
+      <div class="news-body"><p>ครูที่ได้รับจัดสรรรายงานตัวแล้ว ภาระสอนของครูเดิมจะลดลง ควรจัดครูพี่เลี้ยงและแนะนำระบบของโรงเรียนให้ในสัปดาห์แรก</p></div>`;
+  }
+  const el = document.createElement('div'); el.id = 'news'; el.className = 'news-wrap';
+  el.innerHTML = `<article class="news letter staff" role="dialog" aria-modal="true" aria-labelledby="news-h">${body}
+    <div class="news-btns"><button class="btn primary" data-go="1">ต้อนรับ และพาไปพบในเมือง</button><button class="btn" data-go="0">รับทราบ</button></div></article>`;
+  Au.sfx.unlock?.();
+  setTimeout(() => {
+    document.body.appendChild(el);
+    el.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => {
+      el.classList.add('out'); setTimeout(() => el.remove(), 450); done(); refreshHUD();
+      if (b.dataset.go === '1') { if (sc.kind === 'deputy') Sc.flyToChar('staff_' + sc.id); else Sc.flyToChar('staffT0'); }
+    }));
+  }, 500);
 }
 let cardShowing = false;   // กันการ์ดซ้อนสองใบระหว่างรอภาพเหตุการณ์ในเมือง
 function showCard(card) {
