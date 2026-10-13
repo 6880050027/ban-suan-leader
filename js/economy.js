@@ -484,32 +484,36 @@ export function meters() {
 }
 
 // ---------- อัตรากำลังตามจำนวนนักเรียน ----------
-// เกณฑ์ในเกม: แนวคิดว่าจำนวนรองผู้อำนวยการและครูขึ้นกับจำนวนนักเรียน อิงหลักของเกณฑ์อัตรากำลัง ก.ค.ศ. (ว 23/2563)
-// แต่ตัวเลขช่วงนักเรียนด้านล่างกำหนดเพื่อการเล่น ยังไม่ได้ตรวจกับหนังสือจริง
+// เกณฑ์รองผู้อำนวยการตามหนังสือ ก.ค.ศ. เรื่องเกณฑ์อัตรากำลัง (ว 23/2563 ลงวันที่ 23 ธ.ค. 2563) ตามที่เว็บไซต์ข่าวการศึกษาคัดมา (แหล่งรอง):
+// 120–719 คน รองฯ 1 · 720–1,079 คน รองฯ 2 · 1,080–1,679 คน รองฯ 3 · 1,680 คนขึ้นไป รองฯ 4 (สูงสุด 4 คนต่อโรงเรียน)
+// ข้อยกเว้นของเกม: โรงเรียนในเกมเริ่มที่ 640 คนแต่มีรองฯ 2 คนตามเนื้อเรื่อง ตามเกณฑ์จริงช่วงนี้มีได้ 1 คน
+export const DEPUTY_MAX = 4;
 export const DEPUTY_STEPS = [
-  { min: 0, n: 2 }, { min: 900, n: 3 }, { min: 1200, n: 4 }, { min: 1600, n: 5 },
+  { min: 0, n: 2 }, { min: 1080, n: 3 }, { min: 1680, n: 4 },
 ];
+export const DEPUTY_SRC = 'https://www.kruwandee.com/news-id45582.html';
 export const NEW_DEPUTIES = [
   { id: 'deputy3', name: 'รองฯ วิทยา', role: 'รองผู้อำนวยการกลุ่มบริหารงบประมาณ', look: { shirt: '#5B8DD6', skin: '#E5B48C', hair: '#2A2A2A', acc: 'tie' } },
   { id: 'deputy4', name: 'รองฯ สุดา', role: 'รองผู้อำนวยการกลุ่มบริหารงานบุคคล', look: { shirt: '#B59AD6', skin: '#F2C9A5', hair: '#3B2A22', acc: 'bun' } },
-  { id: 'deputy5', name: 'รองฯ ภูมิ', role: 'รองผู้อำนวยการฝ่ายกิจการนักเรียน', look: { shirt: '#6FAF7A', skin: '#C99772', hair: '#1A1A1A', acc: 'tie' } },
 ];
 export const STUDENTS_PER_TEACHER = 20;
 export function staff() {
   const e = econ();
   e.staff ??= { deputies: 2, teachers: Math.ceil(e.students / STUDENTS_PER_TEACHER), pending: [] };
   e.staff.base ??= e.staff.teachers;
+  e.staff.deputies = Math.min(DEPUTY_MAX, e.staff.deputies);
   return e.staff;
 }
 export function entitled(n = econ().students) {
   let d = 2; for (const st of DEPUTY_STEPS) if (n >= st.min) d = st.n;
-  return { deputies: d, teachers: Math.ceil(n / STUDENTS_PER_TEACHER) };
+  return { deputies: Math.min(DEPUTY_MAX, d), teachers: Math.ceil(n / STUDENTS_PER_TEACHER) };
 }
 // ยื่นขออัตรา: ได้รับเมื่อผ่านด่านถัดไป (รอบภาคเรียน)
 export function requestStaff(kind) {
   const st = staff(), ent = entitled();
   if (st.pending.some(p => p.kind === kind)) return { ok: false, why: 'ยื่นคำขอไปแล้ว รอผลหลังผ่านด่านถัดไป' };
   const have = kind === 'deputy' ? st.deputies : st.teachers, can = kind === 'deputy' ? ent.deputies : ent.teachers;
+  if (kind === 'deputy' && have >= DEPUTY_MAX) return { ok: false, why: `เกณฑ์ ก.ค.ศ. ให้มีรองผู้อำนวยการได้ไม่เกิน ${DEPUTY_MAX} คนต่อโรงเรียน` };
   if (have >= can) return { ok: false, why: 'อัตรากำลังยังไม่ต่ำกว่าเกณฑ์ จึงยังขออัตราเพิ่มไม่ได้' };
   st.pending.push({ kind, n: kind === 'deputy' ? 1 : Math.min(5, can - have), at: semCount() });
   addLog(kind === 'deputy' ? 'ยื่นขออัตรารองผู้อำนวยการเพิ่ม' : 'ยื่นขออัตราครูเพิ่มตามเกณฑ์', 0);
@@ -520,7 +524,7 @@ export function requestStaff(kind) {
 function allocateStaff() {
   const st = staff(), got = [];
   for (const p of st.pending) if (semCount() > p.at) {
-    if (p.kind === 'deputy') { st.deputies += 1; got.push({ kind: 'deputy', who: NEW_DEPUTIES[st.deputies - 3] }); }
+    if (p.kind === 'deputy') { if (st.deputies >= DEPUTY_MAX) continue; st.deputies += 1; got.push({ kind: 'deputy', who: NEW_DEPUTIES[st.deputies - 3] }); }
     else { st.teachers += p.n; got.push({ kind: 'teacher', n: p.n }); }
   }
   st.pending = st.pending.filter(p => semCount() <= p.at);
