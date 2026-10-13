@@ -566,7 +566,7 @@ function finishLevelUI(L) {
   if (tick) {
     const d = tick.students - tick.studentsBefore;
     setTimeout(() => { Au.sfx.exp(); toast(`ได้รับงบรอบภาคเรียน · รายหัว +${Ec.fmt(tick.inPer)} · ค่าสาธารณูปโภคและค่าจ้าง −${Ec.fmt(tick.expense)} บาท<br>นักเรียน ${d >= 0 ? '+' : ''}${d} คน (รวม ${Ec.fmt(tick.students)} คน)`, 'good'); }, 1300);
-    if (tick.full) setTimeout(() => toast('จำนวนนักเรียนเต็มความจุแล้ว หากต้องการรับเพิ่ม ต้องขยายพื้นที่โรงเรียน หรือยื่นคำขอตั้งงบลงทุนอาคารเรียนหลังใหม่ (ต้องมีพื้นที่ก่อน)', 'rank'), 2400);
+    if (tick.full) setTimeout(() => toast('จำนวนนักเรียนเต็มความจุแล้ว ต้องสร้างอาคารเรียนเพิ่ม ดูขั้นตอนที่หน้างบประมาณ แท็บ "สร้างอาคาร"', 'rank'), 2400);
     if (tick.crisisStart) setTimeout(() => crisisModal(), 1800);
     if (tick.crisisEnd) setTimeout(() => toast('โรงเรียนพ้นภาวะวิกฤตทางการเงินแล้ว', 'rank'), 1800);
     (tick.staffGot || []).forEach((g, i) => setTimeout(() => { Au.sfx.unlock?.(); toast(g.kind === 'deputy' ? `เขตพื้นที่จัดสรรอัตรารองผู้อำนวยการเพิ่ม: <b>${esc(g.who?.name || 'รองผู้อำนวยการ')}</b> ${esc(g.who?.role || '')}` : `ได้รับจัดสรรครูเพิ่ม ${g.n} คน`, 'rank'); }, 3000 + i * 900));
@@ -1000,14 +1000,14 @@ function staffPanel() {
     <p class="tiny">เกณฑ์ครูตามหนังสือฉบับเดียวกัน: ห้องเรียนละ 35 คน (เศษตั้งแต่ 10 คนเปิดเพิ่ม 1 ห้อง) ชั่วโมงเรียน ม.ต้น 30 ม.ปลาย 35 ชั่วโมงต่อสัปดาห์ หารด้วยชั่วโมงปฏิบัติงานครู 20 ชั่วโมงต่อสัปดาห์ แล้วรวมสองระดับ เศษตั้งแต่ 0.5 ปัดขึ้น <a href="${Ec.TEACHER_SRC}" target="_blank" rel="noopener">แหล่งอ้างอิง</a> (แหล่งรอง) เกมสมมติว่านักเรียนกระจายเท่ากันทั้ง 6 ชั้น${gap.teachers > 0 ? ` ตอนนี้ครูขาด ${gap.teachers} คน ภาระสอนต่อคนสูงขึ้น` : ''}</p></div>`;
 }
 function financeTabs(active) {
-  const tabs = [['overview', 'ภาพรวม'], ['shop', 'ร้านค้า'], ['quests', 'ระดมทรัพยากร']];
+  const tabs = [['overview', 'ภาพรวม'], ['build', 'สร้างอาคาร'], ['shop', 'ร้านค้า'], ['quests', 'ระดมทรัพยากร']];
   return `<div class="tabs">${tabs.map(([k, th]) => `<button class="tab ${k === active.split(':')[0] ? 'on' : ''}" data-act="finance" data-arg="${k}">${th}</button>`).join('')}</div>`;
 }
 function financeModal(tab = 'overview') {
   const e = Ec.econ();
   let body = '';
   if (tab === 'overview') {
-    const dons = e.donations.map(d => `<li>${Ec.fmt(d.amount)} บาท · เพื่อ${Ec.PURPOSE_TH[d.purpose]} <span class="tiny">(${esc(d.from)})</span></li>`).join('');
+    const dons = e.donations.map(d => `<li>${Ec.fmt(d.amount)} บาท · เพื่อ${Ec.PURPOSE_TH[d.purpose]} <span class="tiny">(${esc(d.from)})</span><div class="don-uses">ใช้ซื้อได้ (ราคาไม่เกินยอดคงเหลือ): ${Ec.donationUses(d.purpose, Ec.donationTotal(d.purpose)).map(it => `<button class="chip don-item" data-act="buy" data-arg="${it.id}">${esc(shortName(it.th))} · ${Ec.fmt(it.price)}</button>`).join(' ')}</div></li>`).join('');
     const caps = e.capital.filter(c => !c.used).map(c => `<li>${esc(Ec.ITEM[c.item].th)} · ${c.ready ? 'ได้รับจัดสรรแล้ว พร้อมใช้' : `รอการจัดสรร (เมื่อผ่านครบ ${c.readyAfter} ด่าน)`}</li>`).join('');
     body = `
       ${e.crisis ? `<div class="crisis-box"><b>โรงเรียนอยู่ในภาวะวิกฤตทางการเงิน</b><p class="small">เงินรายหัวรวมกับเงินรายได้ต่ำกว่า ${Ec.fmt(Ec.crisisLine())} บาท นักเรียนจะลดลงทุกภาคเรียน ตัวชี้วัดเก่ง ดี มีสุข ลดลง 15 คะแนน ทางออกคือทำเควสระดมทรัพยากรอย่างถูกระเบียบ และชะลอการซื้อ</p></div>` : ''}
@@ -1025,6 +1025,21 @@ function financeModal(tab = 'overview') {
       ${caps ? `<h3>งบลงทุน</h3><ul class="tight">${caps}</ul>` : ''}
       <h3>ความเคลื่อนไหวล่าสุด</h3>
       ${e.log.length ? `<ul class="log">${e.log.slice(0, 10).map(l => `<li>${esc(l.text)}${l.amount ? ` <b class="${l.amount < 0 ? 'neg' : 'pos'}">${l.amount > 0 ? '+' : ''}${Ec.fmt(l.amount)}</b>` : ''}</li>`).join('')}</ul>` : '<p class="small">ยังไม่มีรายการ ผ่านด่านแรกเพื่อรับงบรอบภาคเรียน</p>'}`;
+  } else if (tab === 'build') {
+    const blds = Ec.ITEMS.filter(it => it.capitalOnly || it.capitalOk);
+    const row = it => {
+      const b = Ec.buildStatus(it.id);
+      let state, act = '';
+      if (b.step === 'done') { state = 'สร้างแล้ว'; act = `<button class="btn sm" data-act="seeNew" data-arg="${it.facility}">ดูในเมือง</button>`; }
+      else if (b.step === 'lvlock') state = `เปิดเมื่อผ่านครบ ${b.need} ด่าน`;
+      else if (b.step === 'land') { state = `ต้องมีที่ดินแปลงที่ ${b.need} ก่อน (มี ${e.land || 0} แปลง)`; act = `<button class="btn sm go" data-act="quest" data-arg="land">ขยายที่ดิน</button>`; }
+      else if (b.step === 'wait') state = `ยื่นคำขอแล้ว รอเขตจัดสรรงบ (ผ่านอีก ${b.left} ด่าน)`;
+      else if (b.step === 'request') { state = 'ต้องยื่นคำขอตั้งงบลงทุนก่อน'; act = b.questOk.ok ? `<button class="btn sm go" data-act="quest" data-arg="capital">ยื่นของบลงทุน</button>` : `<span class="tiny">${esc(b.questOk.why)}</span>`; }
+      else { state = b.viaCapital ? 'ได้รับจัดสรรงบลงทุนแล้ว พร้อมสร้าง' : 'สร้างได้ (เลือกแหล่งเงินให้ถูกประเภท)'; act = `<button class="btn sm primary" data-act="buy" data-arg="${it.id}">สร้าง</button>`; }
+      return `<div class="build-row ${b.step}"><div><b>${esc(it.th)}</b><span class="small">${esc(it.desc || '')}${it.capacity && !(it.desc || '').includes('รับนักเรียนเพิ่ม') && !(it.desc || '').includes('รองรับนักเรียนเพิ่ม') ? ` · รับนักเรียนเพิ่ม ${Ec.fmt(it.capacity)} คน` : ''} · ${Ec.fmt(it.price)} บาท</span><span class="build-state">${state}</span></div><div class="build-act">${act}</div></div>`;
+    };
+    body = `<p class="small">ขั้นตอนสร้างอาคาร: (1) มีที่ดินแปลงที่อาคารต้องใช้ (2) ยื่นคำขอตั้งงบลงทุนต่อเขตพื้นที่ (3) รอจัดสรร 3 ด่าน (4) กดสร้าง แล้วเลือกแหล่งเงิน "งบลงทุน" ที่ดินอย่างเดียวไม่เพิ่มที่นั่งเรียน ความจุนักเรียนเพิ่มเมื่อสร้างอาคารเรียนเสร็จ ตอนนี้รับนักเรียนได้ ${Ec.fmt(e.capacity)} คน มีนักเรียน ${Ec.fmt(e.students)} คน</p>
+      <div class="build-list">${blds.map(row).join('')}</div>`;
   } else if (tab === 'shop' || tab.startsWith('shop:')) {
     const grp = tab.includes(':') ? tab.split(':')[1] : 'building';
     const sub = `<div class="tabs sub">${Object.entries(Ec.SHOP_GROUPS).map(([k, th]) => `<button class="tab ${k === grp ? 'on' : ''}" data-act="finance" data-arg="shop:${k}">${th}</button>`).join('')}</div>`;
@@ -1044,7 +1059,7 @@ function financeModal(tab = 'overview') {
       <p class="small">หาเงินเข้าโรงเรียนโดยไม่ผลักภาระให้ผู้ปกครอง แต่ละเควสทำได้ช่วงละ 1 ครั้ง หากตัดสินใจขัดระเบียบจะไม่ได้รับเงิน</p>
       <div class="shop">${Ec.QUESTS.map(q => {
         const a = Ec.questAvailable(q);
-        const rw = q.landQuest ? `ที่ดิน 1 แปลง · ความจุ +${Ec.LAND_CAP} คน (มีแล้ว ${Ec.econ().land}/${Ec.LAND_MAX})` : q.capitalQuest ? 'งบลงทุนเป็นรายการ' : q.reward.wallet ? `สูงสุด ${Ec.fmt(q.reward.amount)} บาท` : 'ขวัญกำลังใจครู';
+        const rw = q.landQuest ? `ที่ดินสำหรับก่อสร้าง 1 แปลง (มีแล้ว ${Ec.econ().land}/${Ec.LAND_MAX})` : q.capitalQuest ? 'งบลงทุนเป็นรายการ' : q.reward.wallet === 'donation' ? `เงินบริจาคเพื่อ${Ec.PURPOSE_TH[q.reward.purpose]} สูงสุด ${Ec.fmt(q.reward.amount)} บาท · ใช้ได้กับ ${Ec.donationUses(q.reward.purpose, q.reward.amount).map(it => shortName(it.th)).join(', ')}` : q.reward.wallet ? `สูงสุด ${Ec.fmt(q.reward.amount)} บาท` : 'ขวัญกำลังใจครู';
         return `<button class="shop-item ${a.ok ? '' : 'locked'}" data-act="quest" data-arg="${q.id}"><b>${esc(q.th)}</b>
           <span class="small">ผู้เสนอ: ${esc(CHARACTERS[q.by].name)}</span><span class="price">${a.ok ? rw : esc(a.why)}</span></button>`;
       }).join('')}</div>`;

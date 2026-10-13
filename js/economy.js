@@ -72,10 +72,6 @@ export const ITEMS = [
     desc: 'รองรับนักเรียนเพิ่ม 400 คน ต้องยื่นคำขอตั้งงบลงทุนผ่านสำนักงานเขตพื้นที่',
     rules: { capital: { v: 'cap', item: 'newbldg', why: 'อาคารเรียนใช้แบบมาตรฐานและงบลงทุนที่โรงเรียนยื่นคำขอผ่านเขตพื้นที่ โดยเขตจัดลำดับตามความขาดแคลนห้องเรียน', src: SRC.capital2560 },
       perhead: UNV('ยังไม่พบตัวบทที่ระบุว่าใช้เงินรายหัวสร้างอาคารเรียนทั้งหลังได้'), income: UNV('ยังไม่พบตัวบทเรื่องการสร้างอาคารเรียนจากเงินรายได้สถานศึกษา'), donation: R_DON('building'), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD } },
-  { id: 'van', group: 'building', th: 'รถตู้โรงเรียน', price: 1400000, cat: 'vehicle', facility: 'van', rep: 3, locked: true,
-    desc: 'รายการนี้ยังเปิดซื้อไม่ได้ เพราะการจัดหายานพาหนะมีระเบียบเฉพาะ',
-    lockNote: 'คู่มือการจัดตั้งงบลงทุนของ สพฐ. (2560) กำหนดให้สำนักงานเขตพื้นที่เป็นผู้ขอรถตู้ ใช้ทดแทนรถที่ชำรุดหรือมีอายุเกิน 10 ปี และไม่พบรายการยานพาหนะสำหรับโรงเรียน ส่วนการซื้อรถด้วยเงินรายหัว เงินรายได้ หรือการรับบริจาครถ ยังต้องตรวจระเบียบว่าด้วยรถราชการก่อน เกมจึงไม่เปิดให้ซื้อ',
-    rules: {} },
 ];
 
 // รายการเพิ่มเติม (รอบที่ 3)
@@ -178,6 +174,31 @@ export const QUESTS = [
         opts: [
           { t: 'ขอบคุณและชี้แจงว่าการจัดซื้อต้องเป็นไปตามระเบียบพัสดุอย่างเปิดเผย จึงรับเงื่อนไขนี้ไม่ได้', v: 'ok', why: 'การจัดซื้อจัดจ้างต้องโปร่งใสและแข่งขันอย่างเป็นธรรมตาม พ.ร.บ.การจัดซื้อจัดจ้างฯ 2560 การรับบริจาคพร้อมเงื่อนไขกำหนดผู้ขายขัดหลักนี้' },
           { t: 'รับเงื่อนไข เพราะอย่างไรโรงเรียนก็ได้ประโยชน์', v: 'bad', why: 'การกำหนดผู้ขายล่วงหน้าเป็นการล็อกผู้ขาย ขัดหลักการจัดซื้อจัดจ้างที่โปร่งใส คดีจริงเรื่องล็อกสเปกมีผู้บริหารถูกลงโทษ' },
+        ] },
+    ] },
+  { id: 'alumniFund', th: 'รับทุนการศึกษาจากสมาคมศิษย์เก่า', reward: { wallet: 'donation', purpose: 'scholar', amount: 200000 }, by: 'soonthorn', minTier: 1,
+    steps: [
+      { q: 'สมาคมศิษย์เก่าจะมอบเงิน 200,000 บาท เพื่อช่วยนักเรียนขาดแคลน ท่านจะรับเงินอย่างไร',
+        opts: [
+          { t: 'รับในนามโรงเรียน ออกใบเสร็จ ระบุวัตถุประสงค์ "ช่วยเหลือนักเรียนขาดแคลน" แล้วตั้งคณะกรรมการคัดเลือกผู้รับทุนตามเกณฑ์ที่ประกาศ', v: 'ok', why: 'เงินบริจาคที่ระบุวัตถุประสงค์ต้องใช้ตามที่ผู้บริจาคระบุ และการคัดเลือกที่มีเกณฑ์ชัดเจนป้องกันข้อครหา', src: SRC.sea12 },
+          { t: 'ให้ครูประจำชั้นเลือกนักเรียนที่เห็นว่าเหมาะสมเอง ไม่ต้องประกาศเกณฑ์', v: 'warn', why: 'เงินถึงเด็กได้ แต่ไม่มีเกณฑ์ที่ตรวจสอบได้ และเด็กที่ขาดแคลนจริงบางคนอาจตกหล่น' },
+          { t: 'รับเงินแล้วนำไปรวมเป็นงบซ่อมอาคาร เพราะตอนนี้อาคารเร่งด่วนกว่า', v: 'bad', why: 'ใช้เงินผิดวัตถุประสงค์ที่ผู้บริจาคระบุ', src: SRC.sea12 },
+        ] },
+    ] },
+  { id: 'peopleFund', th: 'รับบริจาคจากมูลนิธิเพื่อจ้างบุคลากรและพัฒนาครู', reward: { wallet: 'donation', purpose: 'people', amount: 500000 }, by: 'janpen', minTier: 2,
+    steps: [
+      { q: 'มูลนิธิแห่งหนึ่งจะบริจาค 500,000 บาท ระบุว่าใช้จ้างบุคลากรที่ขาดแคลนหรือพัฒนาครู ท่านจะดำเนินการอย่างไร',
+        opts: [
+          { t: 'เสนอคณะกรรมการสถานศึกษา รับเงินในนามโรงเรียน ระบุวัตถุประสงค์ แล้วจ้างตามระเบียบการจ้างและรายงานผลต่อมูลนิธิ', v: 'ok', why: 'ใช้ตามวัตถุประสงค์ของผู้บริจาค ผ่านความเห็นชอบ และตรวจสอบย้อนกลับได้', src: SRC.sea12 },
+          { t: 'ให้มูลนิธิเป็นผู้เลือกคนที่จะจ้างเอง โรงเรียนรับคนไปทำงาน', v: 'warn', why: 'ได้คนทำงาน แต่โรงเรียนไม่ได้คัดเลือกตามระเบียบ และอาจถูกมองว่าเป็นการฝากคน' },
+        ] },
+    ] },
+  { id: 'buildFund', th: 'รับบริจาคจากชุมชนเพื่อปรับปรุงอาคารสถานที่', reward: { wallet: 'donation', purpose: 'building', amount: 400000 }, by: 'prasert', minTier: 2,
+    steps: [
+      { q: 'กลุ่มผู้ประกอบการในชุมชนจะบริจาค 400,000 บาท เพื่อปรับปรุงอาคารสถานที่ของโรงเรียน ท่านจะรับอย่างไร',
+        opts: [
+          { t: 'รับในนามโรงเรียน ระบุวัตถุประสงค์ "พัฒนาอาคารสถานที่" บรรจุรายการในแผนปฏิบัติการ แล้วจัดซื้อจัดจ้างตามระเบียบพัสดุ', v: 'ok', why: 'เงินบริจาคที่ระบุวัตถุประสงค์ใช้ได้เฉพาะกิจการนั้น และการจัดซื้อจัดจ้างยังต้องทำตามระเบียบ', src: SRC.sea12 },
+          { t: 'ให้ผู้บริจาคจ้างผู้รับเหมาที่รู้จักมาทำเอง โรงเรียนรับมอบงานอย่างเดียว', v: 'warn', why: 'ทำได้ในรูปการบริจาคเป็นสิ่งของหรืองาน แต่ต้องตรวจรับและขึ้นทะเบียนทรัพย์สินให้ครบ เกมยังไม่ได้ตรวจขั้นตอนรับบริจาคสิ่งก่อสร้าง' },
         ] },
     ] },
   { id: 'rent', th: 'ให้เช่าลานจอดรถช่วงวันหยุด', reward: { wallet: 'income', amount: 60000 }, by: 'prasert', minTier: 2,
@@ -283,6 +304,9 @@ export function judge(itemId, wallet) {
   }
   return r;
 }
+export function donationUses(purpose, maxPrice = Infinity) {
+  return ITEMS.filter(it => !it.locked && it.rules?.donation?.v === 'don' && it.rules.donation.purpose === purpose && it.price <= maxPrice);
+}
 export const PURPOSE_TH = { building: 'พัฒนาอาคารสถานที่', learning: 'ห้องเรียนรู้และสื่อการเรียน', safety: 'ความปลอดภัย', scholar: 'ทุนการศึกษา', activity: 'กิจกรรมนักเรียน', people: 'จ้างบุคลากร', other: 'วัตถุประสงค์อื่น' };
 
 function take(wallet, amount, purpose, itemId) {
@@ -338,6 +362,18 @@ export function buy(itemId, wallet) {
   checkCrisis(); St.save();
   return { ok: true, verdict: 'ok', why: j.why, src: j.src, note: j.note || it.rules[wallet]?.note, method };
 }
+// สถานะการสร้างอาคารแต่ละหลัง สำหรับแท็บ "สร้างอาคาร"
+export function buildStatus(id) {
+  const e = econ(), it = ITEM[id];
+  if (it.facility && e.owned[it.facility]) return { step: 'done' };
+  if (it.minLv && St.completedCount() < it.minLv) return { step: 'lvlock', need: it.minLv };
+  if ((it.needLand || 0) > (e.land || 0)) return { step: 'land', need: it.needLand };
+  const c = e.capital.find(x => x.item === id && !x.used);
+  if (c && c.ready) return { step: 'build', viaCapital: true };
+  if (c) return { step: 'wait', left: Math.max(0, c.readyAfter - St.completedCount()) };
+  if (it.capitalOnly) return { step: 'request', questOk: questAvailable(QUEST.capital) };
+  return { step: 'build', viaCapital: false, questOk: questAvailable(QUEST.capital) };
+}
 export function guardOwned(hazard) { const e = econ(); return ITEMS.some(i => i.guards === hazard && i.facility && e.owned[i.facility]); }
 export function semCount() { return Object.keys(econ().paidLevels).length; }
 // ของ/กิจกรรมที่ยังมีผลในภาคเรียนนี้ (ซื้อซ้ำได้ จึงแสดงในเมืองเฉพาะช่วงที่ใช้งาน)
@@ -345,7 +381,7 @@ export function activeEvents() {
   const e = econ(), now = semCount();
   return e.events.filter(v => now < v.until && ITEM[v.id]);
 }
-export const LAND_MAX = 4, LAND_CAP = 150;
+export const LAND_MAX = 4;
 export function procurementNote(price) {
   const parts = [];
   parts.push(price <= 500000 ? 'จัดซื้อจัดจ้างด้วยวิธีเฉพาะเจาะจงได้ (วงเงินไม่เกิน 500,000 บาท)' : 'วงเงินเกิน 500,000 บาท ต้องใช้วิธีที่ระเบียบกำหนด เช่น วิธีประกาศเชิญชวนทั่วไป');
@@ -376,8 +412,8 @@ export function finishQuest(qid, answers) {
   const r = q.reward; let text = '';
   if (q.landQuest) {
     if (!bad) {
-      e.land = Math.min(LAND_MAX, (e.land || 0) + 1); e.capacity += LAND_CAP;
-      text = `โรงเรียนได้รับที่ดินแปลงที่ ${e.land} รับนักเรียนได้เพิ่ม ${LAND_CAP} คน (ความจุ ${fmt(e.capacity)} คน)` + (factor < 1 ? ' แต่เอกสารยังไม่ครบ ชุมชนบางส่วนตั้งคำถาม' : '');
+      e.land = Math.min(LAND_MAX, (e.land || 0) + 1);   // ที่ดินเพิ่มพื้นที่ก่อสร้าง ไม่ได้เพิ่มที่นั่งเรียน ความจุเพิ่มเมื่อสร้างอาคารเรียน
+      text = `โรงเรียนได้รับที่ดินแปลงที่ ${e.land} ใช้เป็นพื้นที่ก่อสร้างอาคารได้ (ความจุนักเรียนยังเท่าเดิม ${fmt(e.capacity)} คน จนกว่าจะสร้างอาคารเรียน ดูได้ที่แท็บสร้างอาคาร)` + (factor < 1 ? ' แต่เอกสารยังไม่ครบ ชุมชนบางส่วนตั้งคำถาม' : '');
       addLog(`ขยายพื้นที่โรงเรียน แปลงที่ ${e.land}`, 0);
       if (factor < 1) for (const c of Object.values(St.S.chars)) c.morale = Math.max(10, c.morale - 3);
     } else text = 'ผู้บริจาคถอนการบริจาค เพราะเงื่อนไขที่ตกลงกันขัดหลักการ โรงเรียนยังไม่ได้ที่ดิน';
@@ -395,7 +431,7 @@ export function finishQuest(qid, answers) {
   } else if (r.wallet === 'donation') {
     const amt = Math.round(r.amount * factor);
     if (amt) e.donations.push({ purpose: r.purpose, amount: amt, from: q.th });
-    text = amt ? `ได้รับเงินบริจาคเพื่อ${PURPOSE_TH[r.purpose]} ${fmt(amt)} บาท` : 'ผู้บริจาคยกเลิกการบริจาค';
+    text = amt ? `ได้รับเงินบริจาคเพื่อ${PURPOSE_TH[r.purpose]} ${fmt(amt)} บาท ใช้ซื้อได้เฉพาะรายการต่อไปนี้ (เลือกแหล่งเงิน "เงินบริจาค"): ${donationUses(r.purpose, amt).map(i => i.th).join(', ')}` : 'ผู้บริจาคยกเลิกการบริจาค';
     if (amt) addLog(`รับบริจาค (${PURPOSE_TH[r.purpose]})`, amt);
   } else if (r.wallet) {
     const amt = Math.round(r.amount * factor);
