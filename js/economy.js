@@ -127,7 +127,7 @@ ITEMS.push(
   { id: 'hall', group: 'building', minLv: 12, needLand: 2, th: 'หอประชุมอเนกประสงค์', price: 2800000, cat: 'building', facility: 'hall', rep: 8, suk: 4, capitalOk: true, desc: 'หอประชุมขนาด 800 ที่นั่ง ใช้จัดกิจกรรมและเป็นที่พักพิงชั่วคราวยามภัยพิบัติ (ต้องมีที่ดินแปลงที่ 2)',
     rules: { capital: { v: 'cap', why: 'สิ่งก่อสร้างวงเงินสูงต้องได้รับจัดสรรงบลงทุนเป็นรายการ', src: SRC.capital2560 }, perhead: UNV('วงเงินระดับนี้เป็นงบลงทุน ยังไม่พบตัวบทที่ให้ใช้ค่าจัดการเรียนการสอน'), income: UNV(), donation: R_DON('building'), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD } },
   { id: 'counselor', group: 'people', minLv: 9, th: 'จ้างนักจิตวิทยาประจำโรงเรียน (1 ปี)', price: 240000, cat: 'people', facility: null, oneTime: false, rep: 3, suk: 5, desc: 'ดูแลสุขภาพจิตนักเรียนและทำงานร่วมกับครูแนะแนว',
-    rules: { perhead: UNV('ยังไม่พบตัวบทที่ระบุค่าจ้างนักจิตวิทยาในค่าจัดการเรียนการสอน'), income: UNV(), donation: R_DON('scholar'), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD, capital: R_CAP_ONLY } },
+    rules: { perhead: UNV('ยังไม่พบตัวบทที่ระบุค่าจ้างนักจิตวิทยาในค่าจัดการเรียนการสอน'), income: UNV(), donation: R_DON('people'), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD, capital: R_CAP_ONLY } },
   { id: 'plcnet', group: 'people', minLv: 7, th: 'วัน PLC ข้ามโรงเรียนในเครือข่าย', price: 20000, cat: 'people', facility: null, oneTime: false, rep: 2, keng: 2, desc: 'ครูแลกเปลี่ยนแผนการสอนและสังเกตชั้นเรียนกับโรงเรียนเครือข่าย 1 วัน',
     rules: { perhead: UNV('ยังไม่พบตัวบทเรื่องค่าพัฒนาครูในค่าจัดการเรียนการสอน'), income: UNV(), activity: R_ACTIVITY_BAD, donation: R_DON('learning'), student: R_STUDENT_BAD, capital: R_CAP_ONLY } },
   { id: 'langcamp', group: 'activity', minLv: 5, th: 'ค่ายภาษาและวัฒนธรรมนานาชาติ', price: 60000, cat: 'activity', facility: null, oneTime: false, rep: 3, keng: 2, suk: 2, desc: 'นักเรียนฝึกสื่อสารกับเพื่อนต่างวัฒนธรรมผ่านกิจกรรมและโครงงาน 2 วัน', rules: ACT_RULES('กิจกรรมวิชาการ') },
@@ -306,6 +306,13 @@ export function judge(itemId, wallet) {
 }
 export function donationUses(purpose, maxPrice = Infinity) {
   return ITEMS.filter(it => !it.locked && it.rules?.donation?.v === 'don' && it.rules.donation.purpose === purpose && it.price <= maxPrice);
+}
+// รายการที่ซื้อได้ด้วยเงินบริจาคที่ระบุวัตถุประสงค์เท่านั้น: คืนวัตถุประสงค์และเควสที่ให้เงินก้อนนั้น
+export function donationOnly(itemId) {
+  const it = ITEM[itemId], r = it.rules || {};
+  if (r.donation?.v !== 'don' || Object.entries(r).some(([w, x]) => w !== 'donation' && (x.v === 'ok' || x.v === 'cap'))) return null;
+  const q = QUESTS.find(q => q.reward.wallet === 'donation' && q.reward.purpose === r.donation.purpose);
+  return { purpose: r.donation.purpose, quest: q };
 }
 export const PURPOSE_TH = { building: 'พัฒนาอาคารสถานที่', learning: 'ห้องเรียนรู้และสื่อการเรียน', safety: 'ความปลอดภัย', scholar: 'ทุนการศึกษา', activity: 'กิจกรรมนักเรียน', people: 'จ้างบุคลากร', other: 'วัตถุประสงค์อื่น' };
 

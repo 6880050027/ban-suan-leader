@@ -1049,7 +1049,7 @@ function financeModal(tab = 'overview') {
         const lvLock = it.minLv && St.completedCount() < it.minLv;
         return `<button class="shop-item ${owned ? 'owned' : ''} ${it.locked || lvLock ? 'locked' : ''}" data-act="buy" data-arg="${it.id}">
           <b>${esc(it.th)}</b><span class="small">${esc(it.desc)}</span>
-          <span class="tags">${it.oneTime !== false ? '<span class="chip">ครั้งเดียว</span>' : '<span class="chip">ซื้อซ้ำได้</span>'}${['keng', 'dee', 'suk'].filter(k => it[k]).map(k => `<span class="chip">${{ keng: 'เก่ง', dee: 'ดี', suk: 'มีสุข' }[k]} +${it[k]}</span>`).join('')}${it.guards ? '<span class="chip guard">ช่วยรับมือเหตุวิกฤต</span>' : ''}</span>
+          <span class="tags">${it.oneTime !== false ? '<span class="chip">ครั้งเดียว</span>' : '<span class="chip">ซื้อซ้ำได้</span>'}${['keng', 'dee', 'suk'].filter(k => it[k]).map(k => `<span class="chip">${{ keng: 'เก่ง', dee: 'ดี', suk: 'มีสุข' }[k]} +${it[k]}</span>`).join('')}${it.guards ? '<span class="chip guard">ช่วยรับมือเหตุวิกฤต</span>' : ''}${(() => { const d = Ec.donationOnly(it.id); return d ? `<span class="chip">ใช้เงินบริจาคเพื่อ${Ec.PURPOSE_TH[d.purpose]}${d.quest ? ` (เควส: ${esc(d.quest.th)})` : ''}</span>` : ''; })()}</span>
           <span class="price">${owned ? 'มีแล้ว' : it.locked ? 'ยังเปิดซื้อไม่ได้' : lvLock ? `เปิดเมื่อผ่าน ${it.minLv} ด่าน · ${Ec.fmt(it.price)} บาท` : Ec.fmt(it.price) + ' บาท'}</span></button>`;
       }).join('')}</div>`;
   } else {
