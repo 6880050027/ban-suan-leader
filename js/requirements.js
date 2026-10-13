@@ -5,6 +5,7 @@
 // เกณฑ์เหล่านี้กำหนดขึ้นเพื่อการเล่น โยงกับเนื้อเรื่องของแต่ละด่าน ไม่ใช่เกณฑ์ทางราชการ
 import * as St from './state.js';
 import * as Ec from './economy.js';
+import { META3 } from './data/levels3meta.js';
 
 const M = { keng: 'เก่ง', dee: 'ดี', suk: 'มีสุข' };
 
@@ -118,3 +119,6 @@ export function promote() {
   return done;
 }
 export function pendingLevels() { return Object.entries(St.S.levels).filter(([, l]) => l.status === 'pending').map(([id]) => +id); }
+
+// ด่าน 31–50
+for (const m of META3) { REQS[m.id] = m.req; if (m.why) WHY[m.id] = m.why; }

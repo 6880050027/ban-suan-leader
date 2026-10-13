@@ -138,6 +138,9 @@ Object.assign(COPY, {
   30: { reader: 'tonkla', hook: 'ท่าน ผอ. ครับ ครูคอมพิวเตอร์ส่งสเปกมาแล้ว แต่ระบุชื่อรุ่นไว้ด้วยครับ' },
 });
 
+import { META3 } from './levels3meta.js';
+for (const m of META3) COPY[m.id] = { reader: m.reader, hook: m.hook };
+
 export function applyCopy(levels) {
   for (const L of levels) {
     const c = COPY[L.id]; if (!c) continue;

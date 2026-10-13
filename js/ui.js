@@ -16,7 +16,7 @@ import { CARDS, CARD } from './data/cards.js';
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const strip = h => String(h).replace(/<[^>]+>/g, '');
-const THAI_LETTERS = ['ก', 'ข', 'ค', 'ง', 'จ'];
+const THAI_LETTERS = ['ก', 'ข', 'ค', 'ง', 'จ', 'ฉ', 'ช', 'ซ', 'ฌ', 'ญ'];
 const DIFF_DOTS = d => '●'.repeat(d) + '○'.repeat(4 - d);
 
 let activeLevel = null; // id ของด่านที่กำลังเล่น
@@ -36,6 +36,7 @@ export function init() {
   bindHUD();
   Sc.setFacilityNames(Object.fromEntries(Ec.ITEMS.flatMap(i => [[i.id, shortName(i.th)], [i.facility || i.id, shortName(i.th)]])));
   setInterval(() => { quizTick(); cardTick(); }, 4000);
+  setInterval(updateClock, 1000); updateClock();
   refreshSoundIcon();
   refreshHUD();
   if (St.hasSave()) { St.load(); refreshHUD(); syncWorld(); }
@@ -79,6 +80,7 @@ const ACTIONS = {
   quiz: () => quizModal(),
   reqs: arg => openModal(`<h2>ด่าน ${arg} · ${esc(St.LEVEL_BY_ID[+arg].title)}</h2>${reqBox(+arg, { title: 'สิ่งที่โรงเรียนยังต้องมีก่อนนับว่าผ่าน' })}<div class="btn-row"><button class="btn" data-act="board">กลับหน้าภารกิจ</button></div>`, { wide: true }),
   seeNew: arg => { closeModal(); Sc.showNew(arg); },
+  staffReq: arg => { const r = Ec.requestStaff(arg); toast(r.ok ? (arg === 'deputy' ? 'ยื่นขออัตรารองผู้อำนวยการต่อเขตพื้นที่แล้ว ผลจะออกหลังผ่านด่านถัดไป' : 'ยื่นขออัตราครูตามเกณฑ์แล้ว ผลจะออกหลังผ่านด่านถัดไป') : r.why, r.ok ? 'good' : ''); financeModal('overview'); refreshHUD(); },
   cast: arg => castModal(arg === 'first'),
   finance: arg => financeModal(arg || 'overview'),
   buy: arg => buyModal(arg),
@@ -119,6 +121,10 @@ export function refreshHUD() {
   const evs = Ec.activeEvents().map(v => v.id), evKey = evs.join(',');
   if (evKey !== lastEvKey) { lastEvKey = evKey; Sc.setEvents(evs); }
   Sc.setStudentCount(e.students);
+  const stf = Ec.staff(), stKey = stf.deputies + ':' + stf.teachers;
+  if (stKey !== lastStaffKey) { lastStaffKey = stKey; Sc.setStaff(Ec.NEW_DEPUTIES.slice(0, Math.max(0, stf.deputies - 2)), Math.max(0, stf.teachers - stf.base)); }
+  const gap = Ec.staffGap();
+  $('#hud-staff-alert').hidden = !(gap.deputies > 0 || gap.teachers > 0) || stf.pending.length >= (gap.deputies > 0) + (gap.teachers > 0);
   Sc.setCrisis(e.crisis);
   // ด่านที่รอเกณฑ์โรงเรียน: เมื่อโรงเรียนพร้อมแล้วให้นับว่าผ่าน
   const tierIds = TIERS.slice(1).map(t => t.id);
@@ -131,7 +137,7 @@ export function refreshHUD() {
     grantAwards();
   }
 }
-let lastEvKey = null;
+let lastEvKey = null, lastStaffKey = null;
 function shortName(th) { return th.replace(/\s*\((?:1 ปี|แบบมาตรฐาน)\)/, '').replace(/ครบชุด$/, ''); }
 // กล่องเกณฑ์ความพร้อมของโรงเรียนประจำด่าน
 function reqBox(id, { title = 'เกณฑ์ความพร้อมของโรงเรียนในด่านนี้', links = true } = {}) {
@@ -360,7 +366,7 @@ function openLevel(id) {
   if (L.warning) {
     const txt = id === 17
       ? 'ด่านนี้เกี่ยวกับเหตุความรุนแรงในโรงเรียน เกมบรรยายอย่างจำกัด ไม่แสดงภาพและไม่ระบุจำนวนผู้สูญเสีย ถ้าเรื่องนี้กระทบใจท่าน เลือกข้ามได้โดยไม่เสียสิทธิรับโปรไฟล์'
-      : 'ด่านนี้เกี่ยวกับการล่วงละเมิดทางเพศต่อนักเรียน เกมไม่บรรยายรายละเอียดของการกระทำ ถ้าเรื่องนี้กระทบใจท่าน เลือกข้ามได้โดยไม่เสียสิทธิรับโปรไฟล์';
+      : id !== 19 ? L.warning : 'ด่านนี้เกี่ยวกับการล่วงละเมิดทางเพศต่อนักเรียน เกมไม่บรรยายรายละเอียดของการกระทำ ถ้าเรื่องนี้กระทบใจท่าน เลือกข้ามได้โดยไม่เสียสิทธิรับโปรไฟล์';
     openModal(`<h2>คำเตือนเนื้อหา · ด่าน ${id}</h2><p>${txt}</p>
       <div class="btn-row"><button class="btn primary" id="w-go">เข้าด่าน</button><button class="btn" data-act="skip" data-arg="${id}">ข้ามด่านนี้</button></div>`);
     $('#w-go').addEventListener('click', () => { St.startAttempt(id); activeLevel = id; renderPhase(); });
@@ -557,6 +563,8 @@ function finishLevelUI(L) {
     if (tick.full) setTimeout(() => toast('จำนวนนักเรียนเต็มความจุแล้ว หากต้องการรับเพิ่ม ต้องขยายพื้นที่โรงเรียน หรือยื่นคำขอตั้งงบลงทุนอาคารเรียนหลังใหม่ (ต้องมีพื้นที่ก่อน)', 'rank'), 2400);
     if (tick.crisisStart) setTimeout(() => crisisModal(), 1800);
     if (tick.crisisEnd) setTimeout(() => toast('โรงเรียนพ้นภาวะวิกฤตทางการเงินแล้ว', 'rank'), 1800);
+    (tick.staffGot || []).forEach((g, i) => setTimeout(() => { Au.sfx.unlock?.(); toast(g.kind === 'deputy' ? `เขตพื้นที่จัดสรรอัตรารองผู้อำนวยการเพิ่ม: <b>${esc(g.who?.name || 'รองผู้อำนวยการ')}</b> ${esc(g.who?.role || '')}` : `ได้รับจัดสรรครูเพิ่ม ${g.n} คน`, 'rank'); }, 3000 + i * 900));
+    if (!tick.staffGot?.length) { const gp = Ec.staffGap(), st = Ec.staff(); if (gp.deputies > 0 && !st.pending.some(p => p.kind === 'deputy')) setTimeout(() => toast(`นักเรียน ${Ec.fmt(tick.students)} คน เกินเกณฑ์รองผู้อำนวยการที่มีอยู่ ยื่นขออัตราเพิ่มได้ที่หน้างบประมาณ`, 'rank'), 3200); }
   }
   // ความพร้อมของตัวละครที่เติบโต
   for (const c of Object.keys(att.commands)) {
@@ -652,6 +660,24 @@ function nextAfterMeet(lvId) {
 }
 function closeSheet() { $('#sheet').classList.remove('show'); }
 
+// นาฬิกาในเกม (ไม่ใช่เวลาจริง)
+function updateClock() {
+  const c = Sc.clockInfo?.(); if (!c) return;
+  const row = $('.clock-row'); if (!row) return;
+  $('#clk-time').textContent = c.time; $('#clk-day').textContent = c.day; $('#clk-mode').textContent = c.label;
+  row.className = 'clock-row ' + c.mode;
+}
+const modeToastAt = {};
+export function onClockMode(mode) {
+  updateClock();
+  if (visiting || activeLevel || $('#modal').classList.contains('show') || $('#news')) return;
+  const now = Date.now();
+  if (now - (modeToastAt[mode] || 0) < 5 * 60 * 1000) return;
+  modeToastAt[mode] = now;
+  if (mode === 'assembly') toast('08:00 นักเรียนเข้าแถวเคารพธงชาติที่ลานหน้าเสาธง', '');
+  else if (mode === 'sports') toast('หลังเลิกเรียน นักเรียนเล่นกีฬาที่สนาม', '');
+  else if (mode === 'night') toast('ค่ำแล้ว โรงเรียนปิด ไฟส่องสว่างรอบอาคารเปิด', '');
+}
 export function onCharClick(id) {
   if (visiting) return toast('ท่านกำลังเยี่ยมโรงเรียนของผู้อื่น โปรดกลับโรงเรียนของตนเองก่อนทำงานกับบุคลากร');
   if (id.startsWith('student')) return toast('นักเรียนกำลังทำกิจกรรมในสนาม ทุกการตัดสินใจของท่านส่งผลถึงนักเรียนในท้ายที่สุด');
@@ -951,6 +977,21 @@ function walletRows() {
   ];
   return rows.map(([k, v]) => `<div class="wallet" style="--w:${Ec.WALLETS[k].color}"><span>${Ec.WALLETS[k].th}</span><b>${Ec.fmt(v)}</b></div>`).join('');
 }
+// อัตรากำลังตามจำนวนนักเรียน
+function staffPanel() {
+  const st = Ec.staff(), ent = Ec.entitled(), gap = Ec.staffGap();
+  const pend = k => st.pending.some(p => p.kind === k);
+  const row = (k, th, have, can) => {
+    const short = can - have;
+    const btn = pend(k) ? '<span class="chip">ยื่นแล้ว รอผลหลังผ่านด่านถัดไป</span>' : short > 0 ? `<button class="btn sm go" data-act="staffReq" data-arg="${k}">ยื่นขออัตรา</button>` : '<span class="chip">ครบตามเกณฑ์</span>';
+    return `<div class="staff-row ${short > 0 ? 'short' : ''}"><span>${th}</span><b>${have} / ${can}</b>${btn}</div>`;
+  };
+  const deps = ['รองฯ ประเสริฐ (บริหารทั่วไป)', 'รองฯ มาลี (วิชาการ)', ...Ec.NEW_DEPUTIES.slice(0, Math.max(0, st.deputies - 2)).map(d => `${d.name} (${d.role.replace('รองผู้อำนวยการ', '')})`)];
+  return `<h3>อัตรากำลัง (มีอยู่ / ตามเกณฑ์ในเกม)</h3>
+    <div class="staff-box">${row('deputy', 'รองผู้อำนวยการ', st.deputies, ent.deputies)}${row('teacher', `ครู (นักเรียน ${Ec.STUDENTS_PER_TEACHER} คนต่อครู 1 คน)`, st.teachers, ent.teachers)}
+    <p class="tiny">รองผู้อำนวยการที่มี: ${deps.map(esc).join(', ')}</p>
+    <p class="tiny">เกณฑ์รองผู้อำนวยการในเกม: ต่ำกว่า 900 คน 2 คน · 900 คนขึ้นไป 3 คน · 1,200 คนขึ้นไป 4 คน · 1,600 คนขึ้นไป 5 คน ตัวเลขนี้ตั้งขึ้นเพื่อการเล่น เกณฑ์จริงให้ดูหนังสือ ก.ค.ศ. เรื่องเกณฑ์อัตรากำลัง (ว 23/2563) ซึ่งเกมยังไม่ได้ตรวจตัวเลขในหนังสือ ครูที่ขาดเกณฑ์ ${gap.teachers > 0 ? gap.teachers : 0} คนทำให้ภาระสอนต่อคนสูง และขวัญกำลังใจลดลง</p></div>`;
+}
 function financeTabs(active) {
   const tabs = [['overview', 'ภาพรวม'], ['shop', 'ร้านค้า'], ['quests', 'ระดมทรัพยากร']];
   return `<div class="tabs">${tabs.map(([k, th]) => `<button class="tab ${k === active.split(':')[0] ? 'on' : ''}" data-act="finance" data-arg="${k}">${th}</button>`).join('')}</div>`;
@@ -969,6 +1010,7 @@ function financeModal(tab = 'overview') {
         <div><b>${1 + (e.land || 0)} แปลง</b><span>พื้นที่โรงเรียน (ขยายได้อีก ${Ec.LAND_MAX - (e.land || 0)})</span></div>
         <div><b>${Ec.fmt(e.lostToMisuse)}</b><span>เงินที่เสียจากการใช้ผิดประเภท</span></div>
       </div>
+      ${staffPanel()}
       <h3>เงินแต่ละประเภท (บาทในเกม)</h3>
       <div class="wallets">${walletRows()}</div>
       <p class="tiny">ทุกครั้งที่ผ่านด่านเป็นครั้งแรก โรงเรียนได้รับงบรอบภาคเรียนตามจำนวนนักเรียน และหักค่าสาธารณูปโภคกับค่าจ้างชั่วคราวจากเงินรายหัว ตัวเลขเหล่านี้กำหนดขึ้นเพื่อการเล่น ไม่ใช่อัตราจริง เงินของนักเรียน (ค่าหนังสือ อุปกรณ์ เครื่องแบบ ปัจจัยพื้นฐาน) แสดงไว้เพื่อให้เห็นว่ามีอยู่ แต่นำมาใช้ซื้อของให้โรงเรียนไม่ได้</p>
@@ -1049,7 +1091,7 @@ function questModal(id, step = 0, answers = []) {
     refreshHUD(); grantAwards();
     return openModal(`<h2>${esc(q.th)}</h2><div class="result ${r.factor ? 'pass' : 'fail'}">${esc(r.text)}</div>
       ${answers.map((a, i) => `<div class="fb ${a.v === 'bad' ? 'illegal' : a.v === 'ok' ? 'ok' : 'undetermined'}"><p class="small">ขั้นที่ ${i + 1}</p><p>${esc(a.t)}</p><p class="small">${esc(a.why)}${a.src ? ` (<a href="${a.src}" target="_blank" rel="noopener">แหล่งอ้างอิง</a>)` : ''}</p></div>`).join('')}
-      <div class="btn-row">${q.landQuest && !r.bad ? `<button class="btn primary" data-act="seeNew" data-arg="${Ec.econ().land >= 2 ? 'land2' : 'expansion'}">ดูที่ดินใหม่ในเมือง</button>` : ''}<button class="btn ${q.landQuest && !r.bad ? '' : 'primary'}" data-act="finance" data-arg="overview">ดูงบประมาณ</button><button class="btn ghost" data-act="close">กลับเมือง</button></div>`, { wide: true });
+      <div class="btn-row">${q.landQuest && !r.bad ? `<button class="btn primary" data-act="seeNew" data-arg="${['expansion', 'land2', 'land3', 'land4'][Math.max(0, Ec.econ().land - 1)]}">ดูที่ดินใหม่ในเมือง</button>` : ''}<button class="btn ${q.landQuest && !r.bad ? '' : 'primary'}" data-act="finance" data-arg="overview">ดูงบประมาณ</button><button class="btn ghost" data-act="close">กลับเมือง</button></div>`, { wide: true });
   }
   const st = q.steps[step];
   openModal(`<h2>${esc(q.th)}</h2><div class="step-prog">${q.steps.map((_, k) => `<i class="${k < step ? 'done' : k === step ? 'cur' : ''}"></i>`).join('')}</div>
@@ -1167,27 +1209,34 @@ function cardTick() {
   c.active = card.id; St.save();
   showCard(card);
 }
+let cardShowing = false;   // กันการ์ดซ้อนสองใบระหว่างรอภาพเหตุการณ์ในเมือง
 function showCard(card) {
-  if (!card || $('#news')) return;
+  if (!card || $('#news') || cardShowing) return;
+  cardShowing = true;
   closeSheet();
   const guard = card.guard && Ec.guardOwned(card.hazard);
   if (card.hazard) { Sc.resetView(); Sc.setHazard(card.hazard, { mitigated: guard }); }
   Au.sfx.quest();
   const el = document.createElement('div');
   el.id = 'news'; el.className = 'news-wrap';
-  const kindTh = card.kind === 'crisis' ? 'เหตุวิกฤต' : 'นโยบายและคำขอด่วน';
-  el.innerHTML = `<article class="news ${card.kind}" role="dialog" aria-modal="true" aria-labelledby="news-h">
-    <header class="news-mast"><span>บ้านสวนรายวัน</span><small>ข่าวด่วนจากสำนักงานเขตพื้นที่ · ปีการศึกษา 2570</small></header>
+  const kindTh = card.kind === 'crisis' ? 'เหตุวิกฤต' : card.kind === 'letter' ? 'จดหมายจากเขต' : 'นโยบายและคำขอด่วน';
+  const head = card.kind === 'letter'
+    ? `<div class="memo-head">บันทึกข้อความ</div>
+    <div class="memo-meta"><span>ส่วนราชการ</span><span>${esc(card.from)}</span><span>เรื่อง</span><span id="news-h">${esc(card.headline)}</span><span>เรียน</span><span>ผู้อำนวยการโรงเรียนบ้านสวนวิทยา</span></div>
+    <div class="news-from"><span class="chip kind">${kindTh}</span> <small>หนังสือสมมติในเกม</small></div>`
+    : `<header class="news-mast"><span>บ้านสวนรายวัน</span><small>ข่าวด่วนจากสำนักงานเขตพื้นที่ · ปีการศึกษา 2570</small></header>
     <div class="news-from"><span class="chip">${kindTh}</span> ${esc(card.from)}</div>
-    <h2 id="news-h">${esc(card.headline)}</h2>
+    <h2 id="news-h">${esc(card.headline)}</h2>`;
+  el.innerHTML = `<article class="news ${card.kind}" role="dialog" aria-modal="true" aria-labelledby="news-h">
+    ${head}
     <div class="news-body"><p>${esc(card.lead)}</p>
       ${guard ? `<p class="news-guard">โรงเรียนมี "${esc(Ec.ITEMS.find(i => i.guards === card.hazard).th)}" อยู่แล้ว ความเสียหายจะน้อยกว่าที่ควรเป็น</p>` : ''}</div>
-    <p class="news-ask">ท่านจะตอบรับเรื่องนี้หรือไม่ ${card.kind === 'policy' ? '(คำขอบางเรื่องไม่ควรทำตาม อ่านให้ดีก่อนตัดสินใจ)' : ''}</p>
+    <p class="news-ask">ท่านจะตอบรับเรื่องนี้หรือไม่ ${card.kind !== 'crisis' ? '(คำขอบางเรื่องไม่ควรทำตาม อ่านให้ดีก่อนตัดสินใจ)' : ''}</p>
     <div class="news-btns"><button class="btn" data-ans="accept">${esc(card.acceptTh)}</button><button class="btn" data-ans="decline">${esc(card.declineTh)}</button></div>
   </article>`;
   setTimeout(() => {
     document.body.appendChild(el);
-    el.querySelectorAll('[data-ans]').forEach(b => b.addEventListener('click', () => { el.classList.add('out'); setTimeout(() => el.remove(), 450); resolveCard(card, b.dataset.ans); }));
+    el.querySelectorAll('[data-ans]').forEach(b => b.addEventListener('click', () => { cardShowing = false; el.classList.add('out'); setTimeout(() => el.remove(), 450); resolveCard(card, b.dataset.ans); }));
   }, card.hazard ? 2600 : 600);
 }
 function cardDamage(card, frac) {

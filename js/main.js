@@ -6,6 +6,7 @@ function boot() {
     initScene(document.getElementById('world'), document.getElementById('labels'), {
       onChar: id => UI.onCharClick(id),
       onBuilding: id => UI.onBuildingClick(id),
+      onClockMode: m => UI.onClockMode(m),
     });
   } catch (err) {
     console.error(err);

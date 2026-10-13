@@ -492,3 +492,23 @@ body.visiting #hud, body.visiting #dock, body.visiting #tracker { display: none;
 @keyframes newsaway { to { transform: translateY(24px) scale(.96); opacity: 0; } }
 @keyframes newsdim { from { background: rgba(58, 46, 40, 0); } }
 @media (max-width: 560px) { .news { padding: 18px 18px; } .news-mast { flex-direction: column; gap: 2px; } .news-mast small { text-align: left; } .news h2 { font-size: 19px; } .news-body { font-size: 14.5px; } }
+
+/* นาฬิกาในเกม */
+.clock-row { display: flex; gap: 6px; align-items: baseline; font-size: .74rem; color: var(--ink-2, #6b6259); margin-bottom: 3px; white-space: nowrap; overflow: hidden; }
+.clock-row b { font-family: var(--font-h); font-size: .9rem; color: var(--ink, #2b2622); font-variant-numeric: tabular-nums; }
+.clock-row #clk-mode { overflow: hidden; text-overflow: ellipsis; }
+.clock-row.night b { color: #4A5A8A; }
+.clock-row.assembly #clk-mode { color: #C0504D; font-weight: 600; }
+/* อัตรากำลัง */
+.staff-tag { position: absolute; bottom: -8px; right: -6px; background: #E8A23A; color: #fff; font-family: var(--font-h); font-size: .66rem; padding: 1px 8px; border-radius: 99px; }
+.staff-box { border: 1px solid var(--line, #e6dccb); border-radius: 14px; padding: 8px 12px; margin-bottom: 10px; }
+.staff-row { display: flex; align-items: center; gap: 10px; padding: 5px 0; }
+.staff-row span:first-child { flex: 1; }
+.staff-row.short b { color: #C0504D; }
+.pet-label { background: rgba(255, 246, 228, .92); font-size: .7rem; }
+/* จดหมายจากเขต: บันทึกข้อความ */
+.news.letter { font-family: 'Sarabun', sans-serif; }
+.news.letter .memo-head { text-align: center; font-family: var(--font-h); font-size: 1.15rem; letter-spacing: .02em; margin: 2px 0 8px; }
+.news.letter .memo-meta { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; font-size: .84rem; border-bottom: 1px solid var(--line, #e6dccb); padding-bottom: 8px; margin-bottom: 8px; }
+.news.letter .memo-meta span:nth-child(odd) { font-weight: 600; }
+.news.letter .chip.kind { background: #E6EEF7; color: #3E5C82; }

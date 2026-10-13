@@ -84,6 +84,8 @@ export function initScene(el, labels, h) {
   clayBump = makeClayBump();
   addLights();
   buildWorld();
+  setupDaily();
+  spawnPets();
 
   raycaster = new THREE.Raycaster();
   pointer = new THREE.Vector2();
@@ -676,6 +678,7 @@ function updateLabels() {
     quizBalloon.style.transform = `translate(-50%,-100%) translate(${p.x}px,${p.y - 30 + bob}px)`;
   }
   updateTags(dist);
+  updatePetLabels(dist);
   for (const [id, b] of Object.entries(buildings)) {
     const p = project(b.center);
     const minor = id === 'guidance' || id === 'toilet' || id === 'police' || id === 'field';
@@ -731,11 +734,12 @@ export function cinematic(at, dist, az, dur = 2.6) {
 const FAC_POS = { garden: [17, 17, 3], bikepark: [-20, 16.8, 3.2], reno: [-19, -6, 3.6], water: [-15.5, 15.6, 4], cctv: [-4, 0, 4], library: [14, -18, 5.5], ict: [-19, -18.5, 6], solar: [10, 10, 2.6],
   dome: [13, -32.5, 8], newbldg: [-9, -32.5, 13], roof: [-20, 11, 7.6], toiletReno: [17, 13, 4.3], electric: [2.6, 4, 4.6], smartboard: [-19, -7.4, 10.5], nurse: [20.8, 7.6, 3.6], band: [14.5, -4, 5.2],
   expansion: [0, -32.5, 2], land2: [44.5, -32.5, 4.5],
-  treecare: [10, 16, 5], pump: [21.4, -14.2, 3], generator: [21.5, -11.3, 3], wifi: [-10.3, -14.9, 12.5], airpurifier: [-11.8, -17.6, 4], fire: [9.2, -7.7, 3.4], langlab: [3.5, -18.5, 5], maker: [-19.3, -32.5, 5], hall: [34.5, -32.5, 8.5] };
+  treecare: [10, 16, 5], pump: [21.4, -14.2, 3], generator: [21.5, -11.3, 3], wifi: [-10.3, -14.9, 12.5], airpurifier: [-11.8, -17.6, 4], fire: [9.2, -7.7, 3.4], langlab: [3.5, -18.5, 5], maker: [-19.3, -32.5, 5], hall: [34.5, -32.5, 8.5],
+  land3: [72, 2, 3], land4: [72, -24, 3], newbldg2: [66, 2, 12.5], gym: [78, 2, 9], scibldg: [66, -24, 9.5], housing: [77, -25, 6] };
 // ของที่ซื้อซ้ำได้และกิจกรรม: แสดงในเมืองเฉพาะภาคเรียนที่ใช้งาน [x, z, ความสูงป้าย]
 const EV_POS = { teacher: [-11, -4.6, 3.8], foreign: [-26, -4.4, 3.8], janitor: [-28.5, 12, 3.8], scilab: [-21, -4.4, 2.6], pd: [-16, -4.4, 3.2], coding: [-6.5, -4.6, 2.6],
   uniform: [5, -6, 2.6], sports: [6.5, 4.5, 2.6], camp: [-9, 10.5, 3.4], scout: [0.5, 10.5, 3.4], moral: [-4, 13.2, 3.8], museum: [-35, -6, 4.4], scholar: [-25, 6.6, 3.6], lunchSec: [-17, 5, 2.6], counselor: [-4.5, -13.6, 3.8], plcnet: [-3.4, -7.4, 3.2], langcamp: [-4, 3.6, 3.4], eyes: [21.5, 10.6, 2.6] };
-export function flyToFacility(id) { const p = FAC_POS[id] || EV_POS[id]; if (p) flyTo(new THREE.Vector3(p[0], 0, p[1]), id === 'cctv' || id === 'electric' ? 62 : id === 'land2' || id === 'expansion' ? 58 : 34, 0.5); }
+export function flyToFacility(id) { const p = FAC_POS[id] || EV_POS[id]; if (p) flyTo(new THREE.Vector3(p[0], 0, p[1]), id === 'cctv' || id === 'electric' ? 62 : id === 'land2' || id === 'expansion' || id === 'land3' || id === 'land4' ? 58 : 34, 0.5); }
 
 // ---------- ป้ายชื่อของที่จัดหาและกิจกรรม ----------
 let facNames = {}, tags = [], newKey = null, newUntil = 0;
@@ -748,6 +752,8 @@ function refreshTags() {
   for (const id of ownedNow) if (FAC_POS[id] && facilities[id]) add(id, FAC_POS[id], facNames[id] || id, 'fac');
   if (landNow >= 1) add('expansion', FAC_POS.expansion, 'ที่ดินแปลงที่ 1 (ได้รับบริจาค)', 'land');
   if (landNow >= 2) add('land2', FAC_POS.land2, 'ที่ดินแปลงที่ 2 · ลานกีฬาและกิจกรรม', 'land');
+  if (landNow >= 3) add('land3', FAC_POS.land3, 'ที่ดินแปลงที่ 3', 'land');
+  if (landNow >= 4) add('land4', FAC_POS.land4, 'ที่ดินแปลงที่ 4', 'land');
   for (const ev of eventsNow) { const p = EV_POS[ev.id]; if (p && !ev.npc) add(ev.id, p, (facNames[ev.id] || ev.id) + (ev.n > 1 ? ` ×${ev.n}` : '') + ' · ภาคเรียนนี้', 'ev'); }
 }
 function updateTags(dist) {
@@ -1051,6 +1057,40 @@ function buildFacilities() {
   { const b = mesh(rbox(8, 5, 7, 0.4), clay('#F6E7C8')); b.position.set(34.5, 2.5, -32.5); g.add(b);
     const roof = mesh(new THREE.CylinderGeometry(4.6, 4.6, 8.4, 24, 1, false, 0, Math.PI), clay('#9B7BC8')); roof.rotation.z = Math.PI / 2; roof.rotation.y = Math.PI / 2; roof.scale.set(1, 1, 0.55); roof.position.set(34.5, 5, -32.5); g.add(roof);
     const door = mesh(rbox(2.4, 2.6, 0.2, 0.1), clay('#A86F4C')); door.position.set(34.5, 1.3, -28.95); g.add(door); }
+  // ---- ที่ดินแปลงที่ 3–4 (ส่วนขยายด้านตะวันออก) และอาคารบนที่ดินใหม่ ----
+  const extLot = (id, z1, z2, label) => {
+    const g = fgroup(id);
+    const d = mesh(rbox(28, 5, z2 - z1, 1.2, 3), clay('#C98F62')); d.position.set(72, -2.6, (z1 + z2) / 2); g.add(d);
+    const gr = mesh(rbox(27.4, 1.2, z2 - z1 - 0.6, 0.5, 3), clay('#9CCB7A')); gr.position.set(72, -0.6, (z1 + z2) / 2); g.add(gr);
+    const pad = mesh(rbox(24, 0.3, z2 - z1 - 4, 0.2), clay('#BFDC98'), { cast: false }); pad.position.set(72, 0.06, (z1 + z2) / 2); g.add(pad);
+    lotFence(g, 60, 84, z1 + 2, z2 - 2);
+    return g;
+  };
+  extLot('land3', -11, 15);
+  extLot('land4', -37, -11);
+  // อาคารเรียนหลังที่ 2
+  g = fgroup('newbldg2');
+  { const sg = new THREE.Group(); sg.position.set(66, 0, 2); g.add(sg);
+    const b = mesh(rbox(10, 9, 6.5, 0.35), clay('#FDEBD3')); b.position.y = 4.5; sg.add(b);
+    windowsOn(sg, 8.6, 9, 6.5, 3, '#FFE6A8');
+    const r = pitchedRoof(sg, 10, 6.5, 2.8, '#2F8F88'); r.position.y = 8.95; }
+  // โรงยิมเนเซียม
+  g = fgroup('gym');
+  { const b = mesh(rbox(9, 5, 9, 0.4), clay('#E8EEF8')); b.position.set(78, 2.5, 2); g.add(b);
+    const roof = mesh(new THREE.CylinderGeometry(4.8, 4.8, 9.4, 24, 1, false, 0, Math.PI), clay('#5B8DD6')); roof.rotation.z = Math.PI / 2; roof.scale.set(1, 1, 0.5); roof.position.set(78, 5, 2); g.add(roof);
+    const door = mesh(rbox(2.6, 2.8, 0.2, 0.1), clay('#3E5C8A')); door.position.set(78, 1.4, 6.55); g.add(door); }
+  // อาคารปฏิบัติการวิทยาศาสตร์
+  g = fgroup('scibldg');
+  { const sg = new THREE.Group(); sg.position.set(66, 0, -24); g.add(sg);
+    const b = mesh(rbox(10, 6.5, 6, 0.35), clay('#E7F2EC')); b.position.y = 3.25; sg.add(b);
+    windowsOn(sg, 8.6, 6.5, 6, 2, '#CFEFFF');
+    const slab = mesh(rbox(10.6, 0.5, 6.6, 0.2), clay('#4AA3A2')); slab.position.y = 6.75; sg.add(slab);
+    const flask = mesh(new THREE.ConeGeometry(0.7, 1.4, 16), clay('#BFE3F2', { emissive: '#7FD3FF', ei: 0.4 })); flask.position.set(3, 7.7, 0); sg.add(flask); }
+  // บ้านพักครู
+  g = fgroup('housing');
+  for (let k = 0; k < 4; k++) { const sg = new THREE.Group(); sg.position.set(74 + (k % 2) * 6, 0, -29 + Math.floor(k / 2) * 8); g.add(sg);
+    const b = mesh(rbox(4.6, 3, 4, 0.3), clay(['#FFF1E6', '#F6E3D3', '#FBEFD9', '#EFF6EA'][k])); b.position.y = 1.5; sg.add(b);
+    const r = pitchedRoof(sg, 4.6, 4, 1.6, ['#C77B4A', '#B05A4A', '#D9824A', '#7A6FA8'][k]); r.position.y = 2.95; }
 }
 function lotFence(g, x1, x2, z1, z2, gate = false) {
   const mat = clay('#F6E7C8');
@@ -1061,27 +1101,36 @@ function lotFence(g, x1, x2, z1, z2, gate = false) {
 export function setFacilities(list) {
   const set = new Set(list || []);
   for (const [id, g] of Object.entries(facilities)) {
-    if (id === 'expansion' || id === 'land2') continue;
+    if (id === 'expansion' || id === 'land2' || id === 'land3' || id === 'land4') continue;
     const on = set.has(id);
     if (on && !g.visible) { g.visible = true; g.scale.set(1, 0.01, 1); g.userData.grow = 0; }
     if (!on) g.visible = false;
   }
   facilities.expansion.visible = landNow >= 1 || set.has('dome') || set.has('newbldg');
   facilities.land2.visible = landNow >= 2;
+  facilities.land3.visible = landNow >= 3;
+  facilities.land4.visible = landNow >= 4;
   ownedNow = set; refreshTags();
 }
 let landNow = 0, ownedNow = new Set();
 export function setLand(n) {
   const was = landNow; landNow = n || 0;
-  for (const [id, need] of [['expansion', 1], ['land2', 2]]) {
+  for (const [id, need] of [['expansion', 1], ['land2', 2], ['land3', 3], ['land4', 4]]) {
     const g = facilities[id]; const on = landNow >= need || (id === 'expansion' && (ownedNow.has('dome') || ownedNow.has('newbldg')));
     if (on && !g.visible) { g.visible = true; g.scale.set(1, 0.01, 1); g.userData.grow = 0; }
     if (!on) g.visible = false;
   }
   if (was !== landNow) refreshTags();
 }
+let studentShow = 16;
 export function setStudentCount(n) {
-  const show = Math.max(6, Math.min(MAX_STUDENTS, Math.round(n / 40)));
+  studentShow = Math.max(6, Math.min(MAX_STUDENTS, Math.round(n / 40)));
+  applyStudentVisibility();
+}
+function applyStudentVisibility() {
+  // จำนวนนักเรียนที่เห็นขึ้นกับจำนวนนักเรียนจริงและช่วงเวลาของวัน
+  const frac = { night: 0, class: 0.25, home: 0.4 }[studentMode] ?? 1;
+  const show = Math.round(studentShow * frac);
   for (let i = 0; i < MAX_STUDENTS; i++) { const c = chars['student' + i]; if (c) c.group.visible = i < show; }
 }
 let crisisOn = false;
@@ -1138,6 +1187,8 @@ export function setHazard(type, { mitigated = false } = {}) {
     addRain(g, mitigated ? 300 : 700);
   } else if (type === 'haze') {
     hazard.fog = mitigated ? [85, 220] : [55, 185];
+  } else if (type === 'dogs') {
+    spawnStrays(mitigated ? 2 : 4);
   }
 }
 function addRain(g, n) {
@@ -1151,6 +1202,7 @@ export function clearHazard() { if (hazard) hazard.leaving = true; }
 export function hazardNow() { return hazard && !hazard.leaving ? hazard.type : null; }
 function clearHazardNow() {
   if (!hazard) return;
+  if (hazard.type === 'dogs') removeStrays();
   scene.remove(hazard.group);
   restoreAtmosphere();
   hazard = null;
@@ -1171,8 +1223,10 @@ function tickHazard(dt, t) {
   if (h.leaving && !h.l0) { h.l0 = now; h.lk = h.level || 1; }
   const k = h.leaving ? Math.max(0, h.lk - (now - h.l0) / 5000) : Math.min(1, (now - h.t0) / 6000);
   h.level = k;
-  const sky = new THREE.Color(crisisOn ? '#B9BDBA' : '#BFE3E0').lerp(new THREE.Color(HAZ_SKY[h.type]), k);
-  scene.background = sky; scene.fog.color = sky;
+  if (HAZ_SKY[h.type]) {
+    const sky = new THREE.Color(crisisOn ? '#B9BDBA' : '#BFE3E0').lerp(new THREE.Color(HAZ_SKY[h.type]), k);
+    scene.background = sky; scene.fog.color = sky;
+  }
   if (h.type === 'flood' && h.water) {
     h.water.position.y = -0.4 + (h.target + 0.4) * k;
     const p = h.water.geometry.attributes.position, b = h.base;
@@ -1192,6 +1246,176 @@ function tickHazard(dt, t) {
   if (h.type === 'tree' && h.tree && h.leaving) h.tree.position.y = -3 * (1 - k);
   if (h.rain) { const p = h.rain.geometry.attributes.position; for (let i = 0; i < p.count; i += 2) { let y = p.array[i * 3 + 1] - dt * 38; if (y < 0) y += 40; p.array[i * 3 + 1] = y; p.array[i * 3 + 4] = y - 1.1; } p.needsUpdate = true; h.rain.material.opacity = 0.55 * k; }
   if (h.leaving && k <= 0) clearHazardNow();
+}
+
+
+// ---------- นาฬิกาในเกม กลางวัน กลางคืน และกิจวัตรของโรงเรียน ----------
+// เวลาไม่ใช่เวลาจริง: ช่วงกลางวันเดินช้า ช่วงกลางคืนเดินเร็ว ช่วงเข้าแถวเดินช้าเป็นพิเศษให้เห็นพิธี
+let clockMin = 6 * 60 + 40, dayIdx = 0, studentMode = 'arrive', clockOn = true;
+const DAYS = ['วันจันทร์', 'วันอังคาร', 'วันพุธ', 'วันพฤหัสบดี', 'วันศุกร์'];
+const SKY_KEYS = [[0, '#16203A'], [5, '#24304F'], [6, '#F3C29D'], [7.5, '#BFE3E0'], [17, '#BFE3E0'], [18.2, '#F2A27A'], [19.2, '#2A3557'], [24, '#16203A']];
+function lerpKey(keys, h) {
+  for (let i = 0; i < keys.length - 1; i++) if (h >= keys[i][0] && h <= keys[i + 1][0]) {
+    const k = (h - keys[i][0]) / (keys[i + 1][0] - keys[i][0]);
+    return new THREE.Color(keys[i][1]).lerp(new THREE.Color(keys[i + 1][1]), k);
+  }
+  return new THREE.Color(keys[0][1]);
+}
+function dayLight(h) { // 0 = กลางคืน, 1 = กลางวันเต็มที่
+  if (h < 5.5 || h > 19.3) return 0;
+  if (h < 7.2) return (h - 5.5) / 1.7;
+  if (h > 17.4) return 1 - (h - 17.4) / 1.9;
+  return 1;
+}
+function modeAt(m) {
+  if (m < 6 * 60 + 15 || m >= 18 * 60 + 30) return 'night';
+  if (m < 7 * 60 + 40) return 'arrive';
+  if (m < 8 * 60 + 15) return 'assembly';
+  if (m < 15 * 60 + 30) return 'class';
+  if (m < 17 * 60 + 30) return 'sports';
+  return 'home';
+}
+const MODE_TH = { night: 'กลางคืน · โรงเรียนปิด', arrive: 'นักเรียนเดินทางมาโรงเรียน', assembly: 'เข้าแถวเคารพธงชาติ', class: 'เวลาเรียน', sports: 'กิจกรรมกีฬาหลังเลิกเรียน', home: 'นักเรียนกลับบ้าน' };
+export function clockInfo() {
+  const hh = String(Math.floor(clockMin / 60)).padStart(2, '0'), mm = String(Math.floor(clockMin % 60)).padStart(2, '0');
+  return { time: `${hh}:${mm}`, day: DAYS[dayIdx % 5], mode: studentMode, label: MODE_TH[studentMode] };
+}
+export function setClockRunning(on) { clockOn = on; }
+export function setClock(min) { clockMin = min; }
+let flagMover = null, ball = null, ballT = 0, ballFrom = null, ballTo = null, lampLights = [];
+function minuteSeconds(m) { // วินาทีจริงต่อ 1 นาทีในเกม
+  if (m >= 7 * 60 + 35 && m < 8 * 60 + 15) return 0.75;
+  if (m < 6 * 60 || m >= 19 * 60) return 0.05;
+  return 0.35;
+}
+function tickClock(dt) {
+  if (!clockOn) return;
+  clockMin += dt / minuteSeconds(clockMin);
+  if (clockMin >= 1440) { clockMin -= 1440; dayIdx++; }
+  const mode = modeAt(clockMin);
+  if (mode !== studentMode) { studentMode = mode; onModeChange(); }
+  const h = clockMin / 60, L = dayLight(h);
+  let sky = lerpKey(SKY_KEYS, h);
+  if (crisisOn) sky.lerp(new THREE.Color('#9AA09D'), 0.5);
+  scene.background = sky; scene.fog.color = sky;
+  if (sunLight) { sunLight.intensity = (0.12 + 2.18 * L) * (crisisOn ? 0.6 : 1); const a = (h - 6) / 12 * Math.PI; sunLight.position.set(Math.cos(a) * 60, 25 + Math.sin(Math.max(0, a)) * 50, 30); }
+  if (hemiLight) hemiLight.intensity = 0.38 + 0.77 * L;
+  renderer.toneMappingExposure = 0.88 + 0.17 * L;
+  for (const l of lampLights) l.intensity = (1 - L) * 22;
+  // ธงชาติ: ชักขึ้นตอน 08:00 ลดลงตอน 18:00
+  if (flagMover) {
+    const m = clockMin, top = 7.9, low = 1.6;
+    let y = top;
+    if (m >= 7 * 60 + 55 && m < 8 * 60) y = low + (top - low) * ((m - (7 * 60 + 55)) / 5);
+    else if (m >= 18 * 60 && m < 18 * 60 + 5) y = top - (top - low) * ((m - 18 * 60) / 5);
+    else if (m >= 18 * 60 + 5 || m < 7 * 60 + 55) y = low;
+    flagMover.obj.position.y = y; flagMover.obj.visible = y > low + 0.05 || (m >= 7 * 60 + 40 && m < 8 * 60);
+  }
+  // ลูกบอลช่วงกีฬา
+  if (ball) {
+    ball.visible = studentMode === 'sports';
+    if (ball.visible) {
+      ballT += dt / 1.3;
+      if (!ballFrom || ballT >= 1) { ballFrom = ball.position.clone(); const a = Math.random() * Math.PI * 2, r = Math.random() * 6; ballTo = new THREE.Vector3(-4 + Math.cos(a) * r * 1.1, 0.3, 7 + Math.sin(a) * r * 0.7); ballT = 0; }
+      ball.position.lerpVectors(ballFrom, ballTo, ballT); ball.position.y = 0.3 + Math.sin(ballT * Math.PI) * 1.6;
+    }
+  }
+}
+function onModeChange() {
+  applyStudentVisibility();
+  for (let i = 0; i < MAX_STUDENTS; i++) { const c = chars['student' + i]; if (c) { c.target = null; c.wait = Math.random() * 1.5; } }
+  handlers.onClockMode?.(studentMode);
+}
+// ตำแหน่งแถวเคารพธงชาติ หันหน้าไปทางเสาธง
+function assemblySlot(i) { const col = i % 8, row = Math.floor(i / 8); return new THREE.Vector3(-5.2 + col * 1.5, 0.2, 0.2 + row * 1.5); }
+function lapPoint(c, t) { const a = c.phase + t * 0.35; return new THREE.Vector3(-4 + Math.cos(a) * 8.85 * 1.15, 0.2, 7 + Math.sin(a) * 8.85 * 0.8); }
+function studentTarget(c, i, t) {
+  if (studentMode === 'assembly') return assemblySlot(i);
+  if (studentMode === 'sports') return i % 3 === 0 ? lapPoint(c, t) : null;
+  if (studentMode === 'home') return new THREE.Vector3(-4 + (i % 5) * 2 - 4, 0.2, 20.5);
+  return null;
+}
+function setupDaily() {
+  flagMover = movers.find(m => m.type === 'flag') || null;
+  ball = mesh(new THREE.SphereGeometry(0.3, 16, 12), clay('#FFFFFF')); ball.userData.dynamic = true; ball.position.set(-4, 0.3, 7); ball.visible = false; scene.add(ball);
+  for (const [x, z] of [[-4, 0], [0, 12], [-20, 6], [14, -6], [-14, -14]]) { const l = new THREE.PointLight('#FFD99A', 0, 26, 1.6); l.position.set(x, 5, z); scene.add(l); lampLights.push(l); }
+}
+
+// ---------- สัตว์ในโรงเรียน ----------
+function makePet(kind) {
+  const g = new THREE.Group();
+  const col = kind === 'cat' ? '#F2A65A' : kind === 'dog2' ? '#3A2E28' : '#C9A27A';
+  const s = kind === 'cat' ? 0.55 : 0.8;
+  const body = mesh(new THREE.CapsuleGeometry(0.35 * s, 0.7 * s, 4, 10), clay(col)); body.rotation.z = Math.PI / 2; body.position.y = 0.55 * s; g.add(body);
+  const head = mesh(new THREE.SphereGeometry(0.32 * s, 14, 10), clay(col)); head.position.set(0.62 * s, 0.85 * s, 0); g.add(head);
+  for (const z of [-0.14, 0.14]) { const ear = mesh(new THREE.ConeGeometry(0.1 * s, 0.25 * s, 6), clay(col)); ear.position.set(0.62 * s, 1.15 * s, z * s); g.add(ear); }
+  const tail = mesh(new THREE.CylinderGeometry(0.05 * s, 0.07 * s, 0.6 * s, 6), clay(col)); tail.position.set(-0.7 * s, 0.8 * s, 0); tail.rotation.z = kind === 'cat' ? -0.3 : 0.9; g.add(tail);
+  const legs = [];
+  for (const [x, z] of [[0.35, 0.18], [0.35, -0.18], [-0.35, 0.18], [-0.35, -0.18]]) { const l = mesh(new THREE.CylinderGeometry(0.07 * s, 0.07 * s, 0.45 * s, 6), clay(col)); l.position.set(x * s, 0.22 * s, z * s); g.add(l); legs.push(l); }
+  g.userData.legs = legs; g.userData.dynamic = true;
+  return g;
+}
+const pets = [];
+function spawnPets() {
+  for (const [kind, x, z, label] of [['cat', -18, 15.5, 'แมวประจำโรงอาหาร'], ['dog', 19, -2, 'สุนัขประจำโรงเรียน']]) {
+    const g = makePet(kind); g.position.set(x, 0.15, z); scene.add(g);
+    pets.push({ g, home: new THREE.Vector3(x, 0.15, z), target: null, wait: Math.random() * 3, speed: kind === 'cat' ? 0.8 : 1.4, wander: kind === 'cat' ? 3 : 7, labelEl: makeLabel(label, 'c-label pet-label') });
+  }
+}
+function tickPets(dt, t) {
+  for (const p of pets) {
+    if (!p.g.visible) continue;
+    if (!p.target) { p.wait -= dt; if (p.wait <= 0) { const a = Math.random() * 6.28, r = Math.random() * p.wander; p.target = p.home.clone().add(new THREE.Vector3(Math.cos(a) * r, 0, Math.sin(a) * r)); } continue; }
+    const to = p.target.clone().sub(p.g.position); to.y = 0; const d = to.length();
+    if (d < 0.1) { p.target = null; p.wait = 2 + Math.random() * 6; if (p.away) p.g.visible = false; continue; }
+    p.g.position.add(to.normalize().multiplyScalar(Math.min(d, p.speed * dt)));
+    p.g.rotation.y = Math.atan2(-to.z, to.x);
+    p.g.userData.legs.forEach((l, i) => { l.rotation.z = Math.sin(t * 12 + i * 1.6) * 0.5; });
+  }
+}
+function updatePetLabels(dist) {
+  for (const p of pets) {
+    if (!p.labelEl) continue;
+    const pos = p.g.position.clone(); pos.y += 1.4; const pr = project(pos);
+    const vis = p.g.visible && !pr.behind && dist < 45;
+    p.labelEl.style.display = vis ? '' : 'none';
+    if (vis) p.labelEl.style.transform = `translate(-50%,-100%) translate(${pr.x}px,${pr.y}px)`;
+  }
+}
+// ฝูงสุนัขจรจัด (ใช้กับการ์ดเหตุสุนัขกัด)
+let strayDogs = [];
+function spawnStrays(n) {
+  for (let i = 0; i < n; i++) {
+    const g = makePet(i % 2 ? 'dog2' : 'dog'); g.position.set(-2 + i * 1.2, 0.15, 22); scene.add(g);
+    const p = { g, home: new THREE.Vector3(-4 + i * 2, 0.15, 12), target: new THREE.Vector3(-6 + i * 2.5, 0.15, 13 - i), wait: 0, speed: 3.2, wander: 6, stray: true };
+    pets.push(p); strayDogs.push(p);
+  }
+}
+function removeStrays() {
+  for (const p of strayDogs) { p.target = new THREE.Vector3(p.g.position.x, 0.15, 30); p.away = true; p.speed = 4; }
+  strayDogs = [];
+}
+
+// ---------- รองผู้อำนวยการและครูที่ได้รับจัดสรรเพิ่ม ----------
+let staffKeys = [];
+export function setStaff(deputies = [], extraTeachers = 0) {
+  if (!scene) return;
+  for (const k of staffKeys) { scene.remove(chars[k].group); chars[k].labelEl?.remove(); delete chars[k]; }
+  staffKeys = [];
+  deputies.forEach((d, i) => {
+    const g = makeCharacter(d.look); const x = -8 + i * 3, z = -7.6; g.position.set(x, 0.2, z); scene.add(g);
+    const key = 'staff_' + d.id;
+    chars[key] = { group: g, home: g.position.clone(), target: null, wait: 1 + i, wander: 2.5, phase: Math.random() * 6, labelEl: makeLabel(d.name, 'c-label') };
+    staffKeys.push(key);
+  });
+  const looks = [['#9CCB7A', '#F2C9A5'], ['#E8C25A', '#D9A77F'], ['#7FA7D9', '#C99772'], ['#E07A9B', '#F2C9A5']];
+  for (let i = 0; i < Math.min(8, extraTeachers); i++) {
+    const [shirt, skin] = looks[i % 4];
+    const g = makeCharacter({ shirt, skin, hair: '#2B1D16', acc: i % 2 ? 'long' : null }); g.position.set(-26 + (i % 4) * 4, 0.2, -3.5 - Math.floor(i / 4) * 1.5); scene.add(g);
+    const key = 'staffT' + i;
+    chars[key] = { group: g, home: g.position.clone(), target: null, wait: Math.random() * 3, wander: 3, phase: Math.random() * 6, labelEl: i === 0 ? makeLabel(`ครูที่ได้รับจัดสรรเพิ่ม ${extraTeachers} คน`, 'c-label') : null };
+    staffKeys.push(key);
+  }
 }
 
 // ---------- ถ้วยรางวัลในหอเกียรติยศ ----------
@@ -1320,7 +1544,7 @@ function tick() {
     if (flyAnim.t >= 1) flyAnim = null;
   }
   // จำกัดการเลื่อนให้อยู่บนเกาะ
-  controls.target.x = THREE.MathUtils.clamp(controls.target.x, -55, 58);
+  controls.target.x = THREE.MathUtils.clamp(controls.target.x, -55, landNow >= 3 ? 84 : 58);
   controls.target.z = THREE.MathUtils.clamp(controls.target.z, -40, 42);
   controls.target.y = 0;
   controls.update();
@@ -1348,6 +1572,8 @@ function tick() {
       pos.needsUpdate = true;
     }
   }
+  tickClock(dt);
+  tickPets(dt, t);
   tickHazard(dt, t);
   if (pulse) {
     pulse.t += dt;
@@ -1363,6 +1589,24 @@ function tick() {
 function animateChar(id, c, dt, t) {
   const g = c.group, parts = g.userData.parts;
   const quest = questChars.has(id);
+  if (c.npc && id.startsWith('student')) {
+    const i = +id.slice(7), tg = studentTarget(c, i, t);
+    if (tg) {
+      const to = tg.clone().sub(g.position); to.y = 0; const d = to.length();
+      if (d > 0.12) {
+        const sp = (studentMode === 'sports' ? 3.2 : 2.2) * dt;
+        g.position.add(to.normalize().multiplyScalar(Math.min(sp, d)));
+        g.rotation.y = Math.atan2(to.x, to.z);
+        const sw = Math.sin(t * (studentMode === 'sports' ? 14 : 9) + c.phase) * 0.6;
+        if (parts) { parts.legs[0].rotation.x = sw; parts.legs[1].rotation.x = -sw; parts.arms[0].rotation.x = -sw * 0.6; parts.arms[1].rotation.x = sw * 0.6; }
+      } else if (studentMode === 'assembly') {
+        g.rotation.y = Math.PI; // หันหน้าเข้าหาเสาธง
+        if (parts) { parts.legs[0].rotation.x = 0; parts.legs[1].rotation.x = 0; parts.arms[0].rotation.x = 0; parts.arms[1].rotation.x = 0; }
+        if (studentMode === 'home') g.visible = false;
+      } else if (studentMode === 'home') g.visible = false;
+      return;
+    }
+  }
   if (!c.target) {
     c.wait -= dt;
     if (c.wait <= 0 && c.wander > 0 && !quest) {

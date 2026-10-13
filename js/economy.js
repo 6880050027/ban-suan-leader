@@ -138,6 +138,15 @@ ITEMS.push(
   { id: 'eyes', group: 'welfare', minLv: 3, th: 'ตรวจสายตาและแว่นตาสำหรับนักเรียนขาดแคลน', price: 40000, cat: 'scholar', facility: null, oneTime: false, rep: 2, suk: 3, keng: 1, desc: 'ร่วมกับหน่วยบริการสาธารณสุขตรวจสายตาและมอบแว่นตา 80 อัน',
     rules: { donation: R_DON('scholar'), perhead: UNV(), income: UNV(), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD, capital: R_CAP_ONLY } },
 );
+// รายการเพิ่มเติม (รอบที่ 5): อาคารบนที่ดินแปลงที่ 3–4 ใช้งบลงทุนเป็นรายการ
+const CAP_RULES = (id, why) => ({ capital: { v: 'cap', item: id, why: why || 'สิ่งก่อสร้างวงเงินสูงต้องได้รับจัดสรรงบลงทุนเป็นรายการผ่านเขตพื้นที่', src: SRC.capital2560 },
+  perhead: UNV('วงเงินระดับนี้เป็นงบลงทุน ยังไม่พบตัวบทที่ให้ใช้ค่าจัดการเรียนการสอน'), income: UNV(), donation: R_DON('building'), activity: R_ACTIVITY_BAD, student: R_STUDENT_BAD });
+ITEMS.push(
+  { id: 'newbldg2', group: 'building', minLv: 14, needLand: 3, th: 'อาคารเรียนหลังที่ 2 (แบบมาตรฐาน)', price: 5200000, cat: 'building', facility: 'newbldg2', rep: 12, keng: 3, capitalOnly: true, capacity: 400, desc: 'รองรับนักเรียนเพิ่ม 400 คน สร้างบนที่ดินแปลงที่ 3', rules: CAP_RULES('newbldg2') },
+  { id: 'gym', group: 'building', minLv: 18, needLand: 3, th: 'โรงยิมเนเซียม', price: 3600000, cat: 'building', facility: 'gym', rep: 7, suk: 4, capitalOnly: true, desc: 'สนามกีฬาในร่ม ใช้สอนพลศึกษาช่วงฝนและฝุ่น สร้างบนที่ดินแปลงที่ 3', rules: CAP_RULES('gym') },
+  { id: 'scibldg', group: 'building', minLv: 24, needLand: 4, th: 'อาคารปฏิบัติการวิทยาศาสตร์', price: 4200000, cat: 'learning', facility: 'scibldg', rep: 9, keng: 5, capitalOnly: true, desc: 'ห้องปฏิบัติการ 6 ห้องพร้อมระบบความปลอดภัย สร้างบนที่ดินแปลงที่ 4', rules: CAP_RULES('scibldg') },
+  { id: 'housing', group: 'building', minLv: 20, needLand: 4, th: 'บ้านพักครู 8 หน่วย', price: 2400000, cat: 'building', facility: 'housing', rep: 4, suk: 4, capitalOnly: true, desc: 'ช่วยครูที่บ้านไกลและครูบรรจุใหม่ สร้างบนที่ดินแปลงที่ 4', rules: CAP_RULES('housing') },
+);
 export const SHOP_GROUPS = { building: 'อาคารสถานที่', equipment: 'ครุภัณฑ์และสื่อ', people: 'บุคลากรและการพัฒนาครู', activity: 'กิจกรรมนักเรียน', welfare: 'ทุนและสวัสดิการ' };
 for (const it of ITEMS) if (it.oneTime !== false && !it.facility) it.facility = it.id;
 export const ITEM = Object.fromEntries(ITEMS.map(i => [i.id, i]));
@@ -194,6 +203,10 @@ export const QUESTS = [
           { t: 'อาคารเรียนหลังใหม่ โดยแนบข้อมูลจำนวนนักเรียนกับจำนวนห้องเรียนที่ขาด', v: 'ok', cap: 'newbldg', why: 'เขตพื้นที่จัดลำดับคำขออาคารเรียนตามความขาดแคลนห้องเรียน ข้อมูลประกอบจึงสำคัญ', src: SRC.capital2560 },
           { t: 'โดมอเนกประสงค์และลานกีฬา พร้อมแผนการใช้งาน', v: 'ok', cap: 'dome', why: 'สิ่งก่อสร้างประกอบที่มีแผนการใช้ชัดเจนสามารถเสนอขอได้ตามขั้นตอนเดียวกัน', src: SRC.capital2560 },
           { t: 'หอประชุมอเนกประสงค์ พร้อมหลักฐานว่ามีที่ดินรองรับและแผนใช้เป็นที่พักพิงยามภัยพิบัติ', v: 'ok', cap: 'hall', why: 'สิ่งก่อสร้างที่มีที่ดินพร้อมและแผนการใช้ชัดเจนเสนอขอได้ตามขั้นตอนเดียวกัน แต่เขตจะจัดลำดับตามความจำเป็น', src: SRC.capital2560 },
+          { t: 'อาคารเรียนหลังที่ 2 พร้อมข้อมูลนักเรียนที่เกินความจุและหลักฐานที่ดินแปลงที่ 3', v: 'ok', cap: 'newbldg2', why: 'เขตพื้นที่จัดลำดับคำขออาคารเรียนตามความขาดแคลนห้องเรียนและความพร้อมของที่ดิน', src: SRC.capital2560 },
+          { t: 'โรงยิมเนเซียม พร้อมแผนการใช้สอนพลศึกษาและเปิดให้ชุมชนใช้นอกเวลา', v: 'ok', cap: 'gym', why: 'สิ่งก่อสร้างที่มีแผนการใช้ชัดเจนเสนอขอได้ แต่มักได้ลำดับหลังอาคารเรียน', src: SRC.capital2560 },
+          { t: 'อาคารปฏิบัติการวิทยาศาสตร์ พร้อมแผนการเรียนการสอนและระบบความปลอดภัย', v: 'ok', cap: 'scibldg', why: 'เสนอขอเป็นรายการได้ตามขั้นตอนเดียวกัน', src: SRC.capital2560 },
+          { t: 'บ้านพักครู พร้อมข้อมูลครูที่บ้านไกลและอัตราการขอย้าย', v: 'ok', cap: 'housing', why: 'เสนอขอเป็นรายการได้ เขตจัดลำดับตามความจำเป็น', src: SRC.capital2560 },
           { t: 'ขอเป็นวงเงินก้อนโดยไม่ระบุรายการ เพื่อความยืดหยุ่น', v: 'bad', why: 'งบลงทุนจัดสรรเป็นรายการ คำขอที่ไม่ระบุรายการจะไม่ได้รับการพิจารณา', src: SRC.capital2560 },
         ] },
     ] },
@@ -332,7 +345,7 @@ export function activeEvents() {
   const e = econ(), now = semCount();
   return e.events.filter(v => now < v.until && ITEM[v.id]);
 }
-export const LAND_MAX = 2, LAND_CAP = 150;
+export const LAND_MAX = 4, LAND_CAP = 150;
 export function procurementNote(price) {
   const parts = [];
   parts.push(price <= 500000 ? 'จัดซื้อจัดจ้างด้วยวิธีเฉพาะเจาะจงได้ (วงเงินไม่เกิน 500,000 บาท)' : 'วงเงินเกิน 500,000 บาท ต้องใช้วิธีที่ระเบียบกำหนด เช่น วิธีประกาศเชิญชวนทั่วไป');
@@ -370,7 +383,10 @@ export function finishQuest(qid, answers) {
     } else text = 'ผู้บริจาคถอนการบริจาค เพราะเงื่อนไขที่ตกลงกันขัดหลักการ โรงเรียนยังไม่ได้ที่ดิน';
   } else if (q.capitalQuest) {
     const cap = answers.find(a => a.cap)?.cap;
-    if (cap && !bad) {
+    const capIt = cap && ITEM[cap];
+    if (capIt && ((capIt.needLand || 0) > (e.land || 0) || (capIt.minLv && St.completedCount() < capIt.minLv))) {
+      text = `คำขอ "${capIt.th}" ยังไม่ผ่านการพิจารณา เพราะ${(capIt.needLand || 0) > (e.land || 0) ? `ยังไม่มีที่ดินแปลงที่ ${capIt.needLand}` : `ต้องผ่านอย่างน้อย ${capIt.minLv} ด่านก่อน`}`;
+    } else if (cap && !bad) {
       const it = ITEM[cap];
       e.capital.push({ item: cap, amount: it.price, approvedAt: Date.now(), readyAfter: St.completedCount() + 3, ready: false, used: false });
       text = `ส่งคำขอ "${it.th}" แล้ว จะได้รับจัดสรรเมื่อท่านผ่านอีก 3 ด่าน`;
@@ -418,11 +434,12 @@ export function semesterTick(levelId, meters) {
   const before = e.students;
   e.students = Math.max(250, Math.min(e.capacity, e.students + delta));
   addLog(`รับงบรอบภาคเรียน (ด่าน ${levelId}) รายหัว +${fmt(inPer)} ค่าสาธารณูปโภคและค่าจ้าง −${fmt(expense)}`, inPer - expense + inAct + inInc);
+  const staffGot = allocateStaff();
   const wasCrisis = e.crisis;
   checkCrisis();
   e.history.push({ lv: levelId, students: e.students, perhead: e.wallets.perhead, income: e.wallets.income, crisis: e.crisis });
   St.save();
-  return { inPer, inAct, inInc, expense, studentsBefore: before, students: e.students, full: e.students >= e.capacity, crisisStart: !wasCrisis && e.crisis, crisisEnd: wasCrisis && !e.crisis };
+  return { inPer, inAct, inInc, expense, studentsBefore: before, students: e.students, full: e.students >= e.capacity, crisisStart: !wasCrisis && e.crisis, crisisEnd: wasCrisis && !e.crisis, staffGot };
 }
 export function checkCrisis() {
   const e = econ();
@@ -465,3 +482,49 @@ export function meters() {
   const adj = (v, k) => v == null ? null : Math.max(0, Math.min(100, Math.round(v + (b[k] || 0) - (e.crisis ? 15 : 0))));
   return { ...m, keng: adj(m.keng, 'keng'), dee: adj(m.dee, 'dee'), suk: adj(m.suk, 'suk') };
 }
+
+// ---------- อัตรากำลังตามจำนวนนักเรียน ----------
+// เกณฑ์ในเกม: แนวคิดว่าจำนวนรองผู้อำนวยการและครูขึ้นกับจำนวนนักเรียน อิงหลักของเกณฑ์อัตรากำลัง ก.ค.ศ. (ว 23/2563)
+// แต่ตัวเลขช่วงนักเรียนด้านล่างกำหนดเพื่อการเล่น ยังไม่ได้ตรวจกับหนังสือจริง
+export const DEPUTY_STEPS = [
+  { min: 0, n: 2 }, { min: 900, n: 3 }, { min: 1200, n: 4 }, { min: 1600, n: 5 },
+];
+export const NEW_DEPUTIES = [
+  { id: 'deputy3', name: 'รองฯ วิทยา', role: 'รองผู้อำนวยการกลุ่มบริหารงบประมาณ', look: { shirt: '#5B8DD6', skin: '#E5B48C', hair: '#2A2A2A', acc: 'tie' } },
+  { id: 'deputy4', name: 'รองฯ สุดา', role: 'รองผู้อำนวยการกลุ่มบริหารงานบุคคล', look: { shirt: '#B59AD6', skin: '#F2C9A5', hair: '#3B2A22', acc: 'bun' } },
+  { id: 'deputy5', name: 'รองฯ ภูมิ', role: 'รองผู้อำนวยการฝ่ายกิจการนักเรียน', look: { shirt: '#6FAF7A', skin: '#C99772', hair: '#1A1A1A', acc: 'tie' } },
+];
+export const STUDENTS_PER_TEACHER = 20;
+export function staff() {
+  const e = econ();
+  e.staff ??= { deputies: 2, teachers: Math.ceil(e.students / STUDENTS_PER_TEACHER), pending: [] };
+  e.staff.base ??= e.staff.teachers;
+  return e.staff;
+}
+export function entitled(n = econ().students) {
+  let d = 2; for (const st of DEPUTY_STEPS) if (n >= st.min) d = st.n;
+  return { deputies: d, teachers: Math.ceil(n / STUDENTS_PER_TEACHER) };
+}
+// ยื่นขออัตรา: ได้รับเมื่อผ่านด่านถัดไป (รอบภาคเรียน)
+export function requestStaff(kind) {
+  const st = staff(), ent = entitled();
+  if (st.pending.some(p => p.kind === kind)) return { ok: false, why: 'ยื่นคำขอไปแล้ว รอผลหลังผ่านด่านถัดไป' };
+  const have = kind === 'deputy' ? st.deputies : st.teachers, can = kind === 'deputy' ? ent.deputies : ent.teachers;
+  if (have >= can) return { ok: false, why: 'อัตรากำลังยังไม่ต่ำกว่าเกณฑ์ จึงยังขออัตราเพิ่มไม่ได้' };
+  st.pending.push({ kind, n: kind === 'deputy' ? 1 : Math.min(5, can - have), at: semCount() });
+  addLog(kind === 'deputy' ? 'ยื่นขออัตรารองผู้อำนวยการเพิ่ม' : 'ยื่นขออัตราครูเพิ่มตามเกณฑ์', 0);
+  St.save();
+  return { ok: true };
+}
+// เรียกจาก semesterTick: จัดสรรอัตราที่ยื่นไว้ คืนรายการที่ได้รับ
+function allocateStaff() {
+  const st = staff(), got = [];
+  for (const p of st.pending) if (semCount() > p.at) {
+    if (p.kind === 'deputy') { st.deputies += 1; got.push({ kind: 'deputy', who: NEW_DEPUTIES[st.deputies - 3] }); }
+    else { st.teachers += p.n; got.push({ kind: 'teacher', n: p.n }); }
+  }
+  st.pending = st.pending.filter(p => semCount() <= p.at);
+  if (got.length) { const e = econ(); e.bonus = e.bonus || { keng: 0, dee: 0, suk: 0 }; e.bonus.suk = Math.min(15, (e.bonus.suk || 0) + got.length); }
+  return got;
+}
+export function staffGap() { const st = staff(), ent = entitled(); return { deputies: ent.deputies - st.deputies, teachers: ent.teachers - st.teachers }; }

@@ -3,6 +3,8 @@ import { LEVELS } from './data/levels.js';
 import { LEVELS2 } from './data/levels2.js';
 // กันกรณีเบราว์เซอร์ยังจำ levels.js รุ่นเก่า (ที่ยังไม่รวมด่าน 21 ขึ้นไป) ไว้ในแคช
 if (!LEVELS.some(l => l.id === LEVELS2[0].id)) LEVELS.push(...LEVELS2);
+import { LEVELS3 } from './data/levels3.js';
+if (!LEVELS.some(l => l.id === LEVELS3[0].id)) LEVELS.push(...LEVELS3);
 import { applyCopy } from './data/copy.js';
 applyCopy(LEVELS);
 import { TIERS, COMMAND_TASKS, FIT_BY_READINESS, PASS_RATIO, COMMAND_EXP, RANKS, CHARACTERS, PROFILES } from './data/world.js';
