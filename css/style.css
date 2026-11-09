@@ -531,3 +531,42 @@ body.visiting #hud, body.visiting #dock, body.visiting #tracker { display: none;
 
 .news.staff .handover { background: #EEF4EA; border-radius: 12px; padding: 8px 12px; font-size: .9rem; }
 .news.staff .say { font-style: italic; color: var(--ink-2, #6b6259); }
+
+/* ครูขาดเกินเกณฑ์: ตัวชี้วัดที่ถูกหักขึ้นสีเตือน */
+.meter.staff-short b { color: #C05A3A; }
+.meter.staff-short span::after { content: ' ⚠'; color: #C05A3A; font-size: .8em; }
+
+/* ขั้นภาวะผู้นำ */
+.stage-chip { display: inline-block; margin-left: 4px; padding: 1px 8px; border-radius: 999px; font-size: .72rem; background: var(--st, #8C8C7A); color: #fff; }
+.st-ladder { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 8px 0; }
+.st-step { border: 2px solid var(--st); border-radius: 12px; padding: 6px 8px; opacity: .55; display: grid; gap: 2px; }
+.st-step span, .st-step small { font-size: .72rem; }
+.st-step.done { opacity: .85; }
+.st-step.cur { opacity: 1; background: color-mix(in srgb, var(--st) 14%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--st) 30%, transparent); }
+.st-need { list-style: none; padding: 0; margin: 6px 0; display: grid; gap: 3px; font-size: .85rem; }
+.st-need li.ok { color: #4F7A3F; }
+.ceremony { text-align: center; }
+.ceremony h2 { color: var(--st); font-size: 2rem; margin: 6px 0; }
+.stage-say { margin: 6px 0; }
+@media (max-width: 560px) { .st-ladder { grid-template-columns: repeat(2, 1fr); } }
+/* ด่านรุ่นใหม่: สืบข้อมูล จับเวลา ผลกระทบ ตัวเลือกตามขั้น */
+.clues { margin: 8px 0; display: grid; gap: 6px; }
+.clues h4 { margin: 0; }
+.clue-btn { text-align: left; padding: 8px 12px; border-radius: 12px; border: 2px dashed #C9B48F; background: #FFFDF8; cursor: pointer; font: inherit; }
+.clue-btn:disabled { opacity: .45; cursor: not-allowed; }
+.clue { padding: 8px 12px; border-radius: 12px; background: #F4E6CF; }
+.clue p { margin: 4px 0 0; }
+.clue.missed { background: #F2EEE8; opacity: .8; }
+.step-timer { display: grid; grid-template-columns: auto auto 1fr; gap: 8px; align-items: center; padding: 6px 10px; border-radius: 12px; background: #FFF1E8; margin: 6px 0; }
+.step-timer b { font-size: 1.3rem; color: #C05A3A; min-width: 2ch; text-align: right; }
+.step-timer .bar { height: 8px; border-radius: 4px; background: #F4E6CF; overflow: hidden; }
+.step-timer .bar i { display: block; height: 100%; background: #D9714F; transition: width .25s linear; }
+.step-timer.urgent { animation: pulse 0.8s ease-in-out infinite alternate; }
+@keyframes pulse { to { background: #FFD9C7; } }
+.impacts { display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0; }
+.imp { font-size: .75rem; padding: 1px 8px; border-radius: 999px; background: #EFE8DD; }
+.imp.up { background: #E3EFDB; color: #3F6B31; }
+.imp.down { background: #F7DFD6; color: #A2442A; }
+.opt.locked { opacity: .5; }
+.opt .stage-req { display: block; margin-top: 4px; font-size: .72rem; color: var(--st); font-weight: 600; }
+.opt.stage-opt { border-color: var(--st, #5B8DD6); }

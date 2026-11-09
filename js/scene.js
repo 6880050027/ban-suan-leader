@@ -640,6 +640,48 @@ export function setMood(id, morale) {
   c.moodEl.dataset.mood = morale >= 75 ? 'good' : morale >= 45 ? 'ok' : 'low';
   c.moodEl.title = `ขวัญกำลังใจ ${morale}`;
 }
+// ขั้นภาวะผู้นำ: ชุดของ ผอ. เปลี่ยนสี เข็มกลัดเปลี่ยนตามขั้น และครูรวมกลุ่ม PLC กลางเมืองในเวลากลางวัน
+const STAGE_LOOK = [null, { coat: '#3C5F9E', pin: '#7FA8E8' }, { coat: '#8E3A5A', pin: '#F0A3BD' }, { coat: '#4F7A3F', pin: '#A8D58F' }];
+let leadStage = -1, plcGroup = null;
+export function setLeadStage(n) {
+  if (n === leadStage || !chars.player) return;
+  leadStage = n;
+  const p = chars.player.group, parts = p.userData.parts, look = STAGE_LOOK[n];
+  if (look) {
+    const coat = clay(look.coat);
+    parts.body.material = coat; parts.arms.forEach(a => a.material = coat);
+    const b = p.userData.badge; if (b) { b.material = clay(look.pin, { emissive: look.pin, ei: 0.5 }); b.scale.setScalar(1 + 0.25 * n); }
+  }
+  buildPLC(n);
+}
+const PLC_POS = [7.5, -7.5];   // ลานว่างข้างเสาธง
+function buildPLC(n) {
+  if (plcGroup) { scene.remove(plcGroup); plcGroup = null; }
+  if (n < 1) return;
+  const g = new THREE.Group(); g.position.set(PLC_POS[0], 0, PLC_POS[1]);
+  const top = mesh(new THREE.CylinderGeometry(1.1, 1.1, 0.12, 24), clay('#C89B6D')); top.position.y = 0.95; g.add(top);
+  const leg = mesh(new THREE.CylinderGeometry(0.12, 0.16, 0.9, 10), clay('#8A6A4A')); leg.position.y = 0.45; g.add(leg);
+  const who = ['arun', 'wilai', 'malee', 'guidance'].slice(0, n >= 2 ? 4 : 3);
+  who.forEach((id, k) => {
+    const c = CHARACTERS[id]; if (!c) return;
+    const t = makeCharacter(c.look, { small: true });
+    const ang = (k / who.length) * Math.PI * 2;
+    // ขั้นผู้สร้างผู้นำ: ครูอรุณยืนนำวง ผอ. ไม่ต้องอยู่ในวงเอง
+    const stand = n >= 3 && id === 'arun';
+    t.position.set(Math.sin(ang) * (stand ? 2.0 : 1.6), stand ? 0 : -0.35, Math.cos(ang) * (stand ? 2.0 : 1.6));
+    t.lookAt(g.position.x, t.position.y, g.position.z); t.rotation.y = ang + Math.PI;
+    if (stand) { t.userData.parts.arms[1].rotation.x = -1.1; }
+    g.add(t);
+  });
+  if (n >= 2) {
+    const board = mesh(rbox(1.4, 1.0, 0.08, 0.04), clay('#FFFDF8')); board.position.set(0, 1.9, -2.3); g.add(board);
+    for (let k = 0; k < 3; k++) { const ln = mesh(rbox(0.9 - k * 0.2, 0.06, 0.02, 0.01), clay(['#D9714F', '#5B8DD6', '#7DAF5A'][k], { noBump: true })); ln.position.set(-0.1, 2.15 - k * 0.22, -2.25); g.add(ln); }
+    const stand = mesh(new THREE.CylinderGeometry(0.04, 0.04, 1.4, 6), clay('#8A6A4A')); stand.position.set(0, 0.7, -2.32); g.add(stand);
+  }
+  plcGroup = g;
+  scene.add(g);
+  plcGroup.visible = studentMode !== 'night';
+}
 export function setPlayerScale(scale) {
   const p = chars.player?.group; if (p) p.scale.setScalar(scale);
 }
@@ -1372,6 +1414,7 @@ function tickClock(dt) {
 const DUTY = { somsak: new THREE.Vector3(-4.2, 0.2, 16.6), pe: new THREE.Vector3(1.2, 0.2, 16.6) };
 function applyStaffPresence() {
   const night = studentMode === 'night';
+  if (plcGroup) plcGroup.visible = !night;
   for (const [id, c] of Object.entries(chars)) {
     if (id.startsWith('student')) continue;
     c.homeOrig ??= c.home.clone();

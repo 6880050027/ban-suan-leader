@@ -5,10 +5,12 @@ import { LEVELS2 } from './data/levels2.js';
 if (!LEVELS.some(l => l.id === LEVELS2[0].id)) LEVELS.push(...LEVELS2);
 import { LEVELS3 } from './data/levels3.js';
 if (!LEVELS.some(l => l.id === LEVELS3[0].id)) LEVELS.push(...LEVELS3);
+import { LEVELS4 } from './data/levels4.js';
+if (!LEVELS.some(l => l.id === LEVELS4[0].id)) LEVELS.push(...LEVELS4);
 import { applyCopy } from './data/copy.js';
 import { OPT_PERM } from './data/optorder.js';
 applyCopy(LEVELS);
-import { TIERS, COMMAND_TASKS, FIT_BY_READINESS, PASS_RATIO, COMMAND_EXP, RANKS, CHARACTERS, PROFILES } from './data/world.js';
+import { TIERS, COMMAND_TASKS, FIT_BY_READINESS, PASS_RATIO, COMMAND_EXP, RANKS, CHARACTERS, PROFILES, STAGES, STAGE_FLAG_MAX } from './data/world.js';
 
 const KEY = 'banSuanLeaderSave.v1';
 export const LEVEL_BY_ID = Object.fromEntries(LEVELS.map(l => [l.id, l]));
@@ -101,7 +103,7 @@ export function tierOpen(tierId) {
 export function levelOpen(id) { return tierOpen(tierOf(id).id); }
 export function maxExp(id) {
   const L = LEVEL_BY_ID[id];
-  return L.steps.length * 30 + (COMMAND_TASKS[id]?.length || 0) * COMMAND_EXP.fit;
+  return (L.pathLen || L.steps.length) * 30 + (COMMAND_TASKS[id]?.length || 0) * COMMAND_EXP.fit;
 }
 export function totalExp() {
   // EXP จากด่าน + EXP จากการ์ดสถานการณ์กะทันหัน (ติดลบได้ แต่รวมแล้วไม่ต่ำกว่า 0)
@@ -118,7 +120,8 @@ export function lv(id) { return (S.levels[id] ||= { status: 'open', bestExp: 0 }
 // readiness ของตัวละครในด่านนี้ (รวมการเติบโต)
 export function taskReadiness(task) {
   let r = task.r;
-  if (task.grow && (S.chars[task.c]?.credits || 0) >= task.grow.credits) r = task.grow.to;
+  // ผู้นำขั้นสูงขึ้น ครูพัฒนาความพร้อมได้เร็วขึ้น (ต้องการเครดิตน้อยลงขั้นละ 1 ไม่ต่ำกว่า 1)
+  if (task.grow && (S.chars[task.c]?.credits || 0) >= Math.max(1, task.grow.credits - stage())) r = task.grow.to;
   return r;
 }
 export function taskFit(task) {
@@ -130,13 +133,13 @@ export function taskFit(task) {
 export function startAttempt(id) {
   const l = lv(id);
   l.status = (l.status === 'passed' || l.status === 'pending') ? l.status : 'inprogress';
-  l.attempt = { step: 0, commands: {}, answers: [], order: shuffleOrders(id), phase: 'brief' };
+  l.attempt = { step: 0, path: [0], clues: {}, commands: {}, answers: [], order: shuffleOrders(id), phase: 'brief' };
   save();
   return l.attempt;
 }
 function shuffleOrders(id) {
-  return LEVEL_BY_ID[id].steps.map(() => {
-    const a = [0, 1, 2, 3, 4];   // สลับใหม่ทุกครั้งที่เริ่มด่าน (ตัวเลือกไม่มีข้อที่อ้างถึงข้ออื่นแล้ว)
+  return LEVEL_BY_ID[id].steps.map(st => {
+    const a = st.options.map((_, k) => k);   // สลับใหม่ทุกครั้งที่เริ่มด่าน (ตัวเลือกไม่มีข้อที่อ้างถึงข้ออื่นแล้ว)
     for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
     return a;
   });
@@ -170,15 +173,34 @@ export function judgeCommand(id, charId, cmd) {
   return { task, fit, readiness, result, direction, first: att?.commands[charId]?.cmd === cmd };
 }
 
-export function answer(id, stepIdx, optIdx) {
+// EXP ของตัวเลือก: ถ้าตัวเลือกอ้างหลักฐานที่ผู้เล่นยังไม่ได้สืบ ได้ครึ่งเดียว (ตัดสินใจถูกแต่ไม่ได้ตรวจข้อเท็จจริง)
+export function optExp(att, stepIdx, opt) {
+  if (opt.legal === 'illegal') return 0;
+  if (opt.evidence && !(att.clues?.[stepIdx] || []).includes(opt.evidence)) return Math.floor(opt.exp / 2);
+  return opt.exp;
+}
+export function seeClue(id, stepIdx, clueId) {
+  const att = lv(id).attempt; const c = (att.clues ||= {}); const list = (c[stepIdx] ||= []);
+  if (!list.includes(clueId)) list.push(clueId);
+  save();
+}
+// ขั้นถัดไปตามทางแยก: goto ของตัวเลือกสุดท้ายที่เลือก ถ้าไม่มีไปขั้นถัดไปตามลำดับ คืน null เมื่อจบด่าน
+export function nextStep(id, stepIdx) {
+  const L = LEVEL_BY_ID[id], a = lv(id).attempt.answers[stepIdx];
+  const g = L.steps[stepIdx].options[a.final].goto;
+  if (g === 'end') return null;
+  const n = g ?? stepIdx + 1;
+  return n < L.steps.length ? n : null;
+}
+export function answer(id, stepIdx, optIdx, { timeout = false } = {}) {
   const att = lv(id).attempt;
   const opt = LEVEL_BY_ID[id].steps[stepIdx].options[optIdx];
   let a = att.answers[stepIdx];
   if (!a) {
-    a = att.answers[stepIdx] = { first: optIdx, final: optIdx, retried: false, exp: opt.legal === 'illegal' ? 0 : opt.exp };
+    a = att.answers[stepIdx] = { first: optIdx, final: optIdx, retried: false, timeout, exp: timeout ? Math.floor(optExp(att, stepIdx, opt) / 2) : optExp(att, stepIdx, opt) };
   } else if (!a.retried && LEVEL_BY_ID[id].steps[stepIdx].options[a.first].legal === 'illegal') {
     a.final = optIdx; a.retried = true;
-    a.exp = opt.legal === 'illegal' ? 0 : Math.floor(opt.exp / 2);
+    a.exp = Math.floor(optExp(att, stepIdx, opt) / 2);
   }
   save();
   return a;
@@ -197,7 +219,7 @@ export function finishLevel(id, lesson = '') {
   const exp = attemptExp(id);
   const max = maxExp(id);
   const passed = exp >= Math.ceil(max * PASS_RATIO);
-  l.record = { answers: l.attempt.answers.map(a => ({ first: a.first, final: a.final, retried: a.retried, exp: a.exp })), commands: l.attempt.commands, exp, at: Date.now() };
+  l.record = { answers: l.attempt.answers.map(a => a && ({ first: a.first, final: a.final, retried: a.retried, exp: a.exp })), path: l.attempt.path, commands: l.attempt.commands, exp, at: Date.now() };
   l.bestExp = Math.max(l.bestExp || 0, exp);
   if (passed) { if (l.status !== 'passed') l.status = 'passedExp'; } else if (l.status !== 'passed' && l.status !== 'pending') l.status = 'failed';
   if (lesson) l.lesson = lesson;
@@ -239,7 +261,7 @@ export function computeProfile() {
       steps++;
       const chosen = st.options[a.first];
       for (const t of STYLE_TAGS) {
-        opp[t] += Math.max(...st.options.map(o => pts(o, t)));
+        opp[t] += Math.max(...st.options.filter(o => !o.minStage).map(o => pts(o, t)));
         got[t] += pts(chosen, t);
       }
       if (st.options.some(o => o.legal === 'illegal')) { legalOpp++; if (chosen.legal !== 'illegal') legalOk++; }
@@ -299,3 +321,27 @@ export function schoolMeters() {
 
 export function isDone(id) { const st = S.levels[id]?.status; return st === 'passed' || st === 'skipped'; }
 export function completedCount() { return Object.values(S.levels).filter(l => l.status === 'passed' || l.status === 'skipped').length; }
+
+// ---- ขั้นภาวะผู้นำ ----
+export function stage() { return S.leadStage || 0; }
+export function stageInfo(P = computeProfile()) {
+  const cur = stage(), next = STAGES[cur + 1];
+  if (!next) return { cur, next: null, items: [], eligible: false };
+  const n = next.need, items = [];
+  for (const [t, min] of Object.entries(n.tags)) items.push({ label: `สัดส่วนแนวการนำ "${t}"`, tag: t, have: P.pct[t] ?? 0, need: min, ok: (P.pct[t] ?? 0) >= min });
+  if (n.fit) items.push({ label: 'สั่งงานเข้ากับความพร้อมของคน', have: P.fitScore ?? 0, need: n.fit, ok: (P.fitScore ?? 0) >= n.fit, unit: '%' });
+  items.push({ label: 'ตัดสินใจสะสม', have: P.steps, need: n.steps, ok: P.steps >= n.steps, unit: ' ขั้น' });
+  items.push({ label: `ตัวเลือกเสี่ยงไม่เกิน ${STAGE_FLAG_MAX}%`, have: P.pct['⚠'] ?? 0, need: STAGE_FLAG_MAX, ok: (P.pct['⚠'] ?? 0) <= STAGE_FLAG_MAX, max: true, unit: '%' });
+  const gl = LEVEL_BY_ID[n.gate];
+  items.push({ label: `ผ่านด่านประเมิน: ด่าน ${n.gate}${gl ? ' ' + gl.title : ''}`, ok: S.levels[n.gate]?.status === 'passed', gate: n.gate });
+  return { cur, next, items, eligible: items.every(i => i.ok) };
+}
+// คืนขั้นใหม่ถ้าเลื่อนได้ (เลื่อนทีละขั้น ไม่ตกขั้น)
+export function tryPromote() {
+  const info = stageInfo();
+  if (!info.eligible) return null;
+  S.leadStage = info.next.id;
+  (S.stageLog ||= []).push({ stage: info.next.id, at: Date.now(), steps: computeProfile().steps });
+  save();
+  return info.next;
+}

@@ -562,17 +562,27 @@ export function itemBonus() {
   for (const k in own) out[k] = Math.min(BONUS_CAP.owned, own[k]) + Math.min(BONUS_CAP.events, ev[k]);
   return out;
 }
+// ครูน้อยกว่าเกณฑ์อัตรากำลัง: ขาดไม่เกิน 5% ยังไม่กระทบ เกินนั้นมีสุขลด 1 คะแนนต่อทุก 1% ที่ขาดเพิ่ม (สูงสุด 20) เก่งลดครึ่งหนึ่ง
+// ตัวเลขนี้กำหนดเพื่อการเล่น ไม่ใช่ผลการวิจัย
+export const STAFF_FREE = 0.05, STAFF_MAX_PEN = 20;
+export function staffPenalty() {
+  const q = teacherQuota(), have = staff().teachers;
+  const short = q > 0 ? Math.max(0, (q - have) / q) : 0;
+  const suk = Math.min(STAFF_MAX_PEN, Math.round(Math.max(0, short - STAFF_FREE) * 100));
+  return { short, suk, keng: Math.round(suk / 2), dee: 0, quota: q, have };
+}
 export function meters() {
   const m = St.schoolMeters();
   const e = econ(), b = e.bonus || {}, ib = itemBonus();
   const parts = {};
   // ทรัพยากรบวกเป็นสัดส่วนของช่องว่างที่เหลือถึง 100 ฐานยิ่งสูง ของที่ซื้อยิ่งบวกได้น้อย จึงซื้อจนเต็ม 100 ไม่ได้
   // ค่าลบ (ใช้เงินผิดประเภท วิกฤตการเงิน) หักตรง ส่วนบุคลากรที่ได้รับจัดสรรนับเป็นทรัพยากร
+  const sp = staffPenalty();
   const adj = (v, k) => {
-    const res = (ib[k] || 0) + Math.max(0, b[k] || 0), neg = Math.min(0, b[k] || 0) - (e.crisis ? 15 : 0);
+    const res = (ib[k] || 0) + Math.max(0, b[k] || 0), neg = Math.min(0, b[k] || 0) - (e.crisis ? 15 : 0) - (sp[k] || 0);
     if (v == null && !res && !neg) { parts[k] = null; return null; }
     const base = v ?? 50, gain = res * (100 - base) / 100;
-    parts[k] = { base: Math.round(base), res: Math.round(gain), neg };
+    parts[k] = { base: Math.round(base), res: Math.round(gain), neg, staff: sp[k] || 0, short: sp.short };
     return Math.max(0, Math.min(100, Math.round(base + gain + neg)));
   };
   return { ...m, keng: adj(m.keng, 'keng'), dee: adj(m.dee, 'dee'), suk: adj(m.suk, 'suk'), parts };

@@ -1,7 +1,7 @@
 // หน้าจอ ภารกิจ การสั่งงานตัวละคร สมุดผู้นำ และการบันทึก
 import { LEVELS } from './data/levels.js';
 import {
-  AREAS, TIERS, TAGS, COMMANDS, READINESS_TH, CUES, CHARACTERS, COMMAND_TASKS, COMMAND_REACTIONS, GENDER, polite,
+  AREAS, TIERS, TAGS, COMMANDS, READINESS_TH, CUES, CHARACTERS, COMMAND_TASKS, COMMAND_REACTIONS, GENDER, polite, STAGES,
   PASS_RATIO, RANKS, BIOS, BIO_GROUPS, COMMON_ADVICE, VALIDITY_NOTE, TEACHER_VIEW, SCHOOL_NAME, AREA_OFFICE, REF, COMMAND_EXP,
 } from './data/world.js';
 import * as St from './state.js';
@@ -103,6 +103,8 @@ export function refreshHUD() {
   $('#hud-name').textContent = St.S.playerName ? `ผอ.${St.S.playerName}` : 'ท่าน ผอ.';
   $('#hud-rank').textContent = r.th;
   $('#hud-rank-sub').textContent = r.sub;
+  { const sg = STAGES[St.stage()], el = $('#hud-stage'); if (el) { el.textContent = sg.th; el.style.setProperty('--st', sg.color); el.title = `ขั้นภาวะผู้นำ: ${sg.th} (${sg.en}) · วิทยฐานะในเกม: ${sg.rankTh}`; } }
+  Sc.setLeadStage?.(St.stage());
   const lo = r.min, hi = r.next ? r.next.min : Math.max(exp, r.min + 1);
   $('#hud-exp-bar').style.width = (r.next ? Math.min(100, 100 * (exp - lo) / (hi - lo)) : 100) + '%';
   $('#hud-exp').textContent = r.next ? `${exp} / ${r.next.min} EXP` : `${exp} EXP · ระดับสูงสุด`;
@@ -113,7 +115,8 @@ export function refreshHUD() {
     $(`#m-${k} .bar i`).style.width = (v ?? 0) + '%';
     $(`#m-${k} b`).textContent = v == null ? '–' : v;
     const pt = m.parts?.[k];
-    $(`#m-${k}`).title = pt ? `จากการตัดสินใจในด่าน ${pt.base}${St.completedCount() ? '' : ' (ยังไม่ได้เล่นด่าน ใช้ฐาน 50)'} · จากทรัพยากรที่จัดหา +${pt.res}${pt.neg ? ` · หัก ${-pt.neg}` : ''}` : 'ยังไม่มีข้อมูล';
+    $(`#m-${k}`).title = pt ? `จากการตัดสินใจในด่าน ${pt.base}${St.completedCount() ? '' : ' (ยังไม่ได้เล่นด่าน ใช้ฐาน 50)'} · จากทรัพยากรที่จัดหา +${pt.res}${pt.neg + pt.staff ? ` · หัก ${-(pt.neg + pt.staff)}` : ''}${pt.staff ? ` · ครูขาด ${Math.round(pt.short * 100)}% ของเกณฑ์ หัก ${pt.staff}` : ''}` : 'ยังไม่มีข้อมูล';
+    $(`#m-${k}`).classList.toggle('staff-short', !!pt?.staff);
   }
   $('#hud-progress').textContent = `${St.completedCount()}/${LEVELS.length} ด่าน`;
   Sc.setPlayerScale(r.scale);
@@ -228,7 +231,7 @@ function showTitle() {
       </div>
       <p class="fineprint">ชื่อบุคคล โรงเรียน และเขตพื้นที่ในเกมเป็นชื่อสมมติทั้งหมด ส่วนสถานการณ์อิงกรณีจริงที่มีแหล่งอ้างอิง ข้อมูลระเบียบเป็นสถานะ ณ เดือนตุลาคม 2569 ผลโปรไฟล์ใช้เพื่อการสะท้อนคิด ไม่ใช่เครื่องมือวินิจฉัย</p>
     </div>`, { cls: 'title', closable: false });
-  $('#t-continue')?.addEventListener('click', () => { closeModal(); syncWorld(); refreshHUD(); if (!St.S.seenRules) showRules(); else resumeHint(); });
+  $('#t-continue')?.addEventListener('click', () => { closeModal(); syncWorld(); refreshHUD(); if (!St.S.seenRules) showRules(); else { resumeHint(); checkStage(1500); } });
   $('#t-new').addEventListener('click', () => newGameForm(has));
   $('#t-intro').addEventListener('click', () => { closeModal(); playIntro(() => showTitle()); });
 }
@@ -457,42 +460,66 @@ function renderTracker() {
     ${att.phase === 'brief' ? `<button class="btn sm primary" data-act="start" data-arg="${id}">อ่านสถานการณ์</button>` : ''}
     ${att.phase !== 'brief' ? tasks.map(t => `<button class="tr-item ${att.commands[t.c] ? 'done' : ''}" data-act="fly" data-arg="${t.c}">${att.commands[t.c] ? '✓' : '!'} ${esc(CHARACTERS[t.c].name)}</button>`).join('') : ''}
     ${att.phase === 'meet' && done ? `<button class="btn sm primary" id="tr-steps">เริ่มตัดสินใจ</button>` : ''}
-    ${att.phase === 'steps' ? `<button class="btn sm primary" data-act="start" data-arg="${id}">ตัดสินใจต่อ (ขั้น ${att.step + 1}/${L.steps.length})</button>` : ''}`;
+    ${att.phase === 'steps' ? `<button class="btn sm primary" data-act="start" data-arg="${id}">ตัดสินใจต่อ (ขั้น ${(att.path?.length || att.step + 1)}/${L.pathLen || L.steps.length})</button>` : ''}`;
   $('#tr-steps')?.addEventListener('click', () => { att.phase = 'steps'; St.save(); closeSheet(); renderPhase(); renderTracker(); });
 }
 
+let stepTimer = null;
+function clearStepTimer() { if (stepTimer) { clearInterval(stepTimer); stepTimer = null; } }
 function renderStep(L, att) {
+  clearStepTimer();
   const i = att.step; const st = L.steps[i];
+  att.path ||= [i];
+  const pos = att.path.length - 1, total = L.pathLen || L.steps.length;
   const order = att.order?.[i] || L.steps[i].options.map((_, k) => k);
   const a = att.answers[i];
   const revealed = !!a;
   const canRetry = a && !a.retried && st.options[a.first].legal === 'illegal';
   const retrying = att.retryMode === i;
+  const stage = St.stage();
+  const seen = att.clues?.[i] || [];
   const opts = order.map((oi, pos) => {
     const o = st.options[oi];
+    const locked = o.minStage && stage < o.minStage;
     const chosen = a && (a.final === oi || a.first === oi);
     const isFinal = a && a.final === oi;
-    const disabled = revealed && !(retrying && oi !== a.first);
-    return `<button class="opt ${chosen ? 'chosen' : ''} ${isFinal ? 'final' : ''} ${revealed && a.first === oi && o.legal === 'illegal' ? 'bad' : ''}" data-oi="${oi}" ${disabled ? 'disabled' : ''}>
-      <span class="opt-l">${THAI_LETTERS[pos]}</span><span class="opt-t">${o.text}</span></button>`;
+    const disabled = locked || (revealed && !(retrying && oi !== a.first));
+    return `<button class="opt ${chosen ? 'chosen' : ''} ${isFinal ? 'final' : ''} ${locked ? 'locked' : ''} ${o.minStage && !locked ? 'stage-opt' : ''} ${revealed && a.first === oi && o.legal === 'illegal' ? 'bad' : ''}" data-oi="${oi}" ${disabled ? 'disabled' : ''}>
+      <span class="opt-l">${THAI_LETTERS[pos]}</span><span class="opt-t">${o.text}${o.minStage ? `<small class="stage-req" style="--st:${STAGES[o.minStage].color}">${locked ? 'ล็อกอยู่ · เปิดเมื่อเป็น' : 'ตัวเลือกของ'}${STAGES[o.minStage].th}</small>` : ''}</span></button>`;
   }).join('');
+  // ข้อมูลที่สืบได้ก่อนตัดสินใจ
+  let clueBox = '';
+  if (st.clues) {
+    const left = (st.clueLimit ?? st.clues.length) - seen.length;
+    clueBox = `<section class="clues"><h4>สืบข้อมูลก่อนตัดสินใจ ${revealed ? '' : `<span class="chip">สืบได้อีก ${left} เรื่อง</span>`}</h4>
+      ${st.clues.map(c => seen.includes(c.id)
+        ? `<div class="clue seen"><b>${esc(c.label)}</b><p>${esc(c.text)}</p></div>`
+        : revealed ? `<div class="clue missed"><b>${esc(c.label)}</b> <span class="tiny">(ท่านไม่ได้สืบ)</span><p class="small">${esc(c.text)}</p></div>`
+        : `<button class="clue-btn" data-clue="${c.id}" ${left <= 0 ? 'disabled' : ''}>${esc(c.label)}</button>`).join('')}</section>`;
+  }
   let reveal = '';
   if (revealed && !retrying) {
     const showIdx = a.retried ? [a.first, a.final] : [a.first];
-    reveal = showIdx.map((oi, k) => feedbackCard(st.options[oi], k === 1 ? 'ตัวเลือกที่เลือกใหม่' : 'ตัวเลือกของท่าน', k === 0 && a.retried ? 0 : a.exp, k === 0 && a.retried)).join('');
+    if (a.timeout) reveal += `<p class="warn">หมดเวลา เกมเลือกตัวเลือกนี้ให้ และได้ EXP ครึ่งเดียว การไม่ตัดสินใจก็เป็นการตัดสินใจอย่างหนึ่ง</p>`;
+    reveal += showIdx.map((oi, k) => feedbackCard(st.options[oi], k === 1 ? 'ตัวเลือกที่เลือกใหม่' : 'ตัวเลือกของท่าน', k === 0 && a.retried ? 0 : a.exp, k === 0 && a.retried, st.options[oi].evidence && !seen.includes(st.options[oi].evidence) ? st.clues?.find(c => c.id === st.options[oi].evidence) : null)).join('');
     reveal += `<details class="all-opts"><summary>ดูเหตุผลของทุกตัวเลือก</summary>${order.map((oi, pos) => {
       const o = st.options[oi];
-      return `<div class="ao"><b>${THAI_LETTERS[pos]}.</b> ${o.text}<div class="ao-meta">${legalChip(o.legal)} ${tagChips(o.tags)} <span class="chip">${o.legal === 'illegal' ? 0 : o.exp} EXP</span></div><p class="small">${o.explain}</p></div>`;
+      return `<div class="ao"><b>${THAI_LETTERS[pos]}.</b> ${o.text}<div class="ao-meta">${legalChip(o.legal)} ${tagChips(o.tags)} <span class="chip">${o.legal === 'illegal' ? 0 : o.exp} EXP</span>${o.minStage ? ` <span class="chip">ขั้น${STAGES[o.minStage].th}</span>` : ''}</div>${impactChips(o.impact)}<p class="small">${o.explain}</p></div>`;
     }).join('')}</details>`;
   }
-  const last = i === L.steps.length - 1;
+  const nxt = revealed ? St.nextStep(L.id, i) : undefined;
+  const last = revealed && nxt == null;
+  const timed = st.timer && !revealed;
+  if (timed) { att.deadline ||= {}; att.deadline[i] ??= Date.now() + st.timer * 1000; St.save(); }
   openModal(`${levelHeader(L, att)}
     <div class="kolb"><span class="${revealed ? '' : 'on'}">ประสบการณ์ตรง</span><span class="${revealed ? 'on' : ''}">สังเกตและสะท้อนคิด</span><span>สร้างความคิดรวบยอด</span><span>ทดลองปฏิบัติ</span></div>
-    <div class="step-prog">${L.steps.map((_, k) => `<i class="${k < i ? 'done' : k === i ? 'cur' : ''}"></i>`).join('')}</div>
-    <h3 class="step-title">ขั้นที่ ${i + 1} · ${esc(st.title)}</h3>
+    <div class="step-prog">${Array.from({ length: total }, (_, k) => `<i class="${k < pos ? 'done' : k === pos ? 'cur' : ''}"></i>`).join('')}</div>
+    <h3 class="step-title">ขั้นที่ ${pos + 1} · ${esc(st.title)}</h3>
+    ${timed ? `<div class="step-timer"><span>เวลาตัดสินใจ</span><b id="st-left">${st.timer}</b><div class="bar"><i id="st-bar"></i></div></div>` : ''}
     ${st.styleOnly ? `<p class="badge-style">ขั้นสะท้อนแนวการนำ: ทุกตัวเลือกในขั้นนี้ไม่ขัดระเบียบ จึงไม่มีคำตอบที่ถูกเพียงข้อเดียว</p>` : ''}
     ${st.hasUnverified ? `<p class="badge-unv">ขั้นนี้มีตัวเลือกที่ยังไม่ได้ยืนยันกับตัวบทต้นฉบับ ตัวเลือกดังกล่าวจึงไม่นำมาตัดสินถูกหรือผิด</p>` : ''}
     ${st.note ? `<p class="small note">${st.note}</p>` : ''}
+    ${clueBox}
     ${retrying ? `<p class="warn">ตัวเลือกแรกขัดระเบียบ เลือกใหม่ได้ 1 ครั้ง (ได้ EXP ครึ่งหนึ่งของตัวเลือกใหม่)</p>` : ''}
     <div class="opts">${opts}</div>
     <div id="reveal">${reveal}</div>
@@ -500,24 +527,48 @@ function renderStep(L, att) {
       ${canRetry && !retrying ? `<button class="btn" id="s-retry">เลือกใหม่ (1 ครั้ง)</button>` : ''}
       ${revealed && !retrying ? `<button class="btn primary" id="s-next">${last ? 'สรุปด่าน' : 'ขั้นถัดไป'}</button>` : ''}
       <button class="btn ghost" data-act="close">พักไว้ก่อน</button></div>`, { wide: true });
-  showReader(L.reader, revealed ? 'บันทึกการตัดสินใจของท่านไว้แล้ว โปรดพิจารณาเหตุผลและแหล่งอ้างอิงก่อนดำเนินการขั้นต่อไป' : `ขั้นที่ ${i + 1}: ${st.title} ขอให้ท่านพิจารณาตัวเลือกทั้ง 5 ข้อ`, false);
-  $('#modal-body').querySelectorAll('.opt:not([disabled])').forEach(b => b.addEventListener('click', () => {
-    const oi = +b.dataset.oi;
+  showReader(L.reader, revealed ? 'บันทึกการตัดสินใจของท่านไว้แล้ว โปรดพิจารณาเหตุผลและแหล่งอ้างอิงก่อนดำเนินการขั้นต่อไป' : `ขั้นที่ ${pos + 1}: ${st.title} ขอให้ท่านพิจารณาตัวเลือกทั้ง ${st.options.length} ข้อ`, false);
+  const choose = (oi, timeout = false) => {
+    clearStepTimer();
     const before = att.answers[i];
-    const res = St.answer(L.id, i, oi);
+    const res = St.answer(L.id, i, oi, { timeout });
     att.retryMode = null;
     const o = st.options[oi];
-    if (!before) logStep(L, st, o);
+    if (!before) { logStep(L, st, o); applyImpact(L, o); }
     if (o.legal === 'illegal') { Au.sfx.bad(); if (!res.retried) toast('ตัวเลือกนี้ขัดระเบียบ โปรดพิจารณาผลที่ตามมาด้านล่าง', 'bad'); }
     else { Au.sfx.good(); setTimeout(() => Au.sfx.exp(), 260); toast(`+${res.exp} EXP`, 'good'); }
     St.save(); renderStep(L, att); refreshHUD();
     setTimeout(() => $('#reveal')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+  };
+  if (timed) {
+    const tick = () => {
+      if (!$('#st-left')) return clearStepTimer();   // ปิดหน้าต่างแล้ว เวลายังนับต่อจากเส้นตายที่บันทึกไว้
+      const left = Math.max(0, Math.ceil((att.deadline[i] - Date.now()) / 1000));
+      $('#st-left').textContent = left; $('#st-bar').style.width = (100 * left / st.timer) + '%';
+      $('.step-timer')?.classList.toggle('urgent', left <= 10);
+      if (left <= 0) { toast('หมดเวลาตัดสินใจ', 'bad'); choose(st.timeout ?? st.options.length - 1, true); }
+    };
+    tick(); if (att.answers[i] == null) stepTimer = setInterval(tick, 250);
+  }
+  $('#modal-body').querySelectorAll('.opt:not([disabled])').forEach(b => b.addEventListener('click', () => choose(+b.dataset.oi)));
+  $('#modal-body').querySelectorAll('[data-clue]').forEach(b => b.addEventListener('click', () => {
+    St.seeClue(L.id, i, b.dataset.clue); Au.sfx.click?.(); renderStep(L, att);
   }));
   $('#s-retry')?.addEventListener('click', () => { att.retryMode = i; renderStep(L, att); });
   $('#s-next')?.addEventListener('click', () => {
     if (last) return finishLevelUI(L);
-    att.step++; St.save(); renderStep(L, att); renderTracker();
+    att.step = nxt; att.path.push(nxt); St.save(); renderStep(L, att); renderTracker();
   });
+}
+const IMPACT_KEYS = ['นักเรียน', 'ครู', 'ผู้ปกครอง', 'ชื่อเสียง'];
+function impactChips(imp) {
+  if (!imp) return '';
+  return `<div class="impacts">${IMPACT_KEYS.filter(k => imp[k] != null).map(k => { const v = imp[k]; return `<span class="imp ${v > 0 ? 'up' : v < 0 ? 'down' : ''}">${k} ${v > 0 ? '▲'.repeat(v) : v < 0 ? '▼'.repeat(-v) : '–'}</span>`; }).join('')}</div>`;
+}
+// ผลกระทบต่อครู: ขวัญกำลังใจของครูที่เกี่ยวข้องกับด่านขยับตามทางเลือก
+function applyImpact(L, o) {
+  const v = o.impact?.['ครู']; if (!v) return;
+  for (const t of COMMAND_TASKS[L.id] || []) { const ch = St.S.chars[t.c]; if (ch) ch.morale = Math.max(10, Math.min(100, ch.morale + v * 3)); }
 }
 function legalChip(legal) {
   return { ok: '<span class="chip ok">ไม่ขัดระเบียบ</span>', illegal: '<span class="chip bad">ขัดระเบียบ</span>', undetermined: '<span class="chip unv">ยังไม่ยืนยันตัวบท</span>' }[legal];
@@ -525,12 +576,14 @@ function legalChip(legal) {
 function tagChips(tags) {
   return tags.map((t, k) => `<span class="chip tag" style="--tag:${TAGS[t].color}" title="${esc(TAGS[t].base)}">${k ? '' : '★ '}${TAGS[t].th}</span>`).join(' ');
 }
-function feedbackCard(o, label, exp, wasFirstBad) {
+function feedbackCard(o, label, exp, wasFirstBad, missedClue) {
   const consequence = o.legal === 'illegal' ? `<p class="consequence"><b>ผลที่ตามมา:</b> ${o.explain}</p>` : `<p>${o.explain}</p>`;
   return `<div class="fb ${o.legal}">
     <div class="fb-head"><span class="small">${label}</span> ${legalChip(o.legal)} <span class="chip exp">+${exp} EXP</span></div>
     <div class="fb-tags">${tagChips(o.tags)}</div>
+    ${impactChips(o.impact)}
     ${consequence}
+    ${missedClue ? `<p class="warn small">ตัวเลือกนี้ต้องอาศัยข้อมูล "${esc(missedClue.label)}" ซึ่งท่านไม่ได้สืบ จึงได้ EXP ครึ่งเดียว</p>` : ''}
     ${o.legal === 'undetermined' ? `<p class="small">ตัวเลือกนี้อิงตัวบทที่ยังไม่ได้ตรวจสอบกับต้นฉบับ จึงไม่นับในคะแนนด้านระเบียบ</p>` : ''}
     ${!wasFirstBad ? `<p class="teacher-view"><b>ครูอาจเห็นการตัดสินใจนี้อย่างไร:</b> ${esc(TEACHER_VIEW[o.tags[0]])}</p>` : ''}
   </div>`;
@@ -547,7 +600,7 @@ function finishLevelUI(L) {
   const att = St.lv(L.id).attempt;
   // แนวการนำที่เลือกในด่านนี้
   const tagCount = {};
-  L.steps.forEach((st, i) => { const o = st.options[att.answers[i].first]; tagCount[o.tags[0]] = (tagCount[o.tags[0]] || 0) + 1; });
+  L.steps.forEach((st, i) => { const a = att.answers[i]; if (!a) return; const o = st.options[a.first]; tagCount[o.tags[0]] = (tagCount[o.tags[0]] || 0) + 1; });
   const domTag = Object.entries(tagCount).sort((a, b) => b[1] - a[1])[0][0];
   const cmdRows = Object.entries(att.commands).map(([c, r]) => `<li>${esc(CHARACTERS[c].name)}: ท่านเลือก <b>${COMMANDS[r.cmd].th}</b> · ความพร้อม ${r.readiness} · ${r.result === 'fit' ? 'เข้ากัน' : r.result === 'near' ? 'ใกล้เคียง' : 'ไม่เข้ากัน'}</li>`).join('');
   const res = St.finishLevel(L.id);
@@ -595,6 +648,7 @@ function finishLevelUI(L) {
 }
 function afterLevelChange(id, beforeRank, nextTierOpenBefore) {
   refreshHUD(); syncWorld(); grantAwards();
+  checkStage(700);
   const t = St.tierOf(id).id;
   if (t < TIERS.length && !nextTierOpenBefore && St.tierOpen(t + 1)) toast(`ปลดล็อก <b>${TIERS[t].th}</b>`, 'rank');
   if (t === 2 && TIERS[1].levels.every(St.levelDone) && !St.S.debrief.midShown) { St.S.debrief.midShown = true; St.save(); setTimeout(() => leaderBook('mid'), 600); }
@@ -618,10 +672,11 @@ function openChar(id) {
   let body = '';
   if (isPlayer) {
     const r = St.rankFor();
-    body = `<p>${esc(c.role)}</p><p class="small">ระดับ: <b>${r.th}</b> · ${r.sub}</p><p class="small">ผ่าน ${St.completedCount()}/${LEVELS.length} ด่าน · ${St.totalExp()} EXP</p>
+    body = `<p>${esc(c.role)}</p><p class="small">ระดับ: <b>${r.th}</b> · ${r.sub}</p><p class="small">ผ่าน ${St.completedCount()}/${LEVELS.length} ด่าน · ${St.totalExp()} EXP</p><p class="small">ขั้นภาวะผู้นำ: <b style="color:${STAGES[St.stage()].color}">${STAGES[St.stage()].th}</b></p>
       <div class="btn-row"><button class="btn sm primary" data-act="board">ภารกิจ</button><button class="btn sm" data-act="book">สมุดผู้นำ</button></div>`;
   } else {
     body = `<p class="small">${esc(c.role)}</p>${BIOS[id] ? `<p class="bio">${esc(BIOS[id].bio)}</p>` : ''}
+      ${c.readiness && c.readiness !== 'ST' ? `<p class="say stage-say">“${esc(polite(id, STAGE_LINES[St.stage()]))}”</p>` : ''}
       ${c.readiness && c.readiness !== 'ST' ? `<div class="morale"><span>ขวัญกำลังใจ</span><div class="bar"><i style="width:${s.morale}%"></i></div><b>${s.morale}</b></div>` : ''}`;
     if (inMeet) {
       body += `<div class="task-box"><h4>ด่าน ${lvId}: เลือกวิธีทำงานกับ${esc(c.name)}</h4>${done ? '' : `<p class="cue">${esc(CUES[lvId + ':' + id] || 'สังเกตจากบทบาท ประวัติ และสิ่งที่บุคคลนี้ทำไปแล้ว แล้วเลือกวิธีทำงานที่เหมาะกับเขาในสถานการณ์นี้')}</p><p class="tiny">ลองวิเคราะห์ว่าเขาทำงานนี้ได้แค่ไหน และเต็มใจหรือมั่นใจเพียงใด เกมจะเฉลยหลังท่านเลือก</p>`}
@@ -763,6 +818,7 @@ function leaderBook(kind) {
       <section class="card"><h3>สี่แกน (สัดส่วนของโอกาสที่ได้เลือก)</h3>${['A', 'B', 'C', 'D'].map(axis).join('')}
         <div class="scores"><div><b>${P.knowledge ?? '–'}%</b><span>ความรู้ระเบียบ</span></div><div><b>${P.fitScore ?? '–'}%</b><span>ความสอดคล้องกับความพร้อมของบุคลากร</span></div><div class="${P.flag > 30 ? 'hi' : ''}"><b>${P.flag}%</b><span>พฤติกรรมนิ่งเฉย</span></div></div></section>
     </div>
+    ${stageSection(P)}
     <section class="card"><h3>แนวการนำ 7 แนวและพฤติกรรมนิ่งเฉย</h3><p class="tiny">ร้อยละ = คะแนนที่ท่านเลือก ÷ คะแนนสูงสุดที่แนวนั้นเปิดให้เลือกในขั้นที่ท่านผ่าน (แนวหลัก 2 คะแนน แนวรอง 1 คะแนน) วิธีนี้ลดอคติที่เกิดจากจำนวนตัวเลือกของแต่ละแนวในคลังสถานการณ์ไม่เท่ากัน</p>${tagRows}</section>
     ${ex ? `<section class="card soft"><h3>ตัวอย่างการตัดสินใจของท่านที่สะท้อนแนวโน้มนี้</h3><ul class="tight">${ex}</ul></section>` : ''}
     <section class="card soft"><h3>ข้อเสนอร่วมของทุกโปรไฟล์</h3><p class="small">${esc(COMMON_ADVICE)} (<a href="${REF.robinson}" target="_blank" rel="noopener">Robinson et al., 2008</a> · <a href="${REF.h1994}" target="_blank" rel="noopener">Hallinger et al., 1994</a> · <a href="${REF.hl2014}" target="_blank" rel="noopener">Hallinger & Lee, 2014</a>)</p></section>
@@ -1016,7 +1072,8 @@ function staffPanel() {
     <div class="staff-box">${row('deputy', 'รองผู้อำนวยการ', st.deputies, ent.deputies)}${row('teacher', `ครู (${cr.lower + cr.upper} ห้องเรียน · ม.ต้น ${cr.lower} ม.ปลาย ${cr.upper})`, st.teachers, ent.teachers)}
     <p class="tiny">การแบ่งงาน: ${deps.map(esc).join(' · ')}</p>
     <p class="tiny">เกณฑ์รองผู้อำนวยการตามหนังสือ ก.ค.ศ. ว 23/2563: นักเรียน 120–719 คน 1 คน · 720–1,079 คน 2 คน · 1,080–1,679 คน 3 คน · 1,680 คนขึ้นไป 4 คน (สูงสุด 4 คน) <a href="${Ec.DEPUTY_SRC}" target="_blank" rel="noopener">แหล่งอ้างอิง</a> (แหล่งรอง) ในเกม โรงเรียนเริ่มด้วยรองฯ 2 คนตามเนื้อเรื่อง แม้เกณฑ์จริงที่ 640 คนจะให้ 1 คน </p>
-    <p class="tiny">เกณฑ์ครูตามหนังสือฉบับเดียวกัน: ห้องเรียนละ 35 คน (เศษตั้งแต่ 10 คนเปิดเพิ่ม 1 ห้อง) ชั่วโมงเรียน ม.ต้น 30 ม.ปลาย 35 ชั่วโมงต่อสัปดาห์ หารด้วยชั่วโมงปฏิบัติงานครู 20 ชั่วโมงต่อสัปดาห์ แล้วรวมสองระดับ เศษตั้งแต่ 0.5 ปัดขึ้น <a href="${Ec.TEACHER_SRC}" target="_blank" rel="noopener">แหล่งอ้างอิง</a> (แหล่งรอง) เกมสมมติว่านักเรียนกระจายเท่ากันทั้ง 6 ชั้น${gap.teachers > 0 ? ` ตอนนี้ครูขาด ${gap.teachers} คน ภาระสอนต่อคนสูงขึ้น` : ''}</p></div>`;
+    <p class="tiny">เกณฑ์ครูตามหนังสือฉบับเดียวกัน: ห้องเรียนละ 35 คน (เศษตั้งแต่ 10 คนเปิดเพิ่ม 1 ห้อง) ชั่วโมงเรียน ม.ต้น 30 ม.ปลาย 35 ชั่วโมงต่อสัปดาห์ หารด้วยชั่วโมงปฏิบัติงานครู 20 ชั่วโมงต่อสัปดาห์ แล้วรวมสองระดับ เศษตั้งแต่ 0.5 ปัดขึ้น <a href="${Ec.TEACHER_SRC}" target="_blank" rel="noopener">แหล่งอ้างอิง</a> (แหล่งรอง) เกมสมมติว่านักเรียนกระจายเท่ากันทั้ง 6 ชั้น${gap.teachers > 0 ? ` ตอนนี้ครูขาด ${gap.teachers} คน ภาระสอนต่อคนสูงขึ้น` : ''}</p>
+    ${(() => { const sp = Ec.staffPenalty(); return sp.suk ? `<p class="warn small">ครูขาด ${Math.round(sp.short * 100)}% ของเกณฑ์ ครูสอนเกินภาระ นักเรียนได้รับการดูแลน้อยลง ตัวชี้วัดมีสุข −${sp.suk} เก่ง −${sp.keng} (ขาดไม่เกิน ${Math.round(Ec.STAFF_FREE * 100)}% ยังไม่กระทบ ตัวเลขนี้กำหนดเพื่อการเล่น)</p>` : sp.short > 0 ? `<p class="tiny">ครูขาด ${Math.round(sp.short * 100)}% ยังอยู่ในช่วงที่ไม่กระทบตัวชี้วัด (ไม่เกิน ${Math.round(Ec.STAFF_FREE * 100)}%)</p>` : ''; })()}</div>`;
 }
 function financeTabs(active) {
   const tabs = [['overview', 'ภาพรวม'], ['build', 'สร้างอาคาร'], ['shop', 'ร้านค้า'], ['quests', 'ระดมทรัพยากร']];
@@ -1450,4 +1507,36 @@ function quizModal(host) {
       <div class="btn-row"><button class="btn primary" data-act="close">กลับเมือง</button></div>
       <p class="tiny center">คำถามข้อถัดไปจะมาเองในเมือง ข้อที่ตอบแล้วจะไม่กลับมาอีก</p>`;
   }));
+}
+
+// ---------------- ขั้นภาวะผู้นำ ----------------
+// สิ่งที่ครูพูดกับ ผอ. เปลี่ยนตามขั้น (ครับ/ค่ะ แปลงตามเพศผู้พูด)
+const STAGE_LINES = [
+  'ท่าน ผอ. สั่งมาได้เลยครับ/ค่ะ จะทำตามที่ท่านกำหนด',
+  'ท่าน ผอ. ว่างไหมครับ/คะ อยากชวนเข้าไปดูห้องเรียนคาบบ่าย แล้วช่วยดูงานนักเรียนด้วยกัน',
+  'มีไอเดียโครงการใหม่ที่ตรงกับเป้าหมายของโรงเรียน อยากเล่าให้ท่านฟังครับ/ค่ะ',
+  'เรื่องนี้ทีมเราจัดการเองได้ครับ/ค่ะ วันศุกร์จะสรุปผลให้ท่านดู',
+];
+function checkStage(delay = 0) {
+  const up = St.tryPromote();
+  if (up) setTimeout(() => stageCeremony(up), delay);
+}
+function stageSection(P) {
+  const info = St.stageInfo(P), cur = St.stage();
+  const ladder = STAGES.map(sg => `<div class="st-step ${sg.id < cur ? 'done' : sg.id === cur ? 'cur' : ''}" style="--st:${sg.color}"><b>${sg.th}</b><span>${sg.en}</span><small>วิทยฐานะในเกม ${sg.rankTh}</small></div>`).join('');
+  const items = info.next ? `<ul class="st-need">${info.items.map(it => `<li class="${it.ok ? 'ok' : ''}">${it.ok ? '✓' : '○'} ${esc(it.label)}${it.need != null ? ` · ${it.have}${it.unit || '%'} / ${it.max ? 'ไม่เกิน ' : ''}${it.need}${it.unit || '%'}` : ''}</li>`).join('')}</ul>` : '<p class="small">ท่านอยู่ขั้นสูงสุดของเส้นทางแล้ว</p>';
+  return `<section class="card stage-card"><h3>เส้นทางภาวะผู้นำ</h3><div class="st-ladder">${ladder}</div>
+    ${info.next ? `<p class="small">ขั้นถัดไป <b>${info.next.th}</b> · ฐานทฤษฎี: ${esc(info.next.theory)}</p>${items}<p class="tiny">เมื่อเลื่อนขั้น: ${esc(info.next.unlock)}</p>` : items}
+    <p class="tiny">เลื่อนขั้นแล้วไม่ตกขั้น วิทยฐานะในเกมผูกกับขั้นเพื่อการเล่นเท่านั้น ในความจริงวิทยฐานะพิจารณาตามหลักเกณฑ์ PA ของ ก.ค.ศ. ซึ่งวัดผลงานตามมาตรฐานตำแหน่ง ไม่ได้วัดแบบภาวะผู้นำ</p></section>`;
+}
+function stageCeremony(sg) {
+  Au.sfx.levelClear?.(); refreshHUD(); syncWorld();
+  Sc.flyToChar?.('player');
+  openModal(`<div class="ceremony" style="--st:${sg.color}">
+    <span class="chip">เลื่อนขั้นภาวะผู้นำ</span>
+    <h2>${esc(sg.th)}</h2><p class="small">${esc(sg.en)} · วิทยฐานะในเกม ${esc(sg.rankTh)}</p>
+    <section class="card soft"><h3>สิ่งที่เปลี่ยนในโรงเรียน</h3><p>${esc(sg.unlock)}</p><p class="say">“${esc(sg.say)}”</p></section>
+    <p class="tiny">ฐานทฤษฎี: ${esc(sg.theory)}</p>
+    <div class="btn-row"><button class="btn primary" data-act="close">กลับเมือง</button><button class="btn" data-act="book">ดูเส้นทางในสมุดผู้นำ</button></div></div>`);
+  toast(`เลื่อนขั้นเป็น <b>${esc(sg.th)}</b> ชุดของ ผอ. ในเมืองเปลี่ยนแล้ว`, 'rank');
 }
