@@ -579,3 +579,7 @@ body.visiting #hud, body.visiting #dock, body.visiting #tracker { display: none;
 .guest-stops { display: grid; gap: 8px; }
 .opt.gstop.sel { outline: 3px solid #F2C14E; background: #FFF6DD; }
 .opt.gstop:disabled { opacity: .5; cursor: not-allowed; }
+
+/* สารคดีโรงเรียน */
+#intro.recap .ib.top { display: flex; align-items: center; justify-content: center; }
+#intro .recap-t { color: #E9D9C6; font-family: var(--font-h); letter-spacing: .08em; font-size: .95rem; opacity: .85; }

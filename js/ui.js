@@ -88,6 +88,7 @@ const ACTIONS = {
   quiz: () => quizModal(),
   reqs: arg => openModal(`<h2>ด่าน ${arg} · ${esc(St.LEVEL_BY_ID[+arg].title)}</h2>${reqBox(+arg, { title: 'สิ่งที่โรงเรียนยังต้องมีก่อนนับว่าผ่าน' })}<div class="btn-row"><button class="btn" data-act="board">กลับหน้าภารกิจ</button></div>`, { wide: true }),
   guest: arg => guestStart(arg),
+  recap: () => playRecap(),
   seeNew: arg => { closeModal(); Sc.showNew(arg); },
   staffReq: arg => { const r = Ec.requestStaff(arg); toast(r.ok ? (arg === 'deputy' ? 'ยื่นขออัตรารองผู้อำนวยการต่อเขตพื้นที่แล้ว ผลจะออกหลังผ่านด่านถัดไป' : 'ยื่นขออัตราครูตามเกณฑ์แล้ว ผลจะออกหลังผ่านด่านถัดไป') : r.why, r.ok ? 'good' : ''); financeModal('overview'); refreshHUD(); },
   cast: arg => castModal(arg === 'first'),
@@ -657,7 +658,7 @@ function afterLevelChange(id, beforeRank, nextTierOpenBefore) {
   const t = St.tierOf(id).id;
   if (t < TIERS.length && !nextTierOpenBefore && St.tierOpen(t + 1)) toast(`ปลดล็อก <b>${TIERS[t].th}</b>`, 'rank');
   if (t === 2 && TIERS[1].levels.every(St.levelDone) && !St.S.debrief.midShown) { St.S.debrief.midShown = true; St.save(); setTimeout(() => leaderBook('mid'), 600); }
-  if (St.completedCount() === LEVELS.length && !St.S.debrief.finalShown) { St.S.debrief.finalShown = true; St.save(); setTimeout(() => leaderBook('final'), 600); }
+  if (St.completedCount() === LEVELS.length && !St.S.debrief.finalShown) { St.S.debrief.finalShown = true; St.save(); setTimeout(() => playRecap(() => leaderBook('final')), 900); }
 }
 
 // ---------------- Character sheet ----------------
@@ -839,7 +840,7 @@ function leaderBook(kind) {
         <label class="field">E · ประเมิน<textarea data-k="e" rows="3" placeholder="รู้ได้อย่างไรว่าได้ผล ดูจากหลักฐานอะไร">${esc(d.e || '')}</textarea></label>
       </div></section>
     <p class="fineprint">${esc(VALIDITY_NOTE)} (<a href="${REF.peus}" target="_blank" rel="noopener">Peus et al., 2013</a> · <a href="${REF.hbg2025}" target="_blank" rel="noopener">Hallinger, Banoğlu & Gümüş, 2025</a>)</p>
-    <div class="btn-row"><button class="btn primary" data-act="close">บันทึกและปิด</button></div></div>`, { wide: true, cls: 'bookmodal' });
+    <div class="btn-row"><button class="btn primary" data-act="close">บันทึกและปิด</button>${St.completedCount() === LEVELS.length ? '<button class="btn" data-act="recap">ชมสารคดีโรงเรียนอีกครั้ง</button>' : ''}</div></div>`, { wide: true, cls: 'bookmodal' });
   $('#modal-body').querySelectorAll('textarea[data-k]').forEach(t => t.addEventListener('input', () => { d[t.dataset.k] = t.value; St.save(); }));
   $('#bk-print').addEventListener('click', () => window.print());
 }
@@ -950,6 +951,7 @@ function menuModal() {
       <button class="btn" data-act="visit">เยี่ยมโรงเรียนอื่น</button>
       <button class="btn" data-act="rules">กติกาและผลที่ได้รับ</button>
       <button class="btn" data-act="intro">ชมประวัติโรงเรียน</button>
+      ${St.completedCount() === LEVELS.length ? '<button class="btn" data-act="recap">ชมสารคดีโรงเรียนของท่าน</button>' : ''}
       <button class="btn" data-act="sound">ตั้งค่าเสียง</button>
       <button class="btn" data-act="save">บันทึกและรหัสสำรอง</button>
       <button class="btn" data-act="title">กลับหน้าแรก</button>
@@ -1622,6 +1624,81 @@ function guestSection() {
   const G = St.S.guests || {}, done = GUESTS.filter(g => G[g.id]?.done);
   if (!done.length) return '';
   return `<section class="card"><h3>คณะที่มาเยือน</h3><ul class="tight">${done.map(g => `<li>${esc(g.short)} · ${G[g.id].pct}/100 · ${esc(G[g.id].grade)}</li>`).join('')}</ul></section>`;
+}
+// ---------------- สารคดีโรงเรียน: รีแคปเมื่อผ่านครบทุกด่าน ----------------
+// ใช้ฉากเมืองจริงของผู้เล่น: เริ่มจากโรงเรียนวันแรก แล้วอาคารที่ผู้เล่นสร้างค่อย ๆ ผุดขึ้นตามลำดับภาคเรียนที่สร้าง
+const START_STUDENTS = 640;
+function recapShots() {
+  const S = St.S, e = Ec.econ(), name = S.playerName ? ` ผอ.${S.playerName} ` : 'ท่าน';   // มีช่องว่างคั่นเมื่อเป็นชื่อ ให้อ่านง่ายในประโยค
+  const sems = Object.values(e.paidLevels).sort((a, b) => a - b);            // เวลาเริ่มของแต่ละภาคเรียน
+  const semOf = t => Math.max(1, sems.filter(x => x <= t).length);
+  const built = Object.entries(e.owned).filter(([id]) => Ec.ITEMS.some(i => i.facility === id) && Sc.facPos?.(id))
+    .map(([id, t]) => ({ id, t, sem: semOf(t), it: Ec.ITEMS.find(i => i.facility === id) })).sort((a, b) => a.t - b.t);
+  const hist = e.history || [], total = sems.length || 1;
+  const studentsAt = sem => hist[Math.min(hist.length, sem) - 1]?.students ?? START_STUDENTS;
+  const shots = [];
+  shots.push({ year: 'ภาคเรียนที่ 1', text: `วันแรกที่${name}เดินเข้าประตู${SCHOOL_NAME} โรงเรียนมีนักเรียน ${Ec.fmt(START_STUDENTS)} คน ครูหลายคนยังไม่แน่ใจว่าผู้อำนวยการคนใหม่จะพาไปทางไหน`, at: [3.4, 0, -6], dist: 26, az: 0.55, show: [] });
+  // อาคารแบ่งเป็นสามช่วงตามภาคเรียนที่สร้าง
+  const thirds = [[1, Math.ceil(total / 3)], [Math.ceil(total / 3) + 1, Math.ceil(total * 2 / 3)], [Math.ceil(total * 2 / 3) + 1, total]];
+  thirds.forEach(([a, b]) => {
+    const group = built.filter(x => x.sem >= a && x.sem <= b);
+    if (!group.length) return;
+    const big = [...group].sort((x, y) => (y.it.price || 0) - (x.it.price || 0))[0];
+    const names = group.slice(0, 4).map(x => x.it.th.replace(/\s*\(.*\)$/, ''));
+    shots.push({ year: `ภาคเรียนที่ ${a}–${b}`, text: `${names.join(' · ')}${group.length > 4 ? ` และอีก ${group.length - 4} รายการ` : ''} · นักเรียน ${Ec.fmt(studentsAt(b))} คน`, fac: big.id, show: built.filter(x => x.sem <= b).map(x => x.id), students: studentsAt(b) });
+  });
+  const crisis = hist.findIndex(h => h.crisis);
+  if (crisis >= 0) shots.push({ year: `ภาคเรียนที่ ${crisis + 1}`, text: 'ช่วงที่ยากที่สุด เงินของโรงเรียนไม่พอใช้ นักเรียนเริ่มย้ายออก แต่โรงเรียนก็ผ่านมาได้', at: [14, 0, -11], dist: 30, az: 0.9, crisis: true });
+  const G = S.guests || {}, met = GUESTS.filter(g => G[g.id]?.done);
+  if (met.length) shots.push({ year: 'คณะที่มาเยือน', text: met.map(g => `${g.short} ${G[g.id].grade || ''}`.trim()).join(' · '), at: [-4, 0, 7], dist: 44, az: -0.2 });
+  // ครูที่เติบโตมากที่สุดจากวิธีทำงานของผู้เล่น
+  const grown = Object.entries(S.chars || {}).filter(([id]) => CHARACTERS[id]?.readiness && !['ST', null].includes(CHARACTERS[id].readiness) && id !== 'player')
+    .sort((a, b) => (b[1].credits || 0) - (a[1].credits || 0))[0];
+  if (grown && (grown[1].credits || 0) > 0) shots.push({ year: 'คนที่เติบโตไปพร้อมกัน', text: `${CHARACTERS[grown[0]].name} ได้รับวิธีทำงานที่เหมาะกับความพร้อม ${grown[1].credits} ครั้ง ขวัญกำลังใจวันนี้ ${grown[1].morale}`, char: grown[0] });
+  const log = S.stageLog || [];
+  if (log.length) shots.push({ year: 'เส้นทางภาวะผู้นำ', text: [STAGES[0], ...log.map(l => STAGES[l.stage])].map(s => s.th).join(' → '), char: 'player', stageFrom: 0, stageTo: St.stage() });
+  // ด่านที่เกือบไม่ผ่าน
+  const close = Object.entries(S.levels).filter(([id, l]) => l.status === 'passed' && l.bestExp != null && St.LEVEL_BY_ID[id])
+    .map(([id, l]) => ({ id: +id, r: l.bestExp / St.maxExp(+id) })).sort((a, b) => a.r - b.r)[0];
+  if (close) shots.push({ year: `ด่าน ${close.id}`, text: `เรื่องที่ยากที่สุดสำหรับ${name.trimEnd()}: "${St.LEVEL_BY_ID[close.id].title}" ผ่านมาได้ด้วยคะแนนร้อยละ ${Math.round(close.r * 100)}`, at: [-4, 0, 7], dist: 40, az: 0.3 });
+  const lessons = Object.entries(S.levels).filter(([, l]) => l.lesson).map(([id, l]) => ({ id: +id, t: l.lesson }));
+  lessons.slice(-2).forEach(ls => shots.push({ year: `บทเรียนที่${name}เขียนไว้ · ด่าน ${ls.id}`.replace(/\s+/g, ' '), text: `“${ls.t.length > 140 ? ls.t.slice(0, 140) + '…' : ls.t}”`, at: [-19, 0, -11], dist: 34, az: -0.5 }));
+  const P = St.computeProfile(), dom = Object.entries(P.pct).filter(([t]) => t !== '⚠').sort((a, b) => b[1] - a[1])[0];
+  shots.push({ year: `วันนี้ · ${Ec.sizeLabel()}`, text: `${SCHOOL_NAME}มีนักเรียน ${Ec.fmt(e.students)} คน ผ่านมา ${total} ภาคเรียน ${dom ? `แนวการนำที่ครูจำได้มากที่สุดคือ "${TAGS[dom[0]].th}"` : ''} ขอบคุณที่นำโรงเรียนมาถึงวันนี้`, at: [2, 0, 3], dist: 90, az: 0.65, show: null, last: true });
+  return shots;
+}
+function playRecap(done) {
+  const shots = recapShots(), el = $('#intro');
+  el.hidden = false; document.body.classList.add('cine'); el.classList.add('recap');
+  el.innerHTML = `<div class="ib top"><span class="recap-t">สารคดี${esc(SCHOOL_NAME)}</span></div><div class="ib bottom"><div class="cap"><b></b><p></p></div><button class="btn sm ghost skip">ข้าม</button></div>`;
+  Au.unlock(); closeModal();
+  const e = Ec.econ();
+  Sc.setFacilities([]); Sc.setLand(0); Sc.setStudentCount(START_STUDENTS); Sc.setLeadStage?.(0); Sc.setGuest?.(null);
+  let i = 0, timer = null, finished = false;
+  const finish = () => {
+    if (finished) return; finished = true; clearTimeout(timer);
+    document.body.classList.remove('cine'); el.classList.add('out');
+    setTimeout(() => { el.hidden = true; el.classList.remove('out', 'recap'); }, 500);
+    Sc.setCrisis(e.crisis); refreshHUD(); Sc.resetView(); done && done();
+  };
+  const next = () => {
+    if (i >= shots.length) return finish();
+    const s = shots[i++];
+    if (s.show) { Sc.setFacilities(s.show); Sc.setLand(Math.max(0, ...s.show.map(id => Ec.ITEMS.find(x => x.facility === id)?.needLand || 0))); }
+    if (s.show === null) { Sc.setFacilities(Object.keys(e.owned)); Sc.setLand(e.land); }
+    if (s.students) Sc.setStudentCount(s.students);
+    if (s.last) Sc.setStudentCount(e.students);
+    Sc.setCrisis(!!s.crisis);
+    if (s.stageTo != null) setTimeout(() => Sc.setLeadStage?.(s.stageTo), 2600);
+    if (s.fac) Sc.flyToFacility(s.fac);
+    else if (s.char) Sc.flyToChar(s.char);
+    else Sc.cinematic(s.at, s.dist, s.az, 3);
+    const cap = el.querySelector('.cap'); cap.classList.remove('show');
+    setTimeout(() => { cap.querySelector('b').textContent = s.year; cap.querySelector('p').textContent = s.text; cap.classList.add('show'); Au.sfx.page(); }, 300);
+    timer = setTimeout(next, s.last ? 7000 : Math.min(7500, 3800 + s.text.length * 25));
+  };
+  el.querySelector('.skip').addEventListener('click', finish);
+  next();
 }
 function checkStage(delay = 0) {
   const up = St.tryPromote();
