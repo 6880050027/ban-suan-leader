@@ -1,7 +1,8 @@
 // ตรวจโครงสร้างด่าน 51 ขึ้นไป: goto อยู่ในช่วง, evidence มีใน clues, timeout ถูกช่วง, ทุกเส้นทางยาวเท่า pathLen
 import { LEVELS4 } from '../js/data/levels4.js';
+import { LEVELS5 } from '../js/data/levels5.js';
 import assert from 'node:assert/strict';
-for (const L of LEVELS4) {
+for (const L of [...LEVELS4, ...LEVELS5]) {
   const n = L.steps.length;
   L.steps.forEach((st, i) => {
     const ids = (st.clues || []).map(c => c.id);

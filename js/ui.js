@@ -360,15 +360,15 @@ function questBoard() {
       return `<div class="q-row ${locked ? 'locked' : ''}" style="--area:${A.color}">
         <div class="q-num">${id}</div>
         <div class="q-main"><div class="q-title">${esc(L.title)} ${L.warning ? '<span class="chip warn-chip">มีคำเตือนเนื้อหา</span>' : ''}</div>
-          <div class="q-meta"><span class="area-dot"></span>${A.th} · <span class="dots" title="ความยาก">${DIFF_DOTS(L.difficulty)}</span> ${L.difficultyTh} · ${L.steps.length} ขั้น · ${best}</div>
-          <div class="q-reqs">เกณฑ์โรงเรียน: ${Rq.check(id).rows.map(r => r.ok ? esc(r.th) + ' ✓' : `<b>${esc(r.th)}</b>`).join(' · ')}</div>
+          <div class="q-meta"><span class="area-dot"></span>${A.th} · <span class="dots" title="ความยาก">${DIFF_DOTS(L.difficulty)}</span> ${L.difficultyTh} · ${L.pathLen || L.steps.length} ขั้น · ${best}</div>
+          ${Rq.check(id).rows.length ? `<div class="q-reqs">เกณฑ์โรงเรียน: ${Rq.check(id).rows.map(r => r.ok ? esc(r.th) + ' ✓' : `<b>${esc(r.th)}</b>`).join(' · ')}</div>` : ''}
           ${l?.status === 'pending' ? `<div class="btn-row left"><button class="btn sm" data-act="reqs" data-arg="${id}">ดูสิ่งที่ยังขาด</button></div>` : ''}</div>
         <div class="q-side">${statusChip(id)}${btn}</div></div>`;
     }).join('');
     return `<section class="tier ${open ? '' : 'locked'} ${tierDone(t) ? 'done' : ''}"><h3>${t.th} ${tierDone(t) ? '<span class="chip">ผ่านครบแล้ว</span>' : open ? '' : '<span class="chip">ผ่านช่วงก่อนหน้าให้ครบ รวมเกณฑ์โรงเรียน เพื่อปลดล็อก</span>'}</h3>${rows}</section>`;
   }).join('');
   openModal(`<h2>ภารกิจ ${LEVELS.length} ด่าน</h2>
-    <p class="small">งาน 4 ด้านวนสลับกัน ด้านละ 5 ด่าน ภายในช่วงเดียวกันเลือกเล่นด่านไหนก่อนก็ได้ ด่านจะนับว่าผ่านเมื่อได้ EXP ถึงเกณฑ์ <b>และ</b> โรงเรียนมีความพร้อมตามเกณฑ์ของด่าน (สิ่งก่อสร้างหรือของที่ต้องมี ตัวชี้วัดเก่ง ดี มีสุข สถานะการเงิน จำนวนนักเรียน หรือพื้นที่)</p>
+    <p class="small">งาน 4 ด้านวนสลับกัน ภายในช่วงเดียวกันเลือกเล่นด่านไหนก่อนก็ได้ ด่านจะนับว่าผ่านเมื่อได้ EXP ถึงเกณฑ์ <b>และ</b> โรงเรียนมีความพร้อมตามเกณฑ์ของด่าน (สิ่งก่อสร้างหรือของที่ต้องมี ตัวชี้วัดเก่ง ดี มีสุข สถานะการเงิน จำนวนนักเรียน หรือพื้นที่)</p>
     <div class="legend">${Object.values(AREAS).map(a => `<span style="--area:${a.color}"><i class="area-dot"></i>${a.th}</span>`).join('')}</div>
     ${tiers}`, { wide: true });
 }
