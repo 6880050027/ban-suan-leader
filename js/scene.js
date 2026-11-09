@@ -778,12 +778,12 @@ const FAC_POS = { garden: [17, 17, 3], bikepark: [-20, 16.8, 3.2], reno: [-19, -
   dome: [13, -32.5, 8], newbldg: [-9, -32.5, 13], roof: [-20, 11, 7.6], toiletReno: [17, 13, 4.3], electric: [2.6, 4, 4.6], smartboard: [-19, -7.4, 10.5], nurse: [20.8, 7.6, 3.6], band: [14.5, -4, 5.2],
   expansion: [0, -32.5, 2], land2: [44.5, -32.5, 4.5],
   treecare: [10, 16, 5], pump: [21.4, -14.2, 3], generator: [21.5, -11.3, 3], wifi: [-10.3, -14.9, 12.5], airpurifier: [-11.8, -17.6, 4], fire: [9.2, -7.7, 3.4], langlab: [3.5, -18.5, 5], maker: [-19.3, -32.5, 5], hall: [34.5, -32.5, 8.5],
-  land3: [72, 2, 3], land4: [72, -24, 3],
+  land3: [72, 2, 3], land4: [72, -24, 3], land5: [100, 9, 3], land6: [100, -31, 3], newbldg3: [100, 2, 16], newbldg4: [100, -24, 16],
   flowers: [-9, 17.9, 2.2], shadeTrees: [-29, -2, 6], hedge: [12, 18.6, 2.4], benches: [-26.8, 0, 2.4], pond: [-28, -17, 2.6], sala: [19.5, 2.5, 4.2], pathLamps: [16, 17.6, 4], schoolSign: [5.5, 17.9, 3.4], recycle: [-12.5, 13.6, 2.4], artWall: [-26.5, 9, 3.6], newbldg2: [66, 2, 12.5], gym: [78, 2, 9], scibldg: [66, -24, 9.5], housing: [77, -25, 6] };
 // ของที่ซื้อซ้ำได้และกิจกรรม: แสดงในเมืองเฉพาะภาคเรียนที่ใช้งาน [x, z, ความสูงป้าย]
 const EV_POS = { teacher: [-11, -4.6, 3.8], foreign: [-26, -4.4, 3.8], janitor: [-28.5, 12, 3.8], scilab: [-21, -4.4, 2.6], pd: [-16, -4.4, 3.2], coding: [-6.5, -4.6, 2.6],
   uniform: [5, -6, 2.6], sports: [6.5, 4.5, 2.6], camp: [-9, 10.5, 3.4], scout: [0.5, 10.5, 3.4], moral: [-4, 13.2, 3.8], museum: [-35, -6, 4.4], scholar: [-25, 6.6, 3.6], lunchSec: [-17, 5, 2.6], counselor: [-4.5, -13.6, 3.8], plcnet: [-3.4, -7.4, 3.2], langcamp: [-4, 3.6, 3.4], eyes: [21.5, 10.6, 2.6] };
-export function flyToFacility(id) { const p = FAC_POS[id] || EV_POS[id]; if (p) flyTo(new THREE.Vector3(p[0], 0, p[1]), id === 'cctv' || id === 'electric' ? 62 : id === 'land2' || id === 'expansion' || id === 'land3' || id === 'land4' ? 58 : 34, 0.5); }
+export function flyToFacility(id) { const p = FAC_POS[id] || EV_POS[id]; if (p) flyTo(new THREE.Vector3(p[0], 0, p[1]), id === 'cctv' || id === 'electric' ? 62 : /^land|^expansion/.test(id) ? 58 : 34, 0.5); }
 
 // ---------- ป้ายชื่อของที่จัดหาและกิจกรรม ----------
 let facNames = {}, tags = [], newKey = null, newUntil = 0;
@@ -798,6 +798,8 @@ function refreshTags() {
   if (landNow >= 2) add('land2', FAC_POS.land2, 'ที่ดินแปลงที่ 2 · ลานกีฬาและกิจกรรม', 'land');
   if (landNow >= 3) add('land3', FAC_POS.land3, 'ที่ดินแปลงที่ 3', 'land');
   if (landNow >= 4) add('land4', FAC_POS.land4, 'ที่ดินแปลงที่ 4', 'land');
+  if (landNow >= 5) add('land5', FAC_POS.land5, 'ที่ดินแปลงที่ 5', 'land');
+  if (landNow >= 6) add('land6', FAC_POS.land6, 'ที่ดินแปลงที่ 6', 'land');
   for (const ev of eventsNow) { const p = EV_POS[ev.id]; if (p && !ev.npc) add(ev.id, p, (facNames[ev.id] || ev.id) + (ev.n > 1 ? ` ×${ev.n}` : '') + ' · ภาคเรียนนี้', 'ev'); }
 }
 function updateTags(dist) {
@@ -883,6 +885,33 @@ export function setEvents(list) {
     } else if (EV_BUILD[id]) { EV_BUILD[id](eventGroup); eventsNow.push({ id, n }); }
   }
   refreshTags();
+}
+
+// ---------- คณะที่มาเยือน: รถบัสจอดหน้าโรงเรียน คณะเดินตามจุดที่ ผอ. เลือก ----------
+const GUEST_BUS = [-24, 22.4];
+let guestG = null, guestKeys = [], guestNow = null;
+export function setGuest(g) {
+  if ((g?.id || null) === guestNow) return;
+  if (guestG) { scene.remove(guestG); guestG = null; }
+  for (const k of guestKeys) { scene.remove(chars[k].group); chars[k].labelEl?.remove(); delete chars[k]; }
+  guestKeys = []; guestNow = g?.id || null;
+  if (!g || !scene) return;
+  guestG = new THREE.Group(); guestG.userData.dynamic = true; scene.add(guestG);
+  const bg = new THREE.Group(); bus(bg, 0, 0, g.color); bg.rotation.y = Math.PI / 2; bg.position.set(GUEST_BUS[0], 0, GUEST_BUS[1]); guestG.add(bg);
+  for (let k = 0; k < 5; k++) {
+    const m = makeCharacter(g.look); m.position.set(GUEST_BUS[0] - 2 + k * 1.1, 0.2, GUEST_BUS[1] - 2.4); scene.add(m);
+    const key = `guest_${k}`;
+    chars[key] = { group: m, home: m.position.clone(), target: null, wait: 1 + k * 0.4, wander: 1.2, phase: Math.random() * 6, npc: true, labelEl: k === 0 ? makeLabel(g.label, 'c-label ev-npc') : null };
+    guestKeys.push(key);
+  }
+}
+// พาคณะเดินไปจุดที่เลือก (อาคารในเมืองหรือสิ่งที่จัดหา) แล้วกล้องตามไป
+export function guestGoto(key) {
+  const f = FAC_POS[key], b = buildings[key];
+  const p = f ? new THREE.Vector3(f[0], 0, f[1]) : b ? new THREE.Vector3(b.center.x, 0, b.center.z) : new THREE.Vector3(GUEST_BUS[0], 0, GUEST_BUS[1]);
+  // คณะ "ลงรถ" ห่างจุดหมายไม่กี่ก้าว แล้วเดินเข้าไป เพื่อไม่ให้ผู้เล่นรอคณะเดินข้ามเมือง
+  guestKeys.forEach((k, i) => { const c = chars[k]; c.home = p.clone().add(new THREE.Vector3((i - 2) * 1.1, 0, 5 + (i % 2))); c.group.position.copy(c.home).add(new THREE.Vector3(0, 0.2, 5)); c.target = c.home.clone(); c.wait = 0; });
+  flyTo(p.clone().add(new THREE.Vector3(0, 0, 3)), 30, 0.62);
 }
 
 // ---------- เน้นของใหม่หลังจัดหา ----------
@@ -1102,16 +1131,26 @@ function buildFacilities() {
     const roof = mesh(new THREE.CylinderGeometry(4.6, 4.6, 8.4, 24, 1, false, 0, Math.PI), clay('#9B7BC8')); roof.rotation.z = Math.PI / 2; roof.rotation.y = Math.PI / 2; roof.scale.set(1, 1, 0.55); roof.position.set(34.5, 5, -32.5); g.add(roof);
     const door = mesh(rbox(2.4, 2.6, 0.2, 0.1), clay('#A86F4C')); door.position.set(34.5, 1.3, -28.95); g.add(door); }
   // ---- ที่ดินแปลงที่ 3–4 (ส่วนขยายด้านตะวันออก) และอาคารบนที่ดินใหม่ ----
-  const extLot = (id, z1, z2, label) => {
+  const extLot = (id, z1, z2, x = 72) => {
     const g = fgroup(id);
-    const d = mesh(rbox(28, 5, z2 - z1, 1.2, 3), clay('#C98F62')); d.position.set(72, -2.6, (z1 + z2) / 2); g.add(d);
-    const gr = mesh(rbox(27.4, 1.2, z2 - z1 - 0.6, 0.5, 3), clay('#9CCB7A')); gr.position.set(72, -0.6, (z1 + z2) / 2); g.add(gr);
-    const pad = mesh(rbox(24, 0.3, z2 - z1 - 4, 0.2), clay('#BFDC98'), { cast: false }); pad.position.set(72, 0.06, (z1 + z2) / 2); g.add(pad);
-    lotFence(g, 60, 84, z1 + 2, z2 - 2);
+    const d = mesh(rbox(28, 5, z2 - z1, 1.2, 3), clay('#C98F62')); d.position.set(x, -2.6, (z1 + z2) / 2); g.add(d);
+    const gr = mesh(rbox(27.4, 1.2, z2 - z1 - 0.6, 0.5, 3), clay('#9CCB7A')); gr.position.set(x, -0.6, (z1 + z2) / 2); g.add(gr);
+    const pad = mesh(rbox(24, 0.3, z2 - z1 - 4, 0.2), clay('#BFDC98'), { cast: false }); pad.position.set(x, 0.06, (z1 + z2) / 2); g.add(pad);
+    lotFence(g, x - 12, x + 12, z1 + 2, z2 - 2);
     return g;
   };
   extLot('land3', -11, 15);
   extLot('land4', -37, -11);
+  extLot('land5', -11, 15, 100);
+  extLot('land6', -37, -11, 100);
+  // อาคารเรียนหลังที่ 3–4 (4 ชั้น)
+  for (const [id, z, roof] of [['newbldg3', 2, '#C0605A'], ['newbldg4', -24, '#5B8DD6']]) {
+    g = fgroup(id);
+    const sg = new THREE.Group(); sg.position.set(100, 0, z); g.add(sg);
+    const b = mesh(rbox(16, 12, 6.5, 0.35), clay('#FFF3E2')); b.position.y = 6; sg.add(b);
+    windowsOn(sg, 14.6, 12, 6.5, 4, '#FFE6A8');
+    const r = pitchedRoof(sg, 16, 6.5, 3, roof); r.position.y = 11.95;
+  }
   // อาคารเรียนหลังที่ 2
   g = fgroup('newbldg2');
   { const sg = new THREE.Group(); sg.position.set(66, 0, 2); g.add(sg);
@@ -1145,7 +1184,7 @@ function lotFence(g, x1, x2, z1, z2, gate = false) {
 export function setFacilities(list) {
   const set = new Set(list || []);
   for (const [id, g] of Object.entries(facilities)) {
-    if (id === 'expansion' || id === 'land2' || id === 'land3' || id === 'land4') continue;
+    if (id === 'expansion' || /^land\d/.test(id)) continue;
     const on = set.has(id);
     if (on && !g.visible) { g.visible = true; g.scale.set(1, 0.01, 1); g.userData.grow = 0; }
     if (!on) g.visible = false;
@@ -1154,12 +1193,14 @@ export function setFacilities(list) {
   facilities.land2.visible = landNow >= 2;
   facilities.land3.visible = landNow >= 3;
   facilities.land4.visible = landNow >= 4;
+  facilities.land5.visible = landNow >= 5;
+  facilities.land6.visible = landNow >= 6;
   ownedNow = set; refreshTags();
 }
 let landNow = 0, ownedNow = new Set();
 export function setLand(n) {
   const was = landNow; landNow = n || 0;
-  for (const [id, need] of [['expansion', 1], ['land2', 2], ['land3', 3], ['land4', 4]]) {
+  for (const [id, need] of [['expansion', 1], ['land2', 2], ['land3', 3], ['land4', 4], ['land5', 5], ['land6', 6]]) {
     const g = facilities[id]; const on = landNow >= need || (id === 'expansion' && (ownedNow.has('dome') || ownedNow.has('newbldg')));
     if (on && !g.visible) { g.visible = true; g.scale.set(1, 0.01, 1); g.userData.grow = 0; }
     if (!on) g.visible = false;
@@ -1654,7 +1695,7 @@ function tick() {
     if (flyAnim.t >= 1) flyAnim = null;
   }
   // จำกัดการเลื่อนให้อยู่บนเกาะ
-  controls.target.x = THREE.MathUtils.clamp(controls.target.x, -55, landNow >= 3 ? 84 : 58);
+  controls.target.x = THREE.MathUtils.clamp(controls.target.x, -55, landNow >= 5 ? 112 : landNow >= 3 ? 84 : 58);
   controls.target.z = THREE.MathUtils.clamp(controls.target.z, -40, 42);
   controls.target.y = 0;
   controls.update();

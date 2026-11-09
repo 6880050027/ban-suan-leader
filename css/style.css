@@ -570,3 +570,12 @@ body.visiting #hud, body.visiting #dock, body.visiting #tracker { display: none;
 .opt.locked { opacity: .5; }
 .opt .stage-req { display: block; margin-top: 4px; font-size: .72rem; color: var(--st); font-weight: 600; }
 .opt.stage-opt { border-color: var(--st, #5B8DD6); }
+
+/* คณะที่มาเยือน */
+.guest-chip { margin-left: 6px; padding: 2px 10px; border-radius: 999px; border: 0; background: #F2C14E; color: #3A2A10; font: inherit; font-size: .8em; cursor: pointer; animation: guestPulse 1.6s ease-in-out infinite; }
+.guest-chip[hidden] { display: none; }
+@keyframes guestPulse { 50% { transform: scale(1.06); } }
+.guest-head { border-left: 6px solid var(--gc, #F2C14E); padding-left: 10px; margin-bottom: 8px; }
+.guest-stops { display: grid; gap: 8px; }
+.opt.gstop.sel { outline: 3px solid #F2C14E; background: #FFF6DD; }
+.opt.gstop:disabled { opacity: .5; cursor: not-allowed; }

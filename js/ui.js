@@ -11,6 +11,7 @@ import * as Aw from './awards.js';
 import * as Ec from './economy.js';
 import * as Rq from './requirements.js';
 import { QUIZ } from './data/quiz.js';
+import { GUESTS, GUEST } from './data/guests.js';
 import { CARDS, CARD } from './data/cards.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -86,6 +87,7 @@ const ACTIONS = {
   menu: () => menuModal(),
   quiz: () => quizModal(),
   reqs: arg => openModal(`<h2>ด่าน ${arg} · ${esc(St.LEVEL_BY_ID[+arg].title)}</h2>${reqBox(+arg, { title: 'สิ่งที่โรงเรียนยังต้องมีก่อนนับว่าผ่าน' })}<div class="btn-row"><button class="btn" data-act="board">กลับหน้าภารกิจ</button></div>`, { wide: true }),
+  guest: arg => guestStart(arg),
   seeNew: arg => { closeModal(); Sc.showNew(arg); },
   staffReq: arg => { const r = Ec.requestStaff(arg); toast(r.ok ? (arg === 'deputy' ? 'ยื่นขออัตรารองผู้อำนวยการต่อเขตพื้นที่แล้ว ผลจะออกหลังผ่านด่านถัดไป' : 'ยื่นขออัตราครูตามเกณฑ์แล้ว ผลจะออกหลังผ่านด่านถัดไป') : r.why, r.ok ? 'good' : ''); financeModal('overview'); refreshHUD(); },
   cast: arg => castModal(arg === 'first'),
@@ -105,6 +107,7 @@ export function refreshHUD() {
   $('#hud-rank-sub').textContent = r.sub;
   { const sg = STAGES[St.stage()], el = $('#hud-stage'); if (el) { el.textContent = sg.th; el.style.setProperty('--st', sg.color); el.title = `ขั้นภาวะผู้นำ: ${sg.th} (${sg.en}) · วิทยฐานะในเกม: ${sg.rankTh}`; } }
   Sc.setLeadStage?.(St.stage());
+  syncGuest();
   const lo = r.min, hi = r.next ? r.next.min : Math.max(exp, r.min + 1);
   $('#hud-exp-bar').style.width = (r.next ? Math.min(100, 100 * (exp - lo) / (hi - lo)) : 100) + '%';
   $('#hud-exp').textContent = r.next ? `${exp} / ${r.next.min} EXP` : `${exp} EXP · ระดับสูงสุด`;
@@ -635,6 +638,7 @@ function finishLevelUI(L) {
     setTimeout(() => { Au.sfx.exp(); toast(`ได้รับงบรอบภาคเรียน · รายหัว +${Ec.fmt(tick.inPer)} · ค่าสาธารณูปโภคและค่าจ้าง −${Ec.fmt(tick.expense)} บาท<br>นักเรียน ${d >= 0 ? '+' : ''}${d} คน (รวม ${Ec.fmt(tick.students)} คน)`, 'good'); }, 1300);
     if (tick.full) setTimeout(() => toast('จำนวนนักเรียนเต็มความจุแล้ว ต้องสร้างอาคารเรียนเพิ่ม ดูขั้นตอนที่หน้างบประมาณ แท็บ "สร้างอาคาร"', 'rank'), 2400);
     if (tick.crisisStart) setTimeout(() => crisisModal(), 1800);
+    (tick.capNews || []).forEach((n, k) => setTimeout(() => toast(n.ok ? `เขตพื้นที่อนุมัติงบลงทุน <b>${esc(Ec.ITEM[n.item].th)}</b> แล้ว สร้างได้ที่แท็บ "สร้างอาคาร"` : `คำของบลงทุน <b>${esc(Ec.ITEM[n.item].th)}</b> ไม่ผ่าน: ${esc(n.why)}`, n.ok ? 'rank' : ''), 2000 + k * 900));
     if (tick.crisisEnd) setTimeout(() => toast('โรงเรียนพ้นภาวะวิกฤตทางการเงินแล้ว', 'rank'), 1800);
     if (tick.staffGot?.length) { (St.S.staffCards ||= []).push(...tick.staffGot.map(g => ({ kind: g.kind, id: g.who?.id, n: g.n }))); St.save(); }
     if (!tick.staffGot?.length) { const gp = Ec.staffGap(), st = Ec.staff(); if (gp.deputies > 0 && !st.pending.some(p => p.kind === 'deputy')) setTimeout(() => toast(`นักเรียน ${Ec.fmt(tick.students)} คน เกินเกณฑ์รองผู้อำนวยการที่มีอยู่ ยื่นขออัตราเพิ่มได้ที่หน้างบประมาณ`, 'rank'), 3200); }
@@ -649,6 +653,7 @@ function finishLevelUI(L) {
 function afterLevelChange(id, beforeRank, nextTierOpenBefore) {
   refreshHUD(); syncWorld(); grantAwards();
   checkStage(700);
+  { const g = guestDue(), G = St.S.guests; if (g && !G[g.id]) { G[g.id] = { arrived: Date.now() }; St.save(); syncGuest(); setTimeout(() => toast(`รถบัสของ<b>${esc(g.short)}</b>มาจอดหน้าโรงเรียนแล้ว กดป้าย “${esc(g.short)} รออยู่” ด้านบนเพื่อต้อนรับ`, 'rank'), 1600); } }
   const t = St.tierOf(id).id;
   if (t < TIERS.length && !nextTierOpenBefore && St.tierOpen(t + 1)) toast(`ปลดล็อก <b>${TIERS[t].th}</b>`, 'rank');
   if (t === 2 && TIERS[1].levels.every(St.levelDone) && !St.S.debrief.midShown) { St.S.debrief.midShown = true; St.save(); setTimeout(() => leaderBook('mid'), 600); }
@@ -819,6 +824,7 @@ function leaderBook(kind) {
         <div class="scores"><div><b>${P.knowledge ?? '–'}%</b><span>ความรู้ระเบียบ</span></div><div><b>${P.fitScore ?? '–'}%</b><span>ความสอดคล้องกับความพร้อมของบุคลากร</span></div><div class="${P.flag > 30 ? 'hi' : ''}"><b>${P.flag}%</b><span>พฤติกรรมนิ่งเฉย</span></div></div></section>
     </div>
     ${stageSection(P)}
+    ${guestSection()}
     <section class="card"><h3>แนวการนำ 7 แนวและพฤติกรรมนิ่งเฉย</h3><p class="tiny">ร้อยละ = คะแนนที่ท่านเลือก ÷ คะแนนสูงสุดที่แนวนั้นเปิดให้เลือกในขั้นที่ท่านผ่าน (แนวหลัก 2 คะแนน แนวรอง 1 คะแนน) วิธีนี้ลดอคติที่เกิดจากจำนวนตัวเลือกของแต่ละแนวในคลังสถานการณ์ไม่เท่ากัน</p>${tagRows}</section>
     ${ex ? `<section class="card soft"><h3>ตัวอย่างการตัดสินใจของท่านที่สะท้อนแนวโน้มนี้</h3><ul class="tight">${ex}</ul></section>` : ''}
     <section class="card soft"><h3>ข้อเสนอร่วมของทุกโปรไฟล์</h3><p class="small">${esc(COMMON_ADVICE)} (<a href="${REF.robinson}" target="_blank" rel="noopener">Robinson et al., 2008</a> · <a href="${REF.h1994}" target="_blank" rel="noopener">Hallinger et al., 1994</a> · <a href="${REF.hl2014}" target="_blank" rel="noopener">Hallinger & Lee, 2014</a>)</p></section>
@@ -1084,7 +1090,7 @@ function financeModal(tab = 'overview') {
   let body = '';
   if (tab === 'overview') {
     const dons = e.donations.map(d => `<li>${Ec.fmt(d.amount)} บาท · เพื่อ${Ec.PURPOSE_TH[d.purpose]} <span class="tiny">(${esc(d.from)})</span><div class="don-uses">ใช้ซื้อได้ (ราคาไม่เกินยอดคงเหลือ): ${Ec.donationUses(d.purpose, Ec.donationTotal(d.purpose)).map(it => `<button class="chip don-item" data-act="buy" data-arg="${it.id}">${esc(shortName(it.th))} · ${Ec.fmt(it.price)}</button>`).join(' ')}</div></li>`).join('');
-    const caps = e.capital.filter(c => !c.used).map(c => `<li>${esc(Ec.ITEM[c.item].th)} · ${c.ready ? 'ได้รับจัดสรรแล้ว พร้อมใช้' : `รอการจัดสรร (เมื่อผ่านครบ ${c.readyAfter} ด่าน)`}</li>`).join('');
+    const caps = e.capital.filter(c => !c.used || c.rejected).slice(-6).map(c => c.rejected ? `<li class="muted">${esc(Ec.ITEM[c.item].th)} · ไม่ผ่าน: ${esc(c.rejected)}</li>` : null).filter(Boolean).concat(e.capital.filter(c => !c.used).map(c => `<li>${esc(Ec.ITEM[c.item].th)} · ${c.ready ? 'ได้รับจัดสรรแล้ว พร้อมใช้' : `รอผลพิจารณาจากเขต (แจ้งผลเมื่อผ่านครบ ${c.readyAfter} ด่าน อาจไม่ผ่าน)`}</li>`)).join('');
     body = `
       ${e.crisis ? `<div class="crisis-box"><b>โรงเรียนอยู่ในภาวะวิกฤตทางการเงิน</b><p class="small">เงินรายหัวรวมกับเงินรายได้ต่ำกว่า ${Ec.fmt(Ec.crisisLine())} บาท นักเรียนจะลดลงทุกภาคเรียน ตัวชี้วัดเก่ง ดี มีสุข ลดลง 15 คะแนน ทางออกคือทำเควสระดมทรัพยากรอย่างถูกระเบียบ และชะลอการซื้อ</p></div>` : ''}
       <div class="fin-top">
@@ -1109,7 +1115,7 @@ function financeModal(tab = 'overview') {
       if (b.step === 'done') { state = 'สร้างแล้ว'; act = `<button class="btn sm" data-act="seeNew" data-arg="${it.facility}">ดูในเมือง</button>`; }
       else if (b.step === 'lvlock') state = `เปิดเมื่อผ่านครบ ${b.need} ด่าน`;
       else if (b.step === 'land') { state = `ต้องมีที่ดินแปลงที่ ${b.need} ก่อน (มี ${e.land || 0} แปลง)`; act = `<button class="btn sm go" data-act="quest" data-arg="land">ขยายที่ดิน</button>`; }
-      else if (b.step === 'wait') state = `ยื่นคำขอแล้ว รอเขตจัดสรรงบ (ผ่านอีก ${b.left} ด่าน)`;
+      else if (b.step === 'wait') state = `ยื่นคำขอแล้ว รอผลพิจารณาจากเขต (ผ่านอีก ${b.left} ด่าน และอาจไม่ผ่าน)`;
       else if (b.step === 'request') { state = 'ต้องยื่นคำขอตั้งงบลงทุนก่อน'; act = b.questOk.ok ? `<button class="btn sm go" data-act="quest" data-arg="capital">ยื่นของบลงทุน</button>` : `<span class="tiny">${esc(b.questOk.why)}</span>`; }
       else { state = b.viaCapital ? 'ได้รับจัดสรรงบลงทุนแล้ว พร้อมสร้าง' : 'สร้างได้ (เลือกแหล่งเงินให้ถูกประเภท)'; act = `<button class="btn sm primary" data-act="buy" data-arg="${it.id}">สร้าง</button>`; }
       return `<div class="build-row ${b.step}"><div><b>${esc(it.th)}</b><span class="small">${esc(it.desc || '')}${it.capacity && !(it.desc || '').includes('รับนักเรียนเพิ่ม') && !(it.desc || '').includes('รองรับนักเรียนเพิ่ม') ? ` · รับนักเรียนเพิ่ม ${Ec.fmt(it.capacity)} คน` : ''} · ${Ec.fmt(it.price)} บาท</span><span class="build-state">${state}</span></div><div class="build-act">${act}</div></div>`;
@@ -1194,7 +1200,7 @@ function questModal(id, step = 0, answers = []) {
     refreshHUD(); grantAwards();
     return openModal(`<h2>${esc(q.th)}</h2><div class="result ${r.factor ? 'pass' : 'fail'}">${esc(r.text)}</div>
       ${answers.map((a, i) => `<div class="fb ${a.v === 'bad' ? 'illegal' : a.v === 'ok' ? 'ok' : 'undetermined'}"><p class="small">ขั้นที่ ${i + 1}</p><p>${esc(a.t)}</p><p class="small">${esc(a.why)}${a.src ? ` (<a href="${a.src}" target="_blank" rel="noopener">แหล่งอ้างอิง</a>)` : ''}</p></div>`).join('')}
-      <div class="btn-row">${q.landQuest && !r.bad ? `<button class="btn primary" data-act="seeNew" data-arg="${['expansion', 'land2', 'land3', 'land4'][Math.max(0, Ec.econ().land - 1)]}">ดูที่ดินใหม่ในเมือง</button>` : ''}<button class="btn ${q.landQuest && !r.bad ? '' : 'primary'}" data-act="finance" data-arg="overview">ดูงบประมาณ</button><button class="btn ghost" data-act="close">กลับเมือง</button></div>`, { wide: true });
+      <div class="btn-row">${q.landQuest && !r.bad ? `<button class="btn primary" data-act="seeNew" data-arg="${['expansion', 'land2', 'land3', 'land4', 'land5', 'land6'][Math.max(0, Ec.econ().land - 1)]}">ดูที่ดินใหม่ในเมือง</button>` : ''}<button class="btn ${q.landQuest && !r.bad ? '' : 'primary'}" data-act="finance" data-arg="overview">ดูงบประมาณ</button><button class="btn ghost" data-act="close">กลับเมือง</button></div>`, { wide: true });
   }
   const st = q.steps[step];
   openModal(`<h2>${esc(q.th)}</h2><div class="step-prog">${q.steps.map((_, k) => `<i class="${k < step ? 'done' : k === step ? 'cur' : ''}"></i>`).join('')}</div>
@@ -1517,6 +1523,98 @@ const STAGE_LINES = [
   'มีไอเดียโครงการใหม่ที่ตรงกับเป้าหมายของโรงเรียน อยากเล่าให้ท่านฟังครับ/ค่ะ',
   'เรื่องนี้ทีมเราจัดการเองได้ครับ/ค่ะ วันศุกร์จะสรุปผลให้ท่านดู',
 ];
+// ---------------- คณะที่มาเยือน ----------------
+const GV = { ok: 2, warn: 1, bad: 0 };
+function guestDue() { const G = (St.S.guests ||= {}); return GUESTS.find(g => !G[g.id]?.done && St.completedCount() >= g.afterDone) || null; }
+function syncGuest() {
+  const g = guestDue(); Sc.setGuest?.(g);
+  const el = $('#hud-guest'); if (!el) return;
+  el.hidden = !g; if (g) { el.textContent = `${g.short} รออยู่`; el.dataset.arg = g.id; }
+}
+let guestRun = null;
+function guestStart(id) {
+  const g = GUEST[id]; if (!g || St.S.guests?.[id]?.done) return;
+  if (currentAttemptLevel()) return toast('เล่นด่านที่ค้างอยู่ให้จบก่อน แล้วค่อยรับคณะ');
+  guestRun = { id, prep: null, picks: [], answers: [], close: null };
+  Sc.guestGoto?.('__bus');
+  openModal(`<div class="guest-head" style="--gc:${g.color}"><span class="chip">คณะมาเยือน</span><h2>${esc(g.th)}</h2></div>
+    <p>${esc(g.intro)}</p><p class="small"><b>สิ่งที่คณะอยากเห็น:</b> ${esc(g.wants)}</p>
+    <p class="tiny">ท่านจะเตรียมรับคณะ เลือกจุดพาชม ${g.pickN} จุด แล้วตอบคำถามของคณะในแต่ละจุด ผลมีต่อชื่อเสียงของโรงเรียนในภาคเรียนถัดไปและขวัญกำลังใจของครู</p>
+    <div class="btn-row"><button class="btn primary" id="g-go">เริ่มรับคณะ</button><button class="btn ghost" data-act="close">ไว้ภายหลัง</button></div>`, { wide: true });
+  $('#g-go').addEventListener('click', () => guestAsk(g.prep, 'เตรียมรับคณะ', null, o => { guestRun.prep = o; guestPick(); }));
+}
+// ถามหนึ่งข้อ แสดงผลทันที แล้วไปต่อ
+function guestAsk(item, title, who, next) {
+  const g = GUEST[guestRun.id];
+  openModal(`<div class="guest-head" style="--gc:${g.color}"><span class="chip">${esc(g.short)}</span><h2>${esc(title)}</h2></div>
+    ${who ? `<p class="small">${esc(who)}ถาม</p>` : ''}<p>${esc(item.q)}</p>
+    <div class="opts">${shuffled(item.opts.length).map((k, n) => `<button class="opt" data-k="${k}"><span class="opt-l">${THAI_LETTERS[n]}</span><span class="opt-t">${esc(item.opts[k].t)}</span></button>`).join('')}</div>`, { wide: true, closable: false });
+  $('#modal-body').querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => {
+    const o = item.opts[+b.dataset.k];
+    (o.v === 'bad' ? Au.sfx.bad : Au.sfx.good)();
+    $('#modal-body').querySelector('.opts').outerHTML = `<div class="fb ${o.v === 'bad' ? 'illegal' : o.v === 'ok' ? 'ok' : 'undetermined'}"><p>${esc(o.t)}</p><p class="small">${esc(o.why)}${o.src ? ` (<a href="${o.src}" target="_blank" rel="noopener">แหล่งอ้างอิง</a>)` : ''}</p></div>
+      <div class="btn-row"><button class="btn primary" id="g-next">ต่อไป</button></div>`;
+    $('#g-next').addEventListener('click', () => next(o));
+  }));
+}
+function guestPick() {
+  const g = GUEST[guestRun.id], e = Ec.econ(), sel = new Set();
+  openModal(`<div class="guest-head" style="--gc:${g.color}"><span class="chip">${esc(g.short)}</span><h2>เลือกจุดพาชม ${g.pickN} จุด</h2></div>
+    <p class="small">คณะอยากเห็น: ${esc(g.wants)}</p>
+    <div class="guest-stops">${g.stops.map((s, k) => { const lock = s.need && !e.owned[s.need];
+      return `<button class="opt gstop" data-k="${k}" ${lock ? 'disabled' : ''}><span class="opt-t">${esc(s.th)}${lock ? ' <small>(โรงเรียนยังไม่มี)</small>' : ''}</span></button>`; }).join('')}</div>
+    <div class="btn-row"><button class="btn primary" id="g-tour" disabled>พาคณะเดินชม (เลือกแล้ว 0/${g.pickN})</button></div>`, { wide: true, closable: false });
+  const go = $('#g-tour');
+  $('#modal-body').querySelectorAll('.gstop').forEach(b => b.addEventListener('click', () => {
+    const k = +b.dataset.k;
+    if (sel.has(k)) sel.delete(k); else if (sel.size < g.pickN) sel.add(k);
+    b.classList.toggle('sel', sel.has(k));
+    go.disabled = sel.size !== g.pickN; go.textContent = `พาคณะเดินชม (เลือกแล้ว ${sel.size}/${g.pickN})`;
+  }));
+  go.addEventListener('click', () => { guestRun.picks = [...sel].sort((a, b) => a - b); guestStop(0); });
+}
+function guestStop(i) {
+  const g = GUEST[guestRun.id];
+  if (i >= guestRun.picks.length) { Sc.guestGoto?.('__bus'); return guestAsk(g.close, 'ก่อนคณะเดินทางกลับ', null, o => { guestRun.close = o; guestEnd(); }); }
+  const s = g.stops[guestRun.picks[i]];
+  closeModal(); Sc.guestGoto?.(s.at);
+  toast(`พาคณะไปที่ <b>${esc(s.th)}</b> (${i + 1}/${guestRun.picks.length})`);
+  setTimeout(() => guestAsk(s, `จุดที่ ${i + 1} · ${s.th}`, s.who, o => { guestRun.answers[i] = o; guestStop(i + 1); }), 2400);
+}
+// คะแนน: การเตรียม + (ความตรงของจุด + คำตอบ) ต่อจุด + การตัดสินใจก่อนกลับ
+function guestScore(g, run) {
+  const max = 2 + run.picks.length * 4 + 2;
+  const got = GV[run.prep.v] + run.picks.reduce((t, k, i) => t + g.stops[k].fit + GV[run.answers[i].v], 0) + GV[run.close.v];
+  return Math.round(got / max * 100);
+}
+function guestEnd() {
+  const g = GUEST[guestRun.id], run = guestRun, e = Ec.econ();
+  const pct = guestScore(g, run);
+  const grade = pct >= 80 ? 'ดีเยี่ยม' : pct >= 60 ? 'ดี' : 'ต้องพัฒนา';
+  const boost = Math.round((pct - 60) / 2 * (g.id === 'onesqa' ? 1.5 : 1));
+  const mor = pct >= 80 ? 4 : pct >= 60 ? 1 : -4;
+  e.repBoost = (e.repBoost || 0) + boost;
+  for (const c of Object.values(St.S.chars)) c.morale = Math.max(10, Math.min(100, c.morale + mor));
+  St.S.guests[g.id] = { done: Date.now(), pct, grade, boost };
+  St.save(); guestRun = null; syncGuest(); refreshHUD();
+  (pct >= 60 ? Au.sfx.levelClear : Au.sfx.levelFail)();
+  const weak = run.picks.filter(k => g.stops[k].fit === 0).map(k => g.stops[k].th);
+  openModal(`<div class="guest-head" style="--gc:${g.color}"><span class="chip">${esc(g.short)}</span><h2>สรุปการรับคณะ</h2></div>
+    <div class="result ${pct >= 60 ? 'pass' : 'fail'}"><b>${pct}</b> / 100 · ${g.id === 'onesqa' ? 'ผลในเกม' : 'ความประทับใจของคณะ'}: <b>${grade}</b></div>
+    <ul class="tight small">
+      <li>ชื่อเสียงของโรงเรียน: นักเรียนภาคเรียนถัดไป ${boost >= 0 ? '+' : ''}${boost} คน (นอกเหนือจากการเติบโตปกติ)</li>
+      <li>ขวัญกำลังใจของครูทุกคน ${mor >= 0 ? '+' : ''}${mor}</li>
+      ${weak.length ? `<li>จุด “${esc(weak.join(', '))}” ไม่ตรงกับสิ่งที่คณะอยากเห็น จึงช่วยภาพรวมได้น้อย</li>` : ''}
+    </ul>
+    ${g.id === 'onesqa' ? '<p class="tiny">ระดับผลในเกมเป็นระดับสมมุติ ไม่ใช่รูปแบบรายงานผลจริงของ สมศ.</p>' : ''}
+    <div class="btn-row"><button class="btn primary" data-act="close">กลับเมือง</button><button class="btn" data-act="book">ดูในสมุดผู้นำ</button></div>`, { wide: true });
+  Sc.resetView?.();
+}
+function guestSection() {
+  const G = St.S.guests || {}, done = GUESTS.filter(g => G[g.id]?.done);
+  if (!done.length) return '';
+  return `<section class="card"><h3>คณะที่มาเยือน</h3><ul class="tight">${done.map(g => `<li>${esc(g.short)} · ${G[g.id].pct}/100 · ${esc(G[g.id].grade)}</li>`).join('')}</ul></section>`;
+}
 function checkStage(delay = 0) {
   const up = St.tryPromote();
   if (up) setTimeout(() => stageCeremony(up), delay);

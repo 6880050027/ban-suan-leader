@@ -141,6 +141,8 @@ ITEMS.push(
   { id: 'newbldg2', group: 'building', minLv: 14, needLand: 3, th: 'อาคารเรียนหลังที่ 2 (แบบมาตรฐาน)', price: 5200000, cat: 'building', facility: 'newbldg2', rep: 12, keng: 3, capitalOnly: true, capacity: 400, desc: 'รองรับนักเรียนเพิ่ม 400 คน สร้างบนที่ดินแปลงที่ 3', rules: CAP_RULES('newbldg2') },
   { id: 'gym', group: 'building', minLv: 18, needLand: 3, th: 'โรงยิมเนเซียม', price: 3600000, cat: 'building', facility: 'gym', rep: 7, suk: 4, capitalOnly: true, desc: 'สนามกีฬาในร่ม ใช้สอนพลศึกษาช่วงฝนและฝุ่น สร้างบนที่ดินแปลงที่ 3', rules: CAP_RULES('gym') },
   { id: 'scibldg', group: 'building', minLv: 24, needLand: 4, th: 'อาคารปฏิบัติการวิทยาศาสตร์', price: 4200000, cat: 'learning', facility: 'scibldg', rep: 9, keng: 5, capitalOnly: true, desc: 'ห้องปฏิบัติการ 6 ห้องพร้อมระบบความปลอดภัย สร้างบนที่ดินแปลงที่ 4', rules: CAP_RULES('scibldg') },
+  { id: 'newbldg3', group: 'building', minLv: 30, needLand: 5, th: 'อาคารเรียนหลังที่ 3 (แบบมาตรฐาน 4 ชั้น)', price: 6800000, cat: 'building', facility: 'newbldg3', rep: 12, keng: 3, capitalOnly: true, capacity: 500, desc: 'รองรับนักเรียนเพิ่ม 500 คน สร้างบนที่ดินแปลงที่ 5 (ราคาในเกมเป็นตัวเลขสมมุติ)', rules: CAP_RULES('newbldg3') },
+  { id: 'newbldg4', group: 'building', minLv: 40, needLand: 6, th: 'อาคารเรียนหลังที่ 4 (แบบมาตรฐาน 4 ชั้น)', price: 7000000, cat: 'building', facility: 'newbldg4', rep: 12, keng: 3, capitalOnly: true, capacity: 500, desc: 'รองรับนักเรียนเพิ่ม 500 คน ทำให้โรงเรียนรับได้ราว 2,700 คน สร้างบนที่ดินแปลงที่ 6 (ราคาในเกมเป็นตัวเลขสมมุติ)', rules: CAP_RULES('newbldg4') },
   { id: 'housing', group: 'building', minLv: 20, needLand: 4, th: 'บ้านพักครู 8 หน่วย', price: 2400000, cat: 'building', facility: 'housing', rep: 4, suk: 4, capitalOnly: true, desc: 'ช่วยครูที่บ้านไกลและครูบรรจุใหม่ สร้างบนที่ดินแปลงที่ 4', rules: CAP_RULES('housing') },
 );
 // ภูมิทัศน์และของตกแต่ง: ใช้เงินรายได้สถานศึกษาหรือเงินบริจาคเพื่ออาคารสถานที่ได้ ส่วนเงินรายหัวยังไม่ตัดสิน
@@ -241,10 +243,18 @@ export const QUESTS = [
           { t: 'โดมอเนกประสงค์และลานกีฬา พร้อมแผนการใช้งาน', v: 'ok', cap: 'dome', why: 'สิ่งก่อสร้างประกอบที่มีแผนการใช้ชัดเจนสามารถเสนอขอได้ตามขั้นตอนเดียวกัน', src: SRC.capital2560 },
           { t: 'หอประชุมอเนกประสงค์ พร้อมหลักฐานว่ามีที่ดินรองรับและแผนใช้เป็นที่พักพิงยามภัยพิบัติ', v: 'ok', cap: 'hall', why: 'สิ่งก่อสร้างที่มีที่ดินพร้อมและแผนการใช้ชัดเจนเสนอขอได้ตามขั้นตอนเดียวกัน แต่เขตจะจัดลำดับตามความจำเป็น', src: SRC.capital2560 },
           { t: 'อาคารเรียนหลังที่ 2 พร้อมข้อมูลนักเรียนที่เกินความจุและหลักฐานที่ดินแปลงที่ 3', v: 'ok', cap: 'newbldg2', why: 'เขตพื้นที่จัดลำดับคำขออาคารเรียนตามความขาดแคลนห้องเรียนและความพร้อมของที่ดิน', src: SRC.capital2560 },
+          { t: 'อาคารเรียนหลังที่ 3 พร้อมข้อมูลนักเรียนที่เกินความจุและหลักฐานที่ดินแปลงที่ 5', v: 'ok', cap: 'newbldg3', why: 'เขตพื้นที่จัดลำดับคำขออาคารเรียนตามความขาดแคลนห้องเรียนและความพร้อมของที่ดิน', src: SRC.capital2560 },
+          { t: 'อาคารเรียนหลังที่ 4 พร้อมข้อมูลนักเรียนที่เกินความจุและหลักฐานที่ดินแปลงที่ 6', v: 'ok', cap: 'newbldg4', why: 'เขตพื้นที่จัดลำดับคำขออาคารเรียนตามความขาดแคลนห้องเรียนและความพร้อมของที่ดิน', src: SRC.capital2560 },
           { t: 'โรงยิมเนเซียม พร้อมแผนการใช้สอนพลศึกษาและเปิดให้ชุมชนใช้นอกเวลา', v: 'ok', cap: 'gym', why: 'สิ่งก่อสร้างที่มีแผนการใช้ชัดเจนเสนอขอได้ แต่มักได้ลำดับหลังอาคารเรียน', src: SRC.capital2560 },
           { t: 'อาคารปฏิบัติการวิทยาศาสตร์ พร้อมแผนการเรียนการสอนและระบบความปลอดภัย', v: 'ok', cap: 'scibldg', why: 'เสนอขอเป็นรายการได้ตามขั้นตอนเดียวกัน', src: SRC.capital2560 },
           { t: 'บ้านพักครู พร้อมข้อมูลครูที่บ้านไกลและอัตราการขอย้าย', v: 'ok', cap: 'housing', why: 'เสนอขอเป็นรายการได้ เขตจัดลำดับตามความจำเป็น', src: SRC.capital2560 },
           { t: 'ขอเป็นวงเงินก้อนโดยไม่ระบุรายการ เพื่อความยืดหยุ่น', v: 'bad', why: 'งบลงทุนจัดสรรเป็นรายการ คำขอที่ไม่ระบุรายการจะไม่ได้รับการพิจารณา', src: SRC.capital2560 },
+        ] },
+      { q: 'เขตพื้นที่ให้แนบหลักฐานประกอบคำขอ ท่านจะแนบอะไร (หลักฐานมีผลต่อโอกาสได้รับอนุมัติ ผลจะออกหลังรอ 1–2 ภาคเรียน และอาจไม่ผ่านก็ได้)',
+        opts: [
+          { t: 'ข้อมูลนักเรียนรายห้องย้อนหลังและแนวโน้มรับนักเรียน แผนพัฒนาการจัดการศึกษา หลักฐานสิทธิในที่ดิน และมติคณะกรรมการสถานศึกษา', v: 'ok', ev: 'strong', why: 'คำขอที่มีข้อมูลความจำเป็นและความพร้อมของที่ดินครบ ช่วยให้เขตจัดลำดับได้ เกมจึงให้โอกาสผ่านสูงกว่า แต่ยังไม่แน่นอนเพราะงบประมาณแต่ละปีมีจำกัด' },
+          { t: 'ภาพถ่ายอาคารเดิมที่ทรุดโทรมและหนังสือขอความอนุเคราะห์ ไม่มีตัวเลขนักเรียน', v: 'warn', ev: 'weak', why: 'ภาพถ่ายช่วยเล่าปัญหาได้ แต่ไม่มีข้อมูลที่เขตใช้เปรียบเทียบความขาดแคลนระหว่างโรงเรียน โอกาสผ่านจึงต่ำลง' },
+          { t: 'ขอให้นักการเมืองท้องถิ่นช่วยโทรผลักดันแทนการแนบเอกสาร', v: 'bad', ev: 'none', why: 'การจัดลำดับคำของบลงทุนต้องอิงข้อมูลความจำเป็น การใช้แรงผลักดันส่วนตัวแทนหลักฐานทำให้คำขอไม่ผ่าน และกระทบความน่าเชื่อถือของโรงเรียน' },
         ] },
     ] },
   { id: 'land', th: 'ขยายพื้นที่โรงเรียน (รับบริจาคที่ดินจากชุมชน)', reward: { wallet: null }, by: 'soonthorn', minTier: 2, landQuest: true,
@@ -259,6 +269,20 @@ export const QUESTS = [
         opts: [
           { t: 'ขอบคุณ และชี้แจงว่าการรับนักเรียนต้องเป็นไปตามประกาศรับนักเรียนเหมือนทุกคน เสนอติดป้ายระลึกถึงผู้บริจาคแทน', v: 'ok', why: 'การรับบริจาคต้องไม่ผูกกับสิทธิพิเศษในการรับนักเรียน การให้เกียรติผู้บริจาคทำได้ด้วยวิธีที่ไม่กระทบสิทธิของผู้อื่น' },
           { t: 'รับเงื่อนไข เพราะที่ดินมีมูลค่าสูงกว่าที่นั่งสองที่', v: 'bad', why: 'การแลกที่นั่งเรียนกับทรัพย์สินทำให้การรับนักเรียนไม่เท่าเทียม เป็นประเด็นที่ถูกร้องเรียนและตรวจสอบบ่อยในการรับนักเรียน' },
+        ] },
+    ] },
+  { id: 'landgov', th: 'ขอใช้ที่ราชพัสดุข้างโรงเรียน', reward: { wallet: null }, by: 'pakorn', minTier: 6, landQuest: true,
+    steps: [
+      { q: 'แปลงติดโรงเรียนด้านตะวันออกเป็นที่ราชพัสดุที่ยังว่าง ท่านจะเริ่มอย่างไร (เกมยังไม่ได้ตรวจตัวบท พ.ร.บ.ที่ราชพัสดุ พ.ศ. 2562 ครบทุกมาตรา จึงตัดสินจากหลักว่าที่ราชพัสดุอยู่ในความดูแลของกรมธนารักษ์ ไม่ได้อ้างมาตรา)',
+        opts: [
+          { t: 'ตรวจสถานะแปลงกับธนารักษ์พื้นที่ แล้วทำเรื่องขอใช้ผ่านต้นสังกัด พร้อมแผนการใช้และแบบแปลนคร่าว ๆ', v: 'ok', why: 'ที่ราชพัสดุมีหน่วยงานผู้ดูแล โรงเรียนต้องขออนุญาตใช้ตามขั้นตอนผ่านต้นสังกัด จะเข้าไปใช้เองไม่ได้แม้เป็นหน่วยงานรัฐเหมือนกัน' },
+          { t: 'ล้อมรั้วเข้าไปใช้ก่อน เพราะเป็นที่ของรัฐเหมือนกัน', v: 'bad', why: 'หน่วยงานรัฐก็ต้องขออนุญาตใช้ที่ราชพัสดุ การเข้าครอบครองเองอาจถูกสั่งให้รื้อถอน และงบลงทุนบนที่ดินที่ไม่มีสิทธิใช้จะไม่ได้รับการพิจารณา' },
+          { t: 'ให้ชาวบ้านที่เช่าทำกินในแปลงนั้นย้ายออกทันทีเพื่อเตรียมพื้นที่', v: 'warn', why: 'ถ้ามีผู้เช่าหรือผู้ใช้เดิม ต้องให้หน่วยงานผู้ดูแลเป็นผู้จัดการตามสัญญา โรงเรียนไม่มีอำนาจสั่ง และจะกระทบความสัมพันธ์กับชุมชน' },
+        ] },
+      { q: 'ระหว่างรอผลการขอใช้ ชุมชนถามว่าโรงเรียนจะใช้ที่ดินทำอะไร ท่านจะตอบอย่างไร',
+        opts: [
+          { t: 'ชี้แจงในการประชุมผู้ปกครองและเผยแพร่แผนการใช้ที่ดิน รวมถึงช่วงเวลาที่ชุมชนใช้ลานได้', v: 'ok', why: 'การสื่อสารแผนอย่างเปิดเผยลดข่าวลือ และสร้างแรงสนับสนุนจากชุมชนที่โรงเรียนต้องพึ่งพาในระยะยาว' },
+          { t: 'ยังไม่ต้องบอก รอให้ได้รับอนุญาตก่อนค่อยประกาศ', v: 'warn', why: 'ไม่ผิดระเบียบ แต่ชุมชนที่ไม่ได้ข้อมูลมักเติมช่องว่างด้วยข่าวลือ' },
         ] },
     ] },
 ];
@@ -393,12 +417,28 @@ export function buy(itemId, wallet) {
 // งบลงทุนที่ยื่นไว้: ได้รับเมื่อผ่านอีก 3 ด่าน แต่ไม่เกินจำนวนด่านทั้งหมด (ด่านท้าย ๆ จะได้ไม่ค้างตลอดไป)
 export function refreshCapital() {
   const e = econ(), total = Object.keys(St.LEVEL_BY_ID).length, done = St.completedCount();
-  let changed = false;
+  let changed = false; const news = [];
   for (const c of e.capital) {
     if (c.readyAfter > total) { c.readyAfter = total; changed = true; }
-    if (!c.ready && done >= c.readyAfter) { c.ready = true; changed = true; addLog(`ได้รับจัดสรรงบลงทุน: ${ITEM[c.item].th}`, c.amount); }
+    if (!c.ready && !c.used && done >= c.readyAfter) {
+      changed = true;
+      const why = capitalReview(c);
+      if (why) { c.used = true; c.rejected = why; addLog(`คำของบลงทุนไม่ผ่าน: ${ITEM[c.item].th} (${why})`, 0); news.push({ ok: false, item: c.item, why }); }
+      else { c.ready = true; addLog(`ได้รับจัดสรรงบลงทุน: ${ITEM[c.item].th}`, c.amount); news.push({ ok: true, item: c.item }); }
+    }
   }
   if (changed) St.save();
+  return news;
+}
+// ผลพิจารณาคำขอ: คืนเหตุผลถ้าไม่ผ่าน (null = ผ่าน)
+// shortcut: เกณฑ์จัดลำดับจริงของเขตไม่เปิดเผยเป็นสูตร เกมใช้ความขาดแคลนห้องเรียน + คุณภาพหลักฐาน + โอกาสสุ่ม แทน
+export function capitalReview(c, rnd = Math.random()) {
+  const e = econ(), it = ITEM[c.item];
+  if (c.ev === 'none') return 'ไม่มีหลักฐานประกอบคำขอ';
+  if (it.capacity && e.students < e.capacity * 0.85) return `ข้อมูลนักเรียน ${fmt(e.students)} คน ยังไม่ถึงร้อยละ 85 ของความจุ ${fmt(e.capacity)} คน เขตจึงจัดลำดับให้โรงเรียนที่ขาดแคลนกว่าก่อน`;
+  if (e.crisis && !it.capacity) return 'โรงเรียนอยู่ในภาวะวิกฤตการเงิน เขตให้ลำดับรายการที่จำเป็นกว่าก่อน';
+  if (rnd < (c.ev === 'weak' ? 0.5 : 0.15)) return c.ev === 'weak' ? 'หลักฐานความจำเป็นไม่พอให้เขตจัดลำดับ' : 'งบประมาณปีนี้มีจำกัด ได้ลำดับถัดไป ยื่นใหม่ได้ในช่วงถัดไป';
+  return null;
 }
 // สถานะการสร้างอาคารแต่ละหลัง สำหรับแท็บ "สร้างอาคาร"
 export function buildStatus(id) {
@@ -420,7 +460,7 @@ export function activeEvents() {
   const e = econ(), now = semCount();
   return e.events.filter(v => now < v.until && ITEM[v.id]);
 }
-export const LAND_MAX = 4;
+export const LAND_MAX = 6;
 export function procurementNote(price) {
   const parts = [];
   parts.push(price <= 500000 ? 'จัดซื้อจัดจ้างด้วยวิธีเฉพาะเจาะจงได้ (วงเงินไม่เกิน 500,000 บาท)' : 'วงเงินเกิน 500,000 บาท ต้องใช้วิธีที่ระเบียบกำหนด เช่น วิธีประกาศเชิญชวนทั่วไป');
@@ -436,6 +476,7 @@ export function questAvailable(q) {
   const d = e.questsDone[q.id];
   if (q.capitalQuest && e.capital.some(c => !c.used)) return { ok: false, why: 'มีคำขอที่รอการจัดสรรหรือยังไม่ได้ใช้อยู่แล้ว' };
   if (q.landQuest && (e.land || 0) >= LAND_MAX) return { ok: false, why: 'ขยายพื้นที่ครบแล้ว' };
+  if (q.id === 'landgov' && (e.land || 0) < 4) return { ok: false, why: 'ใช้ได้เมื่อมีที่ดินครบ 4 แปลงแล้ว (ที่ราชพัสดุแปลงนี้อยู่ถัดจากแปลงที่ 4)' };
   if (d && d.tier === tierNow) return { ok: false, why: 'ทำแล้วในช่วงนี้ ทำได้อีกครั้งเมื่อถึงช่วงถัดไป' };
   return { ok: true };
 }
@@ -463,8 +504,9 @@ export function finishQuest(qid, answers) {
       text = `คำขอ "${capIt.th}" ยังไม่ผ่านการพิจารณา เพราะ${(capIt.needLand || 0) > (e.land || 0) ? `ยังไม่มีที่ดินแปลงที่ ${capIt.needLand}` : `ต้องผ่านอย่างน้อย ${capIt.minLv} ด่านก่อน`}`;
     } else if (cap && !bad) {
       const it = ITEM[cap];
-      e.capital.push({ item: cap, amount: it.price, approvedAt: Date.now(), readyAfter: Math.min(St.completedCount() + 3, Object.keys(St.LEVEL_BY_ID).length), ready: false, used: false });
-      text = `ส่งคำขอ "${it.th}" แล้ว จะได้รับจัดสรรเมื่อท่านผ่านอีก 3 ด่าน`;
+      const ev = answers.find(a => a.ev)?.ev || 'strong', wait = 1 + (Math.random() < 0.5 ? 1 : 0);
+      e.capital.push({ item: cap, amount: it.price, approvedAt: Date.now(), ev, readyAfter: Math.min(St.completedCount() + wait, Object.keys(St.LEVEL_BY_ID).length), ready: false, used: false });
+      text = `ส่งคำขอ "${it.th}" แล้ว เขตพื้นที่จะแจ้งผลหลังผ่านไป ${wait} ภาคเรียน (${wait} ด่าน) และคำขออาจไม่ผ่านก็ได้`;
       addLog(`ยื่นคำขอตั้งงบลงทุน: ${it.th}`, 0);
     } else text = 'คำขอไม่ได้รับการพิจารณา';
   } else if (r.wallet === 'donation') {
@@ -498,13 +540,13 @@ export function semesterTick(levelId, meters) {
   // นักเรียนใช้เงินของนักเรียนตามวัตถุประสงค์ (ไม่สะสมเกินจริง)
   e.wallets.student = Math.min(e.wallets.student, n * 400);
   // ความพร้อมรับงบลงทุน
-  refreshCapital();
-  for (const c of e.capital) if (!c.ready && St.completedCount() >= c.readyAfter) { c.ready = true; addLog(`ได้รับจัดสรรงบลงทุน: ${ITEM[c.item].th}`, c.amount); }
+  const capNews = refreshCapital();
   // การเติบโตของจำนวนนักเรียน: ชื่อเสียงจากตัวชี้วัด + สิ่งอำนวยความสะดวก − วิกฤต
   const vals = [meters.keng, meters.dee, meters.suk].filter(v => v != null);
   const kds = vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : 60;
   const fac = Object.keys(e.owned).reduce((s, f) => s + (ITEMS.find(i => i.facility === f)?.rep || 0), 0);
   let delta = Math.round((kds - 58) * 1.4 + fac * 0.8);
+  delta += e.repBoost || 0; e.repBoost = 0;   // ชื่อเสียงจากคณะที่มาเยือน มีผลภาคเรียนเดียว
   if (e.crisis) delta -= 35;
   delta = Math.max(-45, Math.min(60, delta));
   const before = e.students;
@@ -515,7 +557,7 @@ export function semesterTick(levelId, meters) {
   checkCrisis();
   e.history.push({ lv: levelId, students: e.students, perhead: e.wallets.perhead, income: e.wallets.income, crisis: e.crisis });
   St.save();
-  return { inPer, inAct, inInc, expense, studentsBefore: before, students: e.students, full: e.students >= e.capacity, crisisStart: !wasCrisis && e.crisis, crisisEnd: wasCrisis && !e.crisis, staffGot };
+  return { inPer, inAct, inInc, expense, studentsBefore: before, students: e.students, full: e.students >= e.capacity, crisisStart: !wasCrisis && e.crisis, crisisEnd: wasCrisis && !e.crisis, staffGot, capNews };
 }
 export function checkCrisis() {
   const e = econ();
