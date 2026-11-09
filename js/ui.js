@@ -1585,8 +1585,11 @@ function guestStop(i) {
 function guestScore(g, run) {
   const max = 2 + run.picks.length * 4 + 2;
   const got = GV[run.prep.v] + run.picks.reduce((t, k, i) => t + g.stops[k].fit + GV[run.answers[i].v], 0) + GV[run.close.v];
-  return Math.round(got / max * 100);
+  // สตง.: รายการที่เคยใช้เงินผิดประเภทตลอดเกมถูกยกขึ้นมา หักรายการละ 2 คะแนน (สูงสุด 6)
+  const pen = g.audit ? Math.min(6, 2 * auditFindings().length) : 0;
+  return Math.max(0, Math.round((got - pen) / max * 100));
 }
+function auditFindings() { return Ec.econ().bought.filter(b => b.verdict === 'bad'); }
 function guestEnd() {
   const g = GUEST[guestRun.id], run = guestRun, e = Ec.econ();
   const pct = guestScore(g, run);
@@ -1594,16 +1597,21 @@ function guestEnd() {
   const boost = Math.round((pct - 60) / 2 * (g.id === 'onesqa' ? 1.5 : 1));
   const mor = pct >= 80 ? 4 : pct >= 60 ? 1 : -4;
   e.repBoost = (e.repBoost || 0) + boost;
+  const don = g.donate && pct >= 80 ? g.donate : null;
+  if (don) e.donations.push({ purpose: don.purpose, amount: don.amount, from: g.th });
+  const finds = g.audit ? auditFindings() : [];
   for (const c of Object.values(St.S.chars)) c.morale = Math.max(10, Math.min(100, c.morale + mor));
   St.S.guests[g.id] = { done: Date.now(), pct, grade, boost };
   St.save(); guestRun = null; syncGuest(); refreshHUD();
   (pct >= 60 ? Au.sfx.levelClear : Au.sfx.levelFail)();
   const weak = run.picks.filter(k => g.stops[k].fit === 0).map(k => g.stops[k].th);
   openModal(`<div class="guest-head" style="--gc:${g.color}"><span class="chip">${esc(g.short)}</span><h2>สรุปการรับคณะ</h2></div>
-    <div class="result ${pct >= 60 ? 'pass' : 'fail'}"><b>${pct}</b> / 100 · ${g.id === 'onesqa' ? 'ผลในเกม' : 'ความประทับใจของคณะ'}: <b>${grade}</b></div>
+    <div class="result ${pct >= 60 ? 'pass' : 'fail'}"><b>${pct}</b> / 100 · ${g.id === 'onesqa' ? 'ผลในเกม' : g.audit ? 'ผลการตรวจในเกม' : 'ความประทับใจของคณะ'}: <b>${grade}</b></div>
     <ul class="tight small">
       <li>ชื่อเสียงของโรงเรียน: นักเรียนภาคเรียนถัดไป ${boost >= 0 ? '+' : ''}${boost} คน (นอกเหนือจากการเติบโตปกติ)</li>
       <li>ขวัญกำลังใจของครูทุกคน ${mor >= 0 ? '+' : ''}${mor}</li>
+      ${don ? `<li>ชมรมผู้ปกครองระดมทุนช่วยโรงเรียน ${Ec.fmt(don.amount)} บาท เพื่อ${Ec.PURPOSE_TH[don.purpose]} (ดูได้ที่หน้างบประมาณ)</li>` : g.donate ? '<li>ผู้ปกครองยังไม่ประทับใจพอจะระดมทุนช่วย (ต้องได้ 80 ขึ้นไป)</li>' : ''}
+      ${g.audit ? (finds.length ? `<li>ข้อสังเกตจากการซื้อตลอดเกม: ${finds.map(b => `${esc(Ec.ITEM[b.id]?.th || b.id)} (จ่ายจาก${esc(Ec.WALLETS[b.wallet]?.th || b.wallet)} ซึ่งผิดประเภท)`).join(', ')} หักคะแนน ${Math.min(6, 2 * finds.length)}</li>` : '<li>ไม่พบการใช้เงินผิดประเภทตลอดเกม</li>') : ''}
       ${weak.length ? `<li>จุด “${esc(weak.join(', '))}” ไม่ตรงกับสิ่งที่คณะอยากเห็น จึงช่วยภาพรวมได้น้อย</li>` : ''}
     </ul>
     ${g.id === 'onesqa' ? '<p class="tiny">ระดับผลในเกมเป็นระดับสมมุติ ไม่ใช่รูปแบบรายงานผลจริงของ สมศ.</p>' : ''}

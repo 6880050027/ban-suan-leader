@@ -779,7 +779,7 @@ const FAC_POS = { garden: [17, 17, 3], bikepark: [-20, 16.8, 3.2], reno: [-19, -
   expansion: [0, -32.5, 2], land2: [44.5, -32.5, 4.5],
   treecare: [10, 16, 5], pump: [21.4, -14.2, 3], generator: [21.5, -11.3, 3], wifi: [-10.3, -14.9, 12.5], airpurifier: [-11.8, -17.6, 4], fire: [9.2, -7.7, 3.4], langlab: [3.5, -18.5, 5], maker: [-19.3, -32.5, 5], hall: [34.5, -32.5, 8.5],
   land3: [72, 2, 3], land4: [72, -24, 3], land5: [100, 9, 3], land6: [100, -31, 3], newbldg3: [100, 2, 16], newbldg4: [100, -24, 16],
-  flowers: [-9, 17.9, 2.2], shadeTrees: [-29, -2, 6], hedge: [12, 18.6, 2.4], benches: [-26.8, 0, 2.4], pond: [-28, -17, 2.6], sala: [19.5, 2.5, 4.2], pathLamps: [16, 17.6, 4], schoolSign: [5.5, 17.9, 3.4], recycle: [-12.5, 13.6, 2.4], artWall: [-26.5, 9, 3.6], newbldg2: [66, 2, 12.5], gym: [78, 2, 9], scibldg: [66, -24, 9.5], housing: [77, -25, 6] };
+  flowers: [-9, 17.9, 2.2], shadeTrees: [-29, -2, 6], hedge: [12, 18.6, 2.4], benches: [-26.8, 0, 2.4], pond: [-28, -17, 2.6], sala: [19.5, 2.5, 4.2], pathLamps: [16, 17.6, 4], schoolSign: [5.5, 17.9, 3.4], recycle: [-12.5, 13.6, 2.4], artWall: [-26.5, 9, 3.6], ramps: [-19, -5.6, 2.6], dropoff: [66, 10, 3], walkway: [72, -8, 4.4], botanic: [100, 11, 3], newbldg2: [66, 2, 12.5], gym: [78, 2, 9], scibldg: [66, -24, 9.5], housing: [77, -25, 6] };
 // ของที่ซื้อซ้ำได้และกิจกรรม: แสดงในเมืองเฉพาะภาคเรียนที่ใช้งาน [x, z, ความสูงป้าย]
 const EV_POS = { teacher: [-11, -4.6, 3.8], foreign: [-26, -4.4, 3.8], janitor: [-28.5, 12, 3.8], scilab: [-21, -4.4, 2.6], pd: [-16, -4.4, 3.2], coding: [-6.5, -4.6, 2.6],
   uniform: [5, -6, 2.6], sports: [6.5, 4.5, 2.6], camp: [-9, 10.5, 3.4], scout: [0.5, 10.5, 3.4], moral: [-4, 13.2, 3.8], museum: [-35, -6, 4.4], scholar: [-25, 6.6, 3.6], lunchSec: [-17, 5, 2.6], counselor: [-4.5, -13.6, 3.8], plcnet: [-3.4, -7.4, 3.2], langcamp: [-4, 3.6, 3.4], eyes: [21.5, 10.6, 2.6] };
@@ -888,7 +888,7 @@ export function setEvents(list) {
 }
 
 // ---------- คณะที่มาเยือน: รถบัสจอดหน้าโรงเรียน คณะเดินตามจุดที่ ผอ. เลือก ----------
-const GUEST_BUS = [-24, 22.4];
+const GUEST_BUS = [48, 9];   // ลานว่างข้างหน่วยบริการสาธารณสุข ไม่ทับถนนที่รถวิ่งหรือต้นไม้
 let guestG = null, guestKeys = [], guestNow = null;
 export function setGuest(g) {
   if ((g?.id || null) === guestNow) return;
@@ -897,7 +897,7 @@ export function setGuest(g) {
   guestKeys = []; guestNow = g?.id || null;
   if (!g || !scene) return;
   guestG = new THREE.Group(); guestG.userData.dynamic = true; scene.add(guestG);
-  const bg = new THREE.Group(); bus(bg, 0, 0, g.color); bg.rotation.y = Math.PI / 2; bg.position.set(GUEST_BUS[0], 0, GUEST_BUS[1]); guestG.add(bg);
+  const bg = new THREE.Group(); bus(bg, 0, 0, g.color); bg.position.set(GUEST_BUS[0], 0, GUEST_BUS[1]); guestG.add(bg);
   for (let k = 0; k < 5; k++) {
     const m = makeCharacter(g.look); m.position.set(GUEST_BUS[0] - 2 + k * 1.1, 0.2, GUEST_BUS[1] - 2.4); scene.add(m);
     const key = `guest_${k}`;
@@ -1373,6 +1373,31 @@ function buildDecor() {
   g = fgroup('recycle');
   ['#2F6FB0', '#3E9E5A', '#E8C25A', '#C0504D'].forEach((c, i) => { const bin = mesh(rbox(0.6, 0.9, 0.6, 0.1), clay(c)); bin.position.set(-14 + i * 0.8, 0.65, 13.6); g.add(bin);
     const lid = mesh(rbox(0.66, 0.1, 0.66, 0.04), clay('#EDEDED')); lid.position.set(-14 + i * 0.8, 1.15, 13.6); g.add(lid); });
+  // ทางลาดและราวจับ หน้าอาคารเรียนและอาคารอำนวยการ
+  g = fgroup('ramps');
+  // ทางลาดตั้งฉากกับผนัง วิ่งออกจากประตู มีราวจับสองข้าง
+  for (const [x, z] of [[-19, -5.6], [0, -6.6]]) {
+    const r = mesh(rbox(1.6, 0.3, 3.6, 0.08), clay('#BFAE92')); r.position.set(x, 0.32, z); r.rotation.x = 0.1; g.add(r);
+    for (const dx of [-0.9, 0.9]) { const rail = mesh(new THREE.CylinderGeometry(0.07, 0.07, 3.6, 6), clay('#F2C14E')); rail.rotation.x = Math.PI / 2; rail.position.set(x + dx, 1.2, z); g.add(rail);
+      for (const dz of [-1.6, 1.6]) { const post = mesh(new THREE.CylinderGeometry(0.06, 0.06, 1, 6), clay('#F2C14E')); post.position.set(x + dx, 0.7, z + dz); g.add(post); } } }
+  // ลานจอดรถและจุดรับส่ง (ที่ดินแปลงที่ 3)
+  g = fgroup('dropoff');
+  { const lot = mesh(rbox(11, 0.12, 5, 0.05), clay('#8C8C8C', { noBump: true }), { cast: false }); lot.position.set(66, 0.14, 10); g.add(lot);
+    for (let k = 0; k < 5; k++) { const line = mesh(new THREE.BoxGeometry(0.12, 0.02, 2.2), clay('#FFFFFF', { noBump: true })); line.position.set(61.5 + k * 2.25, 0.22, 11.2); g.add(line); }
+    ['#F28C6B', '#5B8DD6'].forEach((c, k) => { const body = mesh(rbox(1.7, 1, 3, 0.35), clay(c)); body.position.set(62.6 + k * 4.5, 0.7, 11.2); g.add(body); });
+    const sh = mesh(rbox(4, 0.2, 1.6, 0.08), clay('#6FAF7A')); sh.position.set(68, 2.4, 8); g.add(sh);
+    for (const dx of [-1.8, 1.8]) { const p = mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.3, 6), clay('#DDDDDD')); p.position.set(68 + dx, 1.2, 8); g.add(p); } }
+  // ทางเดินมีหลังคา (แปลงที่ 3 ถึง 4)
+  g = fgroup('walkway');
+  { const roof = mesh(rbox(2.4, 0.25, 18, 0.1), clay('#E07A5F')); roof.position.set(72, 2.9, -9.5); g.add(roof);
+    const floor = mesh(rbox(2, 0.1, 18, 0.05), clay('#E9D6B3'), { cast: false }); floor.position.set(72, 0.12, -9.5); g.add(floor);
+    for (let z = -18; z <= -1; z += 3.4) for (const dx of [-1, 1]) { const p = mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.8, 6), clay('#F6E7C8')); p.position.set(72 + dx, 1.4, z); g.add(p); } }
+  // สวนพฤกษศาสตร์โรงเรียน (แปลงที่ 5)
+  g = fgroup('botanic');
+  for (let k = 0; k < 4; k++) { const x = 91 + k * 6;
+    const bed = mesh(rbox(4.6, 0.4, 3, 0.15), clay('#8A5A3C')); bed.position.set(x, 0.3, 10.5); g.add(bed);
+    for (let j = 0; j < 3; j++) { const b = mesh(new THREE.SphereGeometry(0.55 + (j % 2) * 0.2, 12, 9), clay(['#5E9A62', '#7DAF5A', '#A3C76A', '#4F8C5E'][(k + j) % 4])); b.position.set(x - 1.4 + j * 1.4, 0.95, 10.5); g.add(b); }
+    const tag = mesh(rbox(0.6, 0.4, 0.06, 0.03), clay('#FFFFFF')); tag.position.set(x, 0.9, 12.1); g.add(tag); }
   g = fgroup('artWall');
   { const wall = mesh(rbox(0.4, 2, 4.2, 0.1), clay('#F4E6CF')); wall.position.set(-27, 1.2, 9); g.add(wall);
     ['#E86A92', '#5B8DD6', '#F2C14E', '#6FAF7A', '#F28C3A'].forEach((c, i) => { const blob = mesh(new THREE.CircleGeometry(0.35 + (i % 2) * 0.15, 16), clay(c, { noBump: true })); blob.position.set(-26.78, 0.8 + (i % 3) * 0.45, 7.4 + i * 0.75); blob.rotation.y = Math.PI / 2; g.add(blob); }); }
